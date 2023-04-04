@@ -24,6 +24,9 @@ df = pd.read_csv('C:/Users/joris/OneDrive/Documents/OldPC/Hobbies Productives - 
                  sep=';')
 df.head()
 df = df.query("Nom in ['Elena AIGLE','Camille MOUNIER','Camille JOUNIAUX','Lisa LAMOTTE', 'Sara IAFRATE']")
+df['Mois Compet'] = df['Mois Compet'].apply(str)
+df['Mois Compet'] = pd.Categorical(df['Mois Compet'], ["8","9","10","11","12","1","2","3","4","5","6", "7"])
+df = df.sort_values(by='Mois Compet')
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
@@ -133,7 +136,6 @@ def update_figure(selected_year, txt_inserted):
                      log_x=False, size_max=55)
 
     fig.update_layout(transition_duration=5)
-
     return fig
 
 
