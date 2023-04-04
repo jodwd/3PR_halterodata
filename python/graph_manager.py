@@ -132,7 +132,7 @@ def update_figure(selected_year, txt_inserted):
         filtered_df = df[df['SaisonAnnee'] == selected_year]
 
     fig = px.scatter(filtered_df, x="Mois Compet", y="IWF_Points",
-                     hover_name="Nom", color="Nom",
+                     hover_name="Competition", color="Nom",
                      log_x=False, size_max=55)
 
     fig.update_layout(transition_duration=5)
