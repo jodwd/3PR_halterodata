@@ -12,18 +12,41 @@ body {
   text-align: center;
 }
 
-.container {
-  position: relative;
-  height: 90vh;
-  width: 95vw;
+.text-box {
+  margin-top: 20px;
+  margin-left: 20px;
+  border: 1px solid #000;
+  padding: 20px;
+  width: 300px;
+  height: 35px;
+  /* Additional CSS properties for styling */
+  background-color: #3161A2;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  color: white;
+  text-align: center;
+}
+
+.input_box {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.graph_box {
+  margin-top: 20px;
+  margin-left: 20px;
+  background-color: #3161A2;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  color: white;
  }
 
-.box {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background-color: #ccc;
+ .slider_zone {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  color: white;
 }
+
 .top-left {
   top: 10;
   left: 20;
@@ -31,7 +54,7 @@ body {
 
 .bottom-left
   bottom: 20;
- left: 20;
+  left: 20;
 }
 .bottom-right {
   bottom: 20;
@@ -63,14 +86,7 @@ body {
 }
 
 /* Content */
-.athlete_box {
-  position: relative;
 
-  margin-left : 20px;
-  height 40px;
-  margin-bottom: 500px;
-  background: color '#D2F3FF';
-}
 .data_tab {
   margin-left: 20px;
   margin-right: 20px;
