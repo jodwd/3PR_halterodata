@@ -5,6 +5,7 @@ from dash import dcc
 from dash import html
 import pandas as pd
 from dash.dependencies import Input, Output
+from flask import Flask, render_template
 
 
 def generate_table(dataframe, max_rows=10):
@@ -23,13 +24,25 @@ def generate_table(dataframe, max_rows=10):
 df = pd.read_csv('C:/Users/joris/OneDrive/Documents/OldPC/Hobbies Productives - Copie/Haltero/haltero_data_full_2.csv',
                  sep=';')
 df.head()
-df = df.query("Nom in ['Elena AIGLE','Camille MOUNIER','Camille JOUNIAUX','Lisa LAMOTTE', 'Sara IAFRATE']")
+df = df
 df['Mois Compet'] = df['Mois Compet'].apply(str)
 df['Mois Compet'] = pd.Categorical(df['Mois Compet'], ["8","9","10","11","12","1","2","3","4","5","6", "7"])
 df = df.sort_values(by='Mois Compet')
 app = dash.Dash(__name__)
 
+#df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
+list_names = list(set(df['Nom'].tolist()))
+
+
 app.layout = html.Div([
+
+    html.Div(
+        children=[
+            html.P("Haltero Data")
+        ],
+        id='filter_info',
+        className="text-box",
+    ),
     html.Div([
         dcc.Input(
             id='my_txt_input',
@@ -45,29 +58,30 @@ app.layout = html.Div([
             autoFocus=True,  # the element should be automatically focused after the page loaded
             n_blur=0,  # number of times the input lost focus
             n_blur_timestamp=-1,  # last time the input lost focus.
+
+                    # Dynamically generate options
             # selectionDirection='', # the direction in which selection occurred
             # selectionStart='',     # the offset into the element's text content of the first selected character
             # selectionEnd='',       # the offset into the element's text content of the last selected character
-        )
-    ]),
+        )],
+        className="input_box",
+    ),
 
-    # numpy.unique(df['DATA']))
-    html.Datalist(id='Nom_athl', children=[
-        html.Option(value="Lisa LAMOTTE"),
-        html.Option(value="Elena AIGLE"),
-        html.Option(value="Camille MOUNIER")
-    ]),
+    html.Datalist(id='Nom_athl'),
     html.Br(),
-    html.Br(),
-    html.Div(id='div_output'),
-    dcc.Graph(id='graph-with-slider'),
-    dcc.Slider(
-        df['SaisonAnnee'].min(),
-        df['SaisonAnnee'].max(),
-        step=None,
-        value=df['SaisonAnnee'].max(),
-        marks={str(year): str(year) for year in df['SaisonAnnee'].unique()},
-        id='year-slider'
+
+    html.Div([
+        dcc.Graph(id='graph-with-slider'),
+        dcc.Slider(
+            df['SaisonAnnee'].min(),
+            df['SaisonAnnee'].max(),
+            step=None,
+            value=df['SaisonAnnee'].max(),
+            marks={str(year): str(year) for year in df['SaisonAnnee'].unique()},
+            id='year-slider',
+            className = 'slider_zone')],
+        id='div_output',
+        className='graph_box'
     ),
     html.Div([
         dash_table.DataTable(
@@ -99,7 +113,21 @@ app.layout = html.Div([
     )
 ])
 
+@app.callback(
+    Output('Nom_athl', 'children'),
+    [Input('my_txt_input', 'value')]
+)
+def update_datalist(input_value):
+    children = []  # List to store dynamic options
 
+    # Generate options based on input value
+    if input_value:
+        # Fetch or generate data based on input value
+        # For example, you can query a database or an API
+        # and append the options to the children list
+        children = [html.Option(value=val, children=val) for val in list_names]
+
+    return children
 @app.callback(
     Output('datatable-interactivity', 'style_data_conditional'),
     Input('datatable-interactivity', 'selected_columns')
@@ -109,7 +137,6 @@ def update_styles(selected_columns):
         'if': {'column_id': i},
         'background_color': '#D2F3FF'
     } for i in selected_columns]
-
 
 @app.callback(
     Output('datatable-interactivity-container', "children"),
@@ -125,11 +152,12 @@ def update_styles(selected_columns):
     [Input('year-slider', 'value'),
      Input(component_id='my_txt_input', component_property='value')
      ])
+
 def update_figure(selected_year, txt_inserted):
     if txt_inserted:
         filtered_df = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] == selected_year)]
     else:
-        filtered_df = df[df['SaisonAnnee'] == selected_year]
+        filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] == selected_year)]
 
     fig = px.scatter(filtered_df, x="Mois Compet", y="IWF_Points",
                      hover_name="Competition", color="Nom",
@@ -137,9 +165,7 @@ def update_figure(selected_year, txt_inserted):
 
     fig.update_layout(transition_duration=5)
     return fig
-
-
-def update_data(selected_year, txt_inserted):
+def update_data(txt_inserted):
     if txt_inserted:
         filtered_df = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] == selected_year)]
     else:
@@ -148,7 +174,16 @@ def update_data(selected_year, txt_inserted):
     dat = filtered_df.to_dict('records')
 
     return dat
+@app.callback(
+    Output("filter_info", "children"),
+    [Input('year-slider', 'value'),
+     Input(component_id='my_txt_input', component_property='value')
+     ])
 
+def update_title(selected_year, txt_inserted):
+    # Perform any manipulation on input_value and return the updated title
+    updated_title = f"{txt_inserted} {selected_year-1}/{selected_year}" if txt_inserted else "This is the initial title"
+    return updated_title
 
 if __name__ == '__main__':
     app.run_server(debug=True, use_reloader=False)
