@@ -17,7 +17,7 @@ body {
   margin-left: 20px;
   border: 1px solid #000;
   padding: 20px;
-  width: 300px;
+  width: 500px;
   height: 35px;
   /* Additional CSS properties for styling */
   background-color: #3161A2;
@@ -27,13 +27,71 @@ body {
   text-align: center;
 }
 
-.input_box {
-  margin-top: 20px;
+
+.filter_zone {
+    width: 320px;
+    margin-left: 20px;
+    border-width:5px;
+    border-style:solid;
+    border-color:black;
+    padding:10px;
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+.athl1_zone {
   margin-left: 20px;
+  margin-left: 20px;
+  width: 300px;
+  height: 35px;
+  display:flex;
+  /*
+  border-style:solid;
+  border-color:grey;
+  border-width:2px;
+  */
+  margin-left: 10px;
+}
+
+.athl1_box {
+  width: 120px;
+  height: 35px;
+  margin-left: 10px;
+  display:flex;
+}
+.input_box1 {
+  margin-top: 10px;
+  margin-left: 20px;
+  width: 150px;
+  height: 35px;
+}
+.athl2_zone {
+  margin-top: 5px;
+  margin-left: 20px;
+  width: 300px;
+  height: 35px;
+  display:flex;
+  /*
+  border-style:solid;
+  border-color:grey;
+  border-width:2px;
+  */
+  margin-left: 10px;
+}
+.athl2_box {
+  width: 120px;
+  height: 35px;
+  margin-left: 10px;
+  display:flex;
+}
+.input_box2 {
+  margin-top: 10px;
+  margin-left: 20px;
+  width: 150px;
+  height: 35px;
 }
 
 .graph_box {
-  margin-top: 20px;
+  margin-top: -20px;
   margin-left: 20px;
   background-color: #3161A2;
   font-family: 'Bebas Neue', sans-serif;

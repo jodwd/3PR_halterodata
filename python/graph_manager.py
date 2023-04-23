@@ -36,6 +36,7 @@ list_names = list(set(df['Nom'].tolist()))
 
 app.layout = html.Div([
 
+    # Titre
     html.Div(
         children=[
             html.P("Haltero Data")
@@ -43,33 +44,86 @@ app.layout = html.Div([
         id='filter_info',
         className="text-box",
     ),
+
+    #Zone filtres athlètes
     html.Div([
-        dcc.Input(
-            id='my_txt_input',
-            type='text',
-            debounce=True,  # changes to input are sent to Dash server only on enter or losing focus
-            pattern=r"^[A-Za-z].*",  # Regex: string must start with letters only
-            spellCheck=True,
-            inputMode='latin',  # provides a hint to browser on type of data that might be entered by the user.
-            name='text',  # the name of the control, which is submitted with the form data
-            list='Nom_athl',  # identifies a list of pre-defined options to suggest to the user
-            n_submit=0,  # number of times the Enter key was pressed while the input had focus
-            n_submit_timestamp=-1,  # last time that Enter was pressed
-            autoFocus=True,  # the element should be automatically focused after the page loaded
-            n_blur=0,  # number of times the input lost focus
-            n_blur_timestamp=-1,  # last time the input lost focus.
+    # Selection Athlète #1
+        html.Div([
+            html.Div(
+                children=[
+                    html.P("Athlète #1")
+                ],
+                id='athl1_info',
+                className="athl1_box",
+            ),
+            html.Div([
+                    dcc.Input(
+                        id='my_txt_input',
+                        type='text',
+                        debounce=True,  # changes to input are sent to Dash server only on enter or losing focus
+                        pattern=r"^[A-Za-z].*",  # Regex: string must start with letters only
+                        spellCheck=True,
+                        inputMode='latin',  # provides a hint to browser on type of data that might be entered by the user.
+                        name='text',  # the name of the control, which is submitted with the form data
+                        list='Nom_athl',  # identifies a list of pre-defined options to suggest to the user
+                        n_submit=0,  # number of times the Enter key was pressed while the input had focus
+                        n_submit_timestamp=-1,  # last time that Enter was pressed
+                        autoFocus=True,  # the element should be automatically focused after the page loaded
+                        n_blur=0,  # number of times the input lost focus
+                        n_blur_timestamp=-1,  # last time the input lost focus.
+
+                                # Dynamically generate options
+                        # selectionDirection='', # the direction in which selection occurred
+                        # selectionStart='',     # the offset into the element's text content of the first selected character
+                        # selectionEnd='',       # the offset into the element's text content of the last selected character
+                    )
+                ],
+                className="input_box1",
+            )] ,
+            className="athl1_zone",
+        ),
+        html.Datalist(id='Nom_athl'),
+
+        #Selection Athlète #2
+        html.Div([
+            html.Div(
+                children=[
+                    html.P("Athlète #2")
+                ],
+                id='athl2_info',
+                className="athl2_box",
+            ),
+            html.Div([
+                dcc.Input(
+                    id='my_txt_input2',
+                    type='text',
+                    debounce=True,  # changes to input are sent to Dash server only on enter or losing focus
+                    pattern=r"^[A-Za-z].*",  # Regex: string must start with letters only
+                    spellCheck=True,
+                    inputMode='latin',  # provides a hint to browser on type of data that might be entered by the user.
+                    name='text',  # the name of the control, which is submitted with the form data
+                    list='Nom_athl',  # identifies a list of pre-defined options to suggest to the user
+                    n_submit=0,  # number of times the Enter key was pressed while the input had focus
+                    n_submit_timestamp=-1,  # last time that Enter was pressed
+                    autoFocus=True,  # the element should be automatically focused after the page loaded
+                    n_blur=0,  # number of times the input lost focus
+                    n_blur_timestamp=-1,  # last time the input lost focus.
 
                     # Dynamically generate options
-            # selectionDirection='', # the direction in which selection occurred
-            # selectionStart='',     # the offset into the element's text content of the first selected character
-            # selectionEnd='',       # the offset into the element's text content of the last selected character
-        )],
-        className="input_box",
+                    # selectionDirection='', # the direction in which selection occurred
+                    # selectionStart='',     # the offset into the element's text content of the first selected character
+                    # selectionEnd='',       # the offset into the element's text content of the last selected character
+                )
+            ],
+                className="input_box2",
+            )],
+            className="athl2_zone",
+        ),
+        html.Datalist(id='Nom_athl2')
+        ],
+    className="filter_zone",
     ),
-
-    html.Datalist(id='Nom_athl'),
     html.Br(),
-
     html.Div([
         dcc.Graph(id='graph-with-slider'),
         dcc.Slider(
@@ -132,6 +186,7 @@ def update_datalist(input_value):
     Output('datatable-interactivity', 'style_data_conditional'),
     Input('datatable-interactivity', 'selected_columns')
 )
+
 def update_styles(selected_columns):
     return [{
         'if': {'column_id': i},
@@ -145,17 +200,13 @@ def update_styles(selected_columns):
 @app.callback(
     Output('graph-with-slider', 'figure'),
     [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value')
-     ])
-@app.callback(
-    Output('datatable-interactivity', "data"),
-    [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value')
+     Input(component_id='my_txt_input', component_property='value'),
+     Input(component_id='my_txt_input2', component_property='value')
      ])
 
-def update_figure(selected_year, txt_inserted):
+def update_figure(selected_year, txt_inserted, txt_inserted2):
     if txt_inserted:
-        filtered_df = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] == selected_year)]
+        filtered_df = df[((df['Nom'] == txt_inserted) | (df['Nom'] == txt_inserted2)) & (df['SaisonAnnee'] == selected_year)]
     else:
         filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] == selected_year)]
 
@@ -165,24 +216,45 @@ def update_figure(selected_year, txt_inserted):
 
     fig.update_layout(transition_duration=5)
     return fig
-def update_data(txt_inserted):
+
+
+@app.callback(
+    [Output('datatable-interactivity', "data"),
+     Output('datatable-interactivity', "columns")],
+    [Input('year-slider', 'value'),
+     Input(component_id='my_txt_input', component_property='value'),
+     Input(component_id='my_txt_input2', component_property='value')
+     ])
+
+def update_data(selected_year, txt_inserted, txt_inserted2):
     if txt_inserted:
-        filtered_df = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] == selected_year)]
+        filtered_df = df[((df['Nom'] == txt_inserted) | (df['Nom'] == txt_inserted2)) & (df['SaisonAnnee'] == selected_year)]
     else:
-        filtered_df = df[df['SaisonAnnee'] == selected_year]
+        filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] == selected_year)]
+
+    columns = [
+        {"name": i, "id": i, "deletable": True, "selectable": True} for i in
+        ['Nom', 'Date Naissance', 'Competition', 'Poids de Corps', 'Arrache', 'EpJete', 'TOTAL', 'IWF']
+    ]
 
     dat = filtered_df.to_dict('records')
 
-    return dat
+    return dat, columns
 @app.callback(
     Output("filter_info", "children"),
     [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value')
+     Input(component_id='my_txt_input', component_property='value'),
+     Input(component_id='my_txt_input2', component_property='value')
      ])
 
-def update_title(selected_year, txt_inserted):
+def update_title(selected_year, txt_inserted, txt_inserted2):
     # Perform any manipulation on input_value and return the updated title
-    updated_title = f"{txt_inserted} {selected_year-1}/{selected_year}" if txt_inserted else "This is the initial title"
+    if (txt_inserted and (not txt_inserted2)):
+        updated_title = f"{txt_inserted} {selected_year-1}/{selected_year}"
+    if ((not txt_inserted) and txt_inserted2):
+        updated_title = f"{txt_inserted2} {selected_year-1}/{selected_year}"
+    if (txt_inserted and txt_inserted2):
+        updated_title = f"{txt_inserted} vs {txt_inserted2} {selected_year-1}/{selected_year}"
     return updated_title
 
 if __name__ == '__main__':
