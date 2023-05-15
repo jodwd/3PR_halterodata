@@ -1,102 +1,211 @@
-/* Body */
+/* Body
 body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
-
-/* Header */
-.header {
-  background-color: #333;
-  color: #fff;
-  padding: 10px;
-  text-align: center;
-}
-
-.text-box {
-  margin-top: 20px;
-  margin-left: 20px;
-  border: 1px solid #000;
-  padding: 20px;
-  width: 500px;
-  height: 35px;
-  /* Additional CSS properties for styling */
-  background-color: #3161A2;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 24px;
-  color: white;
-  text-align: center;
-}
-
+*/
 
 .filter_zone {
-    width: 320px;
-    margin-left: 20px;
-    border-width:5px;
-    border-style:solid;
-    border-color:black;
-    padding:10px;
+    width: 1300px;
+    height: 90px;
+    margin-left: 10px;
     font-family: 'Bebas Neue', sans-serif;
 }
 
-.athl1_zone {
-  margin-left: 20px;
-  margin-left: 20px;
-  width: 300px;
-  height: 35px;
-  display:flex;
-  /*
-  border-style:solid;
-  border-color:grey;
-  border-width:2px;
-  */
-  margin-left: 10px;
+.text-box {
+     margin-left: 20px;
+     border: 1px solid #000;
+     width: 500px;
+     height: 80px;
+     /* Additional CSS properties for styling */
+     padding 20px;
+     background-color: #3161A2;
+     font-family: 'Bebas Neue', sans-serif;
+     font-size: 24px;
+     color: white;
+     text-align: center;
+     vertical-align: top;
+     display: inline-block;
 }
 
+
+.athl_zone {
+  vertical-align: top;
+  display: inline-block;
+}
+
+
+.athl1_zone {
+  margin-left: 20px;
+  width: 250px;
+  height: 40px;
+}
 .athl1_box {
-  width: 120px;
-  height: 35px;
+  width: 60px;
+  height: 40px;
   margin-left: 10px;
-  display:flex;
+  display: inline-block;
 }
 .input_box1 {
-  margin-top: 10px;
   margin-left: 20px;
   width: 150px;
-  height: 35px;
+  height: 40px;
+  display: inline-block;
 }
+
 .athl2_zone {
-  margin-top: 5px;
   margin-left: 20px;
-  width: 300px;
-  height: 35px;
-  display:flex;
-  /*
-  border-style:solid;
-  border-color:grey;
-  border-width:2px;
-  */
-  margin-left: 10px;
+  width: 250px;
+  height: 40px;
 }
 .athl2_box {
-  width: 120px;
-  height: 35px;
+  width: 60px;
+  height: 40px;
   margin-left: 10px;
-  display:flex;
+  display: inline-block;
 }
 .input_box2 {
-  margin-top: 10px;
   margin-left: 20px;
   width: 150px;
-  height: 35px;
+  height: 40px;
+  display: inline-block;
+}
+
+
+.athl1_info {
+  margin-left: 20px;
+  width: 160px;
+  height: 100px;
+  display: inline-block;
+}
+
+.athl1_nom {
+  width: 150px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  display: inline-block;
+}
+
+.athl1_club {
+  width: 150px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  display: inline-block;
+}
+
+.athl1_anniv {
+  width: 75px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  font-color: black;
+  display: inline-block;
+}
+
+.athl1_max {
+  width: 75px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  text_align: right;
+  display: inline-block;
+}
+
+.athl1_total {
+  width: 90px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  font-color: black;
+  display: inline-block;
+}
+
+.athl1_pdc {
+  width: 60px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  text_align: right;
+  display: inline-block;
+}
+
+.athl2_info {
+  margin-left: 20px;
+  width: 160px;
+  height: 100px;
+  display: inline-block;
+}
+
+.athl2_nom {
+  width: 150px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  display: inline-block;
+}
+
+.athl2_club {
+  width: 150px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  display: inline-block;
+}
+
+.athl2_anniv {
+  width: 75px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  font-color: black;
+  display: inline-block;
+}
+
+.athl2_max {
+  width: 75px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  text_align: right;
+  display: inline-block;
+}
+
+.athl2_total {
+  width: 90px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  font-color: black;
+  display: inline-block;
+}
+
+.athl2_pdc {
+  width: 60px;
+  height: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  text_align: right;
+  display: inline-block;
 }
 
 .graph_box {
   margin-top: -20px;
   margin-left: 20px;
-  background-color: #3161A2;
+  background-color: #163651;
   font-family: 'Bebas Neue', sans-serif;
   font-size: 14px;
   color: white;
+ }
+
+.data_tab {
+  margin-top: -20px;
+  margin-left: 20px;
+  background-color: white;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  color: black;
  }
 
  .slider_zone {
@@ -104,21 +213,6 @@ body {
   font-size: 14px;
   color: white;
 }
-
-.top-left {
-  top: 10;
-  left: 20;
-}
-
-.bottom-left
-  bottom: 20;
-  left: 20;
-}
-.bottom-right {
-  bottom: 20;
-  right: 20;
-}
-
 
 /* Sidebar */
 .sidebar {
