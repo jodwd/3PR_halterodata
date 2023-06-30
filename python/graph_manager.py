@@ -5,6 +5,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 import pandas as pd
+import numpy as np
 from dash.dependencies import Input, Output
 from flask import Flask, render_template
 
@@ -22,13 +23,14 @@ def generate_table(dataframe, max_rows=10):
     ])
 
 
-df = pd.read_csv('C:/Users/joris/OneDrive/Documents/OldPC/Hobbies Productives - Copie/Haltero/haltero_data_full_2.csv',
+df = pd.read_csv('C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full_2.csv',
                  sep=';')
 df.head()
 df = df
 df['Mois Compet'] = df['Mois Compet'].apply(str)
 df['Mois Compet'] = pd.Categorical(df['Mois Compet'], ["8","9","10","11","12","1","2","3","4","5","6", "7"])
 df = df.sort_values(by='Mois Compet')
+updated_title='Haltero Data'
 app = dash.Dash(__name__)
 
 #df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
@@ -217,11 +219,11 @@ app.layout = html.Div([
     html.Br(),
     html.Div([
         dcc.Graph(id='graph-with-slider'),
-        dcc.Slider(
+        dcc.RangeSlider(
             df['SaisonAnnee'].min(),
             df['SaisonAnnee'].max(),
             step=None,
-            value=df['SaisonAnnee'].max(),
+            value=[df['SaisonAnnee'].max()-1,df['SaisonAnnee'].max()],
             marks={str(year): str(year) for year in df['SaisonAnnee'].unique()},
             id='year-slider',
             className = 'slider_zone')],
@@ -232,9 +234,9 @@ app.layout = html.Div([
         dash_table.DataTable(
             id='datatable-interactivity',
             # tab_selected_columns=['Nom', 'Date Naissance','Competition','Poids de Corps', 'Arrache','EpJete','Total','IWF'],
-            columns=[
-                {"name": i, "id": i, "deletable": True, "selectable": True} for i in
-                ['Nom', 'Date Naissance', 'Competition', 'Poids de Corps', 'Arrache', 'EpJete', 'TOTAL', 'IWF']
+                columns=[
+                    {"name": i, "id": i, "deletable": True, "selectable": True} for i in
+                    ['Nom', 'Date Naissance', 'Competition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'TOTAL', 'IWF']
             ],
             data=df.to_dict('records'),
             editable=True,
@@ -242,10 +244,19 @@ app.layout = html.Div([
             sort_action="native",
             sort_mode="multi",
             column_selectable="single",
+            style_header={
+                'backgroundColor': 'white',
+                'fontWeight': 'bold'
+            },
+            style_data={
+                'backgroundColor': 'rgb(80, 80, 90)',
+                'color': 'white'
+            },
             row_selectable="multi",
             row_deletable=False,
             selected_columns=[],
             selected_rows=[],
+            style_as_list_view=True,
             page_action="native",
             page_current=0,
             page_size=10,
@@ -319,19 +330,28 @@ def update_figure(selected_year, txt_inserted, txt_inserted2):
     if selected_year=='':
         selected_year=df['SaisonAnnee'].max()
     if (txt_inserted!='' and txt_inserted2!=''):
-        filtered_df = df[((df['Nom'] == txt_inserted) | (df['Nom'] == txt_inserted2)) & (df['SaisonAnnee'] == selected_year)]
+        filtered_df = df[((df['Nom'] == txt_inserted) | (df['Nom'] == txt_inserted2)) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     elif (txt_inserted=='' and txt_inserted2 !=''):
-        filtered_df = df[(df['Nom'] == txt_inserted2) & (df['SaisonAnnee'] == selected_year)]
+        filtered_df = df[(df['Nom'] == txt_inserted2) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     elif (txt_inserted!='' and txt_inserted2==''):
-        filtered_df = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] == selected_year)]
+        filtered_df = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     else:
-        filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] == selected_year)]
+        filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
 
-    fig = px.scatter(filtered_df, x="Mois Compet", y="IWF_Points",
+    fig = px.scatter(filtered_df, x="Annee Mois", y="IWF_Points",
                      hover_name="Competition", color="Nom",
                      log_x=False, size_max=55)
+    fig.update_traces(marker = dict(
+                            size=10,
+                            symbol='circle'))
 
-    fig.update_layout(transition_duration=5)
+    fig.update_xaxes(categoryorder="category ascending")
+    fig.update_layout(transition_duration=5,
+                      plot_bgcolor='rgb(40,40,45)',
+                      paper_bgcolor='rgb(40,40,45)',
+                      font_color="white",
+                      title_font_color="white",
+                      legend_title_font_color="white")
     return fig
 
 
@@ -347,13 +367,13 @@ def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
     if selected_year=='':
         selected_year=df['SaisonAnnee'].max()
     if txt_inserted!='':
-        filtered_df = df[((df['Nom'] == txt_inserted) | (df['Nom'] == txt_inserted2)) & (df['SaisonAnnee'] == selected_year)]
+        filtered_df = df[((df['Nom'] == txt_inserted) | (df['Nom'] == txt_inserted2)) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     else:
-        filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] == selected_year)]
+        filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
 
     columns = [
-        {"name": i, "id": i, "deletable": True, "selectable": True} for i in
-        ['Nom', 'Date Naissance', 'Competition', 'Poids de Corps', 'Arrache', 'EpJete', 'TOTAL', 'IWF']
+            {"name": i, "id": i, "deletable": True, "selectable": True} for i in
+            ['Nom', 'Date Naissance', 'Competition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'TOTAL', 'IWF']
     ]
 
     dat = filtered_df.to_dict('records')
@@ -368,14 +388,20 @@ def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
 
 def update_title(selected_year, txt_inserted, txt_inserted2):
     # Perform any manipulation on input_value and return the updated title
-    if (txt_inserted=='' and txt_inserted2=='') or (txt_inserted not in df['Nom'] and txt_inserted2 not in df['Nom']):
+    global updated_title
+    if min(selected_year)==max(selected_year):
+        year_text = 'Saison ' + str(max(selected_year))
+    else:
+        year_text = 'Saisons ' + str(min(selected_year)) + '/' + str(max(selected_year))
+
+    if (txt_inserted=='' and txt_inserted2==''):
         raise PreventUpdate
+    if (txt_inserted!='' and txt_inserted2==''):
+        updated_title = f"{txt_inserted}\n{year_text}"
+    if ((txt_inserted=='') and txt_inserted2!=''):
+        updated_title = f"{txt_inserted2}\n{year_text}"
     if (txt_inserted!='' and txt_inserted2!=''):
-        updated_title = f"{txt_inserted} {selected_year-1}/{selected_year}"
-    if ((txt_inserted!='') and txt_inserted2!=''):
-        updated_title = f"{txt_inserted2} {selected_year-1}/{selected_year}"
-    if (txt_inserted!='' and txt_inserted2!=''):
-        updated_title = f"{txt_inserted} vs {txt_inserted2} {selected_year-1}/{selected_year}"
+        updated_title = f"{txt_inserted} vs {txt_inserted2}\n{year_text}"
 
     return updated_title
 
@@ -396,8 +422,11 @@ def updated_name(selected_year, txt_inserted):
         raise PreventUpdate
     else:
         updated_name = txt_inserted
-        df1 = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] == selected_year)]
-        updated_club = df1['Club'].values[0]
+        df1 = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
+        if len(df1['Club'].values[0]) > 21:
+            updated_club = df1['Club'].values[0][0:20] + '.'
+        else:
+            updated_club = df1['Club'].values[0]
         updated_anniv = df1['Date Naissance'].values[0]
         updated_max = df1['IWF_Points'].max()
         updated_arr = df1['Arrache'].max()
@@ -425,8 +454,11 @@ def updated_name(selected_year, txt_inserted2):
         raise PreventUpdate
     else:
         updated_name2 = txt_inserted2
-        df2 = df[(df['Nom'] == txt_inserted2) & (df['SaisonAnnee'] == selected_year)]
-        updated_club2 = df2['Club'].values[0]
+        df2 = df[(df['Nom'] == txt_inserted2) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
+        if len(df2['Club'].values[0]) > 21:
+            updated_club2 = df2['Club'].values[0][0:20] + '.'
+        else:
+            updated_club2 = df2['Club'].values[0]
         updated_anniv2 = df2['Date Naissance'].values[0]
         updated_max2 = df2['IWF_Points'].max()
         updated_arr2 = df2['Arrache'].max()
