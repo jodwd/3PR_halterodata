@@ -1,17 +1,30 @@
 import sqlite3 as sql
 import pandas as pd
 import math
+import csv
 
-
+#Recalcul de l'IWF par année (permet de recalculer correctement les minimes)
 def sinclair_history(total, pdc, sexe, annee):
     print(total)
-    if sexe == 'M':
-        res = total*(10**(0.751945030*((math.log10(pdc/175.508))**2)))
-    else:
-        res = total*(10**(0.783497476*((math.log10(pdc/153.655))**2)))
-    return res
 
+    if annee<2023:
+        if sexe == 'M':
+            a = 0.751945030
+            b = 175.508
+        else:
+            a = 0.783497476
+            b = 153.655
+    if annee>=2023:
+        if sexe == 'M':
+            a = 0.722762521
+            b = 193.609
+        else:
+            a = 0.787004341
+            b = 153.655
+    res = total*(10**(a*((math.log10(pdc/b))**2)))
+    return res;
 
+#Recalcul du total par mouvement
 def resultat(mvmt1, mvmt2, mvmt3):
     if mvmt3> 0:
         res = mvmt3
@@ -23,7 +36,7 @@ def resultat(mvmt1, mvmt2, mvmt3):
         res = 0
     return res;
 
-
+#Recalcul du total par mouvement pour les U10/U13
 def resultatU13(mvmt1, mvmt2, mvmt3):
     if mvmt2>0 and mvmt3>0:
         res = mvmt2+mvmt3
@@ -34,25 +47,65 @@ def resultatU13(mvmt1, mvmt2, mvmt3):
     else:
         res = 0
     return res;
+def cate_master(annee_naissance, annee_saison, sexe, cate_poids):
+    if annee_saison-annee_naissance<35:
+        res = ''
+    else:
+        cat_age = 35 + 5*math.floor((annee_saison-annee_naissance)/5)
+        if sexe == 'F':
+            s = 'W'
+        else:
+            s = 'M'
+        res = s + cat_age + ' ' + sexe + ' ' + cate_poids
+    return res;
+def cate_poids(cate):
+    cate_poids_index = (cate.rfind(' ')-len(cate)+3)
+    res = cate[cate_poids_index:]
+    return res;
+def cate_age(cate):
+    if cate[0] == 'M' or cate[0] == 'W':
+        res = 'SEN'
+    else:
+        cate_age_end_index = cate.find(' ')
+        res = cate[0 : cate_age_end_index]
+    return res;
+
+
+
 def main_code():
     try:
+        #Connection à la base SQLite
         conn = sql.connect(database="dataltero.db")
         cur = conn.cursor()
 
-        df = pd.read_csv('C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full_2.csv', sep=';')
+        #On remplace les "faux" espaces du data par des "vrais" espaces
+        path_csv = 'C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full_2.csv'
+        with open(path_csv, 'r', newline='', encoding='utf-8') as file:
+            content = file.read()
+            content = content.replace('\u00A0', ' ')  # Replace non-breaking spaces with regular spaces
+            modified_content = content.replace('\xa0', ' ')  # Replace non-breaking spaces with regular spaces
+
+        with open(path_csv, 'w', newline='', encoding='utf-8') as file:
+            file.write(modified_content)
+
+        df = pd.read_csv(path_csv, sep=',')
         df.columns = df.columns.str.strip()
-        print(2)
-        #df.to_sql("haltero_full_data", conn)
+        print('z')
 
         #Suppression des tables pour cleaning
         cur.execute("DROP TABLE IF EXISTS CLUB")
-        cur.execute("DROP TABLE IF EXISTS COMPET_DATES")
-        cur.execute("DROP TABLE IF EXISTS ATHLETES")
+        cur.execute("DROP TABLE IF EXISTS COMPET")
+        cur.execute("DROP TABLE IF EXISTS ATHLETE")
+        cur.execute("DROP TABLE IF EXISTS COMPET_ATHLETE")
 
         #Création des fonctions
         conn.create_function("mvmt_resultat", 3 , resultat)
         conn.create_function("mvmt_resultatU13", 3 , resultatU13)
         conn.create_function("coeff_sinclair", 4 , sinclair_history)
+        conn.create_function("categorie_master", 4 , cate_master)
+        conn.create_function("categorie_poids", 1 , cate_poids)
+        conn.create_function("categorie_age", 1 , cate_age)
+
         #TABLE CLUB
         for res in cur.execute(
             """ CREATE table CLUB as 
@@ -71,16 +124,17 @@ def main_code():
             print(res)
 
         for res in cur.execute(
-            """ CREATE table COMPET_DATES as
-                SELECT
-                hfd.Competition                 as "NomCompetition"
+            """ CREATE table COMPET as
+                SELECT distinct
+                hfd.Competition                  as "NomCompetition"
             ,   substr(hfd.Competition, 1, 3)    as "LigueCompetition"
-            ,   dat."Date Compet"
-            ,   dat."Annee Compet" 
-            ,   dat."Mois Compet"
-            ,  '' as  "Semaine Compet"
-            ,   strftime('%Y', date(dat."Date Compet", '-4 months')) || '-' || strftime('%Y', date(dat."Date Compet", '+8 months')) as "Saison"
-            ,   strftime('%Y', date(dat."Date Compet", '+8 months')) as "Saison Annee"
+            ,   dat."DateCompet"
+            ,   dat."AnneeCompet" 
+            ,   dat."MoisCompet"
+            ,   dat."AnneeMois"
+            ,  '' as  "SemaineCompet"
+            ,   strftime('%Y', date(dat."DateCompet", '-8 months')) || '-' || strftime('%Y', date(dat."DateCompet", '+4 months')) as "Saison"
+            ,   cast(strftime('%Y', date(dat."DateCompet", '+4 months')) as Integer) as "SaisonAnnee"
                    
                    FROM haltero_full_data as hfd
                    LEFT JOIN (SELECT
@@ -93,16 +147,16 @@ def main_code():
                                 when 'Mar' then '03'
                                 when 'Avr' then '04'
                                 when 'Mai' then '05'
-                                when 'Jun' then '06'
+                                when 'Jui' then '06'
                                 when 'Jul' then '07'
-                                when 'Aou' then '08'
+                                when 'Aoû' then '08'
                                 when 'Sep' then '09'
                                 when 'Oct' then '10'
                                 when 'Nov' then '11'
                                 when 'Déc' then '12'
                               end  || '-' ||
-                            substr(Competition, length(Competition)-10,2) as "Date Compet"
-                    ,   substr(Competition, length(Competition)-3,4) as "Annee Compet" 
+                            substr(Competition, length(Competition)-10,2) as "DateCompet"
+                    ,   substr(Competition, length(Competition)-3,4) as "AnneeCompet" 
                     ,   case substr(Competition,
                         length(Competition)-7,3)
                             when 'Jan' then '01'
@@ -112,13 +166,30 @@ def main_code():
                             when 'Mai' then '05'
                             when 'Jun' then '06'
                             when 'Jul' then '07'
-                            when 'Aou' then '08'
+                            when 'Aoû' then '08'
                             when 'Sep' then '09'
                             when 'Oct' then '10'
                             when 'Nov' then '11'
                             when 'Déc' then '12'
-                          end as "Mois Compet"
-                    ,  '' as  "Semaine Compet"
+                          end as "MoisCompet"
+                    ,   substr(Competition, length(Competition)-3,4) 
+                        || '_' ||
+                        case substr(Competition,
+                            length(Competition)-7,3)
+                                when 'Jan' then '01'
+                                when 'Fév' then '02'
+                                when 'Mar' then '03'
+                                when 'Avr' then '04'
+                                when 'Mai' then '05'
+                                when 'Jun' then '06'
+                                when 'Jul' then '07'
+                                when 'Aoû' then '08'
+                                when 'Sep' then '09'
+                                when 'Oct' then '10'
+                                when 'Nov' then '11'
+                                when 'Déc' then '12'
+                              end as "AnneeMois"
+                    ,  '' as  "SemaineCompet"
                         FROM haltero_full_data) as dat
                         on dat.Competition = hfd.Competition
                    """):
@@ -129,12 +200,12 @@ def main_code():
         # Conversion du numéro de licence pour les athlètes en doublon (càd nom + date naissance identique = plusieurs licences)
         # Licence max remplacée par licence min
         for res in cur.execute(
-            """ CREATE table ATHLETES as
+            """ CREATE table ATHLETE as
                 select
-                    dat.Nom
-                ,   dat."Date Naissance"
-                ,   dat.Licence as "Licence"
-                ,   nat.NAT  as "Nationalite" 
+                    dat.Nom                             as "Nom"
+                ,   dat."Date Naissance"                as "DateNaissance"
+                ,   dat.Licence                         as "Licence"
+                ,   nat.NAT                             as "Nationalite"               
                 
                 from (SELECT distinct Nom, "Date Naissance", max(Licence) as Licence from haltero_full_data group by Nom, "Date Naissance") as dat
                 left join (Select distinct Licence, NAT, "Date Competition",
@@ -152,28 +223,29 @@ def main_code():
 
         # Table Compétition Athlète
         # Un athlète peut théoriquement changer de club durant la saison donc le club de l'athlète est rattaché à la compétition
+        #CREATE table COMPET_ATHLETE as
         for res in cur.execute(
-            """
+            """ CREATE table COMPET_ATHLETE as
                 select
-                    dat.Licence,
-                    dat.Competition,
-                    dat.Club,
-                    dat."Poids de Corps",
-                    dat.Arr1,
-                    dat.Arr2,
-                    dat.Arr3,
-                    mvmt_resultat(dat.Arr1, dat.Arr2, dat.Arr3) as "Arrache",
-                    mvmt_resultatU13(dat.Arr1, dat.Arr2, dat.Arr3) as "ArracheU13",
-                    dat.EpJ1,
-                    dat.EpJ2,
-                    dat.EpJ3,   
-                    mvmt_resultat(dat.EpJ1, dat.EpJ2, dat.EpJ3) as "EpJeté",
-                    mvmt_resultatU13(dat.EpJ1, dat.EpJ2, dat.EpJ3) as "EpJeteU13",
-                    mvmt_resultat(dat.Arr1, dat.Arr2, dat.Arr3) +
-                    mvmt_resultat(dat.EpJ1, dat.EpJ2, dat.EpJ3) as "PoidsTotal",
-                    mvmt_resultatU13(dat.Arr1, dat.Arr2, dat.Arr3) +
-                    mvmt_resultatU13(dat.EpJ1, dat.EpJ2, dat.EpJ3)  as "TotalU13",
-                    coeff_sinclair(
+                    dat.Licence                                        as "CATLicence"
+                ,   dat.Competition                                    as "CATNomCompetition"
+                ,   dat.Club                                           as "CATClub"
+                ,   dat."Poids de Corps"
+                ,   dat.Arr1
+                ,   dat.Arr2
+                ,   dat.Arr3
+                ,   mvmt_resultat(dat.Arr1, dat.Arr2, dat.Arr3)         as "Arrache"
+                ,   mvmt_resultatU13(dat.Arr1, dat.Arr2, dat.Arr3)      as "ArracheU13"
+                ,   dat.EpJ1
+                ,   dat.EpJ2
+                ,   dat.EpJ3   
+                ,   mvmt_resultat(dat.EpJ1, dat.EpJ2, dat.EpJ3)         as "EpJete"
+                ,   mvmt_resultatU13(dat.EpJ1, dat.EpJ2, dat.EpJ3)      as "EpJeteU13"
+                ,   mvmt_resultat(dat.Arr1, dat.Arr2, dat.Arr3) +
+                    mvmt_resultat(dat.EpJ1, dat.EpJ2, dat.EpJ3)         as "PoidsTotal"
+                ,   mvmt_resultatU13(dat.Arr1, dat.Arr2, dat.Arr3) +
+                    mvmt_resultatU13(dat.EpJ1, dat.EpJ2, dat.EpJ3)      as "TotalU13"
+                ,   coeff_sinclair(
                             mvmt_resultat(dat.Arr1, dat.Arr2, dat.Arr3) + mvmt_resultat(dat.EpJ1, dat.EpJ2, dat.EpJ3)
                         ,   cast(replace(dat."Poids de Corps", ',' , '.') as decimal)
                         ,   case when
@@ -181,34 +253,19 @@ def main_code():
                                    then 'F'
                                    else 'M'
                                end
-                       ,   2022) as "IWF_Calcul",
-                    dat.Série,
-                    dat.Catégorie,
-                    dat.IWF,
-                    case when dat.Catégorie like '%F' then 'F' else 'M' end  as "Sexe"
+                       ,   cast(comp."SaisonAnnee" as Integer))                         as "IWF_Calcul"
+                ,   dat.Série
+                ,   categorie_poids(dat.Catégorie)                                       as "CatePoids"
+                ,   categorie_age(dat.Catégorie)                                         as "CateAge"
+                ,   replace(dat.Catégorie, cast('\xa0' as text), ' ')                    as "Categorie"               
+                ,   dat.IWF
+                ,   case when dat.Catégorie like '%F%' then 'F' else 'M' end             as "Sexe"
    
                     from haltero_full_data as dat
+                    left join COMPET as comp
+                        on comp.NomCompetition = dat.competition
                    """):
             print(res)
-
-    #sinclair_history(
-    #                iif(dat.Arr3>0, dat.Arr3,
-    #                    iif(dat.Arr2>0, dat.Arr2,
-    #                        iif(dat.Arr1>0, Arr1, 0))) +
-    #                iif(dat.EpJ3>0 and dat.EpJ2>0 , dat.EpJ2+dat.EpJ3,
-    #                    iif(dat.EpJ3>0 and dat.EpJ1>0, dat.EpJ1+dat.EpJ3,
-    #                        iif(dat.EpJ1+dat.EpJ2>0, dat.EpJ1+dat.EpJ2, 0))) , dat."Poids de Corps", case when dat.Catégorie like '%F' then 'F' else 'M' end , cast(right(dat.Competition, 4) as integer)) as "IWF_Calcul",
-    #                    coeff_sinclair(
-   #                         mvmt_resultat(dat.Arr1, dat.Arr2, dat.Arr3) + mvmt_resultat(dat.EpJ1, dat.EpJ2, dat.EpJ3)
-  #                     ,   dat."Poids de Corps"
-  #                     ,   case when
-  #                             dat.Catégorie like '%F%'
-  #                                 then 'F'
-  #                                 else 'M'
-  #                             end
-  #                     ,   2022) as "IWF_Calcul",
-  # # ,  left(SaisonAnnee;Annee Mois;Âge Sportif;Age;CatégorieAge;Sexe;Catégorie Poids;Max Saison;LigueCompet;Ligue;IWF_Points;ID Compet;Doublons;Colonne2
-
 
     finally:
         # closing database connection.

@@ -5,6 +5,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 import pandas as pd
+import sqlite3 as sql
 import numpy as np
 from dash.dependencies import Input, Output
 from flask import Flask, render_template
@@ -23,13 +24,25 @@ def generate_table(dataframe, max_rows=10):
     ])
 
 
-df = pd.read_csv('C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full_2.csv',
-                 sep=';')
+# Connection à la base SQLite
+conn = sql.connect(database="dataltero.db")
+cur = conn.cursor()
+qry = "SELECT * FROM ATHLETE as ath " \
+      "LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.LIcence " \
+      "LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition " \
+      "LEFT JOIN CLUB as clb on clb.Club = cat.CATClub"
+#df = pd.read_csv('C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full_2.csv', sep=';')
+df = pd.read_sql_query(qry, conn)
 df.head()
 df = df
-df['Mois Compet'] = df['Mois Compet'].apply(str)
-df['Mois Compet'] = pd.Categorical(df['Mois Compet'], ["8","9","10","11","12","1","2","3","4","5","6", "7"])
-df = df.sort_values(by='Mois Compet')
+df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["08","09","10","11","12","01","02","03","04","05","06","07"])
+df = df.sort_values(by='MoisCompet')
+
+#df.head()
+#df = df
+#df['MoisCompet'] = df['MoisCompet'].apply(str)
+#df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["8","9","10","11","12","1","2","3","4","5","6", "7"])
+#df = df.sort_values(by='MoisCompet')
 updated_title='Haltero Data'
 app = dash.Dash(__name__)
 
@@ -233,10 +246,10 @@ app.layout = html.Div([
     html.Div([
         dash_table.DataTable(
             id='datatable-interactivity',
-            # tab_selected_columns=['Nom', 'Date Naissance','Competition','Poids de Corps', 'Arrache','EpJete','Total','IWF'],
+            # tab_selected_columns=['Nom', 'DateNaissance','NomCompetition','Poids de Corps', 'Arrache','EpJete','Total','IWF'],
                 columns=[
                     {"name": i, "id": i, "deletable": True, "selectable": True} for i in
-                    ['Nom', 'Date Naissance', 'Competition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'TOTAL', 'IWF']
+                    ['Nom', 'DateNaissance', 'NomCompetition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'PoidsTotal', 'IWF_Calcul']
             ],
             data=df.to_dict('records'),
             editable=True,
@@ -338,8 +351,8 @@ def update_figure(selected_year, txt_inserted, txt_inserted2):
     else:
         filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
 
-    fig = px.scatter(filtered_df, x="Annee Mois", y="IWF_Points",
-                     hover_name="Competition", color="Nom",
+    fig = px.scatter(filtered_df, x="AnneeMois", y="IWF_Calcul",
+                     hover_name="NomCompetition", color="Nom",
                      log_x=False, size_max=55)
     fig.update_traces(marker = dict(
                             size=10,
@@ -373,7 +386,7 @@ def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
 
     columns = [
             {"name": i, "id": i, "deletable": True, "selectable": True} for i in
-            ['Nom', 'Date Naissance', 'Competition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'TOTAL', 'IWF']
+            ['Nom', 'DateNaissance', 'NomCompetition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'PoidsTotal', 'IWF_Calcul']
     ]
 
     dat = filtered_df.to_dict('records')
@@ -427,12 +440,12 @@ def updated_name(selected_year, txt_inserted):
             updated_club = df1['Club'].values[0][0:20] + '.'
         else:
             updated_club = df1['Club'].values[0]
-        updated_anniv = df1['Date Naissance'].values[0]
-        updated_max = df1['IWF_Points'].max()
+        updated_anniv = df1['DateNaissance'].values[0]
+        updated_max = round(df1['IWF_Calcul'].max(),3)
         updated_arr = df1['Arrache'].max()
         updated_epj = df1['EpJete'].max()
-        updated_total = df1['TOTAL'].max()
-        pdc_df = df1['TOTAL'].idxmax()
+        updated_total = df1['PoidsTotal'].max()
+        pdc_df = df1['PoidsTotal'].idxmax()
         updated_pdc=df.loc[pdc_df, 'Poids de Corps']
 
         return f"{updated_name}", f"{updated_club}", f"{updated_anniv}", f"{updated_max} IWF", f"{updated_arr}/{updated_epj}/{updated_total}", f"{updated_pdc} PdC"
@@ -459,12 +472,12 @@ def updated_name(selected_year, txt_inserted2):
             updated_club2 = df2['Club'].values[0][0:20] + '.'
         else:
             updated_club2 = df2['Club'].values[0]
-        updated_anniv2 = df2['Date Naissance'].values[0]
-        updated_max2 = df2['IWF_Points'].max()
+        updated_anniv2 = df2['DateNaissance'].values[0]
+        updated_max2 = round(df2['IWF_Calcul'].max(),3)
         updated_arr2 = df2['Arrache'].max()
         updated_epj2 = df2['EpJete'].max()
-        updated_total2 = df2['TOTAL'].max()
-        pdc_df2 = df2['TOTAL'].idxmax()
+        updated_total2 = df2['PoidsTotal'].max()
+        pdc_df2 = df2['PoidsTotal'].idxmax()
         updated_pdc2=df.loc[pdc_df2, 'Poids de Corps']
 
         return f"{updated_name2}", f"{updated_club2}", f"{updated_anniv2}", f"{updated_max2} IWF", f"{updated_arr2}/{updated_epj2}/{updated_total2}", f"{updated_pdc2} PdC"
