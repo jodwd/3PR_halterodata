@@ -79,7 +79,7 @@ def main_code():
         cur = conn.cursor()
 
         #On remplace les "faux" espaces du data par des "vrais" espaces
-        path_csv = 'C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full_2.csv'
+        path_csv = 'output/haltero_data_full_2.csv'
         with open(path_csv, 'r', newline='', encoding='utf-8') as file:
             content = file.read()
             content = content.replace('\u00A0', ' ')  # Replace non-breaking spaces with regular spaces
