@@ -1,6 +1,7 @@
 import sqlite3 as sql
 import pandas as pd
 import math
+import os
 import csv
 
 #Recalcul de l'IWF par année (permet de recalculer correctement les minimes)
@@ -79,7 +80,8 @@ def main_code():
         cur = conn.cursor()
 
         #On remplace les "faux" espaces du data par des "vrais" espaces
-        path_csv = 'output/haltero_data_full.csv'
+        dirname = os.path.dirname(__file__)
+        path_csv = os.path.join(dirname, 'altero_data_full.csv')
         with open(path_csv, 'r', newline='', encoding='utf-8') as file:
             content = file.read()
             content = content.replace('\u00A0', ' ')  # Replace non-breaking spaces with regular spaces
