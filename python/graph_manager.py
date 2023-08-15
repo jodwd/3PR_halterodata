@@ -27,8 +27,9 @@ def generate_table(dataframe, max_rows=10):
 # Connection à la base SQLite
 conn = sql.connect(database="dataltero.db")
 cur = conn.cursor()
+qry = "SELECT * from haltero_data_full"
 qry = "SELECT * FROM ATHLETE as ath " \
-      "LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.LIcence " \
+      "LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.Licence " \
       "LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition " \
       "LEFT JOIN CLUB as clb on clb.Club = cat.CATClub"
 #df = pd.read_csv('C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full.csv', sep=';')
