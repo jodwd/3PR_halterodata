@@ -31,7 +31,7 @@ qry = "SELECT * FROM ATHLETE as ath " \
       "LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.LIcence " \
       "LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition " \
       "LEFT JOIN CLUB as clb on clb.Club = cat.CATClub"
-#df = pd.read_csv('C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full_2.csv', sep=';')
+#df = pd.read_csv('C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full.csv', sep=';')
 df = pd.read_sql_query(qry, conn)
 df.head()
 df = df
