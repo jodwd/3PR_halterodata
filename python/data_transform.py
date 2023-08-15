@@ -79,20 +79,35 @@ def main_code():
         conn = sql.connect(database="dataltero.db")
         cur = conn.cursor()
 
+        cur.execute("DROP TABLE IF EXISTS haltero_data_full")
+
         #On remplace les "faux" espaces du data par des "vrais" espaces
         dirname = os.path.dirname(__file__)
-        path_csv = os.path.join(dirname, 'altero_data_full.csv')
+        path_csv = os.path.join(dirname, 'haltero_data_full.csv')
+        #path_csv = 'C:/Users/joris/PycharmProjects/halterodata/python/haltero_data_full.csv'
+        print(path_csv)
         with open(path_csv, 'r', newline='', encoding='utf-8') as file:
             content = file.read()
-            content = content.replace('\u00A0', ' ')  # Replace non-breaking spaces with regular spaces
-            modified_content = content.replace('\xa0', ' ')  # Replace non-breaking spaces with regular spaces
+            modified_content = content
+            #content = content.replace('\u00A0', ' ')  # Replace non-breaking spaces with regular spaces
+            modified_content = content.replace('1,2,3,ARR,1,2,3', 'Arr1,Arr2,Arr3,Arr,EpJ1,Epj2,Epj3')  # Replace non-breaking spaces with regular spaces
 
         with open(path_csv, 'w', newline='', encoding='utf-8') as file:
             file.write(modified_content)
 
         df = pd.read_csv(path_csv, sep=',')
         df.columns = df.columns.str.strip()
-        print('z')
+
+        df.to_sql("df", conn, if_exists="replace")
+
+        ##create the table
+
+        conn.execute(
+            """
+            create table haltero_data_full as 
+            select * from df
+            """)
+
 
         #Suppression des tables pour cleaning
         cur.execute("DROP TABLE IF EXISTS CLUB")
@@ -232,7 +247,7 @@ def main_code():
                     dat.Licence                                        as "CATLicence"
                 ,   dat.Competition                                    as "CATNomCompetition"
                 ,   dat.Club                                           as "CATClub"
-                ,   dat."Poids de Corps"
+                ,   dat."P.C."                                         as "PoidsDeCorps"
                 ,   dat.Arr1
                 ,   dat.Arr2
                 ,   dat.Arr3
@@ -249,7 +264,7 @@ def main_code():
                     mvmt_resultatU13(dat.EpJ1, dat.EpJ2, dat.EpJ3)      as "TotalU13"
                 ,   coeff_sinclair(
                             mvmt_resultat(dat.Arr1, dat.Arr2, dat.Arr3) + mvmt_resultat(dat.EpJ1, dat.EpJ2, dat.EpJ3)
-                        ,   cast(replace(dat."Poids de Corps", ',' , '.') as decimal)
+                        ,   cast(replace(dat."P.C.", ',' , '.') as decimal)
                         ,   case when
                             dat.Catégorie like '%F%'
                                    then 'F'
