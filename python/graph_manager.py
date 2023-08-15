@@ -25,7 +25,7 @@ def generate_table(dataframe, max_rows=10):
 
 
 # Connection à la base SQLite
-conn = sql.connect(database="dataltero.db")
+conn = sql.connect(database="dataaltero.db")
 cur = conn.cursor()
 qry = "SELECT * from haltero_data_full"
 df = pd.read_sql_query(qry, conn)
