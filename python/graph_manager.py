@@ -28,6 +28,9 @@ def generate_table(dataframe, max_rows=10):
 conn = sql.connect(database="dataltero.db")
 cur = conn.cursor()
 qry = "SELECT * from haltero_data_full"
+qry = "SELECT * from COMPET_ATHLETE"
+qry = "SELECT * from COMPET"
+qry = "SELECT * from ATHLETE"
 qry = "SELECT * FROM ATHLETE as ath " \
       "LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.Licence " \
       "LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition " \
