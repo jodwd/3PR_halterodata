@@ -79,7 +79,7 @@ def main_code():
         cur = conn.cursor()
 
         #On remplace les "faux" espaces du data par des "vrais" espaces
-        path_csv = 'output/haltero_data_full_2.csv'
+        path_csv = 'output/haltero_data_full.csv'
         with open(path_csv, 'r', newline='', encoding='utf-8') as file:
             content = file.read()
             content = content.replace('\u00A0', ' ')  # Replace non-breaking spaces with regular spaces
@@ -116,7 +116,7 @@ def main_code():
                 ,    count(1)
                 ,    row_number() over(partition by Club order by count(1) desc) as row_num
                  
-                FROM haltero_data_full_2
+                FROM haltero_data_full
                     group by Club,  substr(Competition, 1, instr(Competition, ' ')-1)
                     ORDER BY Club, count(1) desc) as data_club
                 where data_club.row_num=1
@@ -136,7 +136,7 @@ def main_code():
             ,   strftime('%Y', date(dat."DateCompet", '-8 months')) || '-' || strftime('%Y', date(dat."DateCompet", '+4 months')) as "Saison"
             ,   cast(strftime('%Y', date(dat."DateCompet", '+4 months')) as Integer) as "SaisonAnnee"
                    
-                   FROM haltero_data_full_2 as hfd
+                   FROM haltero_data_full as hfd
                    LEFT JOIN (SELECT
                         Competition
                    ,    substr(Competition, length(Competition)-3,4) || '-' ||
@@ -190,7 +190,7 @@ def main_code():
                                 when 'Déc' then '12'
                               end as "AnneeMois"
                     ,  '' as  "SemaineCompet"
-                        FROM haltero_data_full_2) as dat
+                        FROM haltero_data_full) as dat
                         on dat.Competition = hfd.Competition
                    """):
             print(res)
@@ -207,13 +207,13 @@ def main_code():
                 ,   dat.Licence                         as "Licence"
                 ,   nat.NAT                             as "Nationalite"               
                 
-                from (SELECT distinct Nom, "Date Naissance", max(Licence) as Licence from haltero_data_full_2 group by Nom, "Date Naissance") as dat
+                from (SELECT distinct Nom, "Date Naissance", max(Licence) as Licence from haltero_data_full group by Nom, "Date Naissance") as dat
                 left join (Select distinct Licence, NAT, "Date Competition",
                                 ROW_NUMBER() OVER (
                                     PARTITION BY Licence, "Date Competition"
                                     ORDER BY "Date Competition" DESC
                                 ) as row_num
-                         from haltero_data_full_2
+                         from haltero_data_full
                          order by Licence, "Date Competition" desc) as nat
                          on nat.licence = dat.licence
                          and nat.row_num=1
@@ -261,7 +261,7 @@ def main_code():
                 ,   dat.IWF
                 ,   case when dat.Catégorie like '%F%' then 'F' else 'M' end             as "Sexe"
    
-                    from haltero_data_full_2 as dat
+                    from haltero_data_full as dat
                     left join COMPET as comp
                         on comp.NomCompetition = dat.competition
                    """):
