@@ -30,14 +30,6 @@ dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
-cur = conn.cursor()
-qry = "SELECT * from haltero_data_full"
-df = pd.read_sql_query(qry, conn)
-qry = "SELECT * from COMPET_ATHLETE"
-df = pd.read_sql_query(qry, conn)
-qry = "SELECT * from COMPET"
-df = pd.read_sql_query(qry, conn)
-qry = "SELECT * from ATHLETE"
 df = pd.read_sql_query(qry, conn)
 qry = "SELECT * FROM ATHLETE as ath " \
       "LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.Licence " \
@@ -497,4 +489,4 @@ def updated_name(selected_year, txt_inserted2):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, use_reloader=False)
+    app.run_server(debug=True)
