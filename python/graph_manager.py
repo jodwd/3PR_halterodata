@@ -57,6 +57,7 @@ df = df.sort_values(by='MoisCompet')
 #df = df.sort_values(by='MoisCompet')
 updated_title='Haltero Data'
 app = dash.Dash(__name__)
+server = app.server
 
 #df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
 list_names = list(set(df['Nom'].tolist()))
