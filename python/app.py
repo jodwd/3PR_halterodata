@@ -30,7 +30,6 @@ dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
-df = pd.read_sql_query(qry, conn)
 qry = "SELECT * FROM ATHLETE as ath " \
       "LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.Licence " \
       "LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition " \
