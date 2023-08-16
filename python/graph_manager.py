@@ -7,6 +7,7 @@ from dash.exceptions import PreventUpdate
 import pandas as pd
 import sqlite3 as sql
 import numpy as np
+import os
 from dash.dependencies import Input, Output
 from flask import Flask, render_template
 
@@ -25,7 +26,10 @@ def generate_table(dataframe, max_rows=10):
 
 
 # Connection à la base SQLite
-conn = sql.connect(database="dataaltero.db")
+dirname = os.path.dirname(__file__)
+path_db = os.path.join(dirname, 'dataltero.db')
+conn = sql.connect(database=path_db)
+
 cur = conn.cursor()
 qry = "SELECT * from haltero_data_full"
 df = pd.read_sql_query(qry, conn)
