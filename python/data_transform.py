@@ -90,7 +90,7 @@ def main_code():
             content = file.read()
             modified_content = content
             #content = content.replace('\u00A0', ' ')  # Replace non-breaking spaces with regular spaces
-            modified_content = content.replace('1,2,3,ARR,1,2,3', 'Arr1,Arr2,Arr3,Arr,EpJ1,Epj2,Epj3')  # Replace non-breaking spaces with regular spaces
+            modified_content = content.replace('1,2,3,ARR,1,2,3', 'Arr1,Arr2,Arr3,Arr,EpJ1,EpJ2,EpJ3')  # Replace non-breaking spaces with regular spaces
 
         with open(path_csv, 'w', newline='', encoding='utf-8') as file:
             file.write(modified_content)
@@ -144,6 +144,8 @@ def main_code():
             """ CREATE table COMPET as
                 SELECT distinct
                 hfd.Competition                  as "NomCompetition"
+            ,   substr(substr(hfd.Competition, instr(hfd.Competition, '-')+2, length(hfd.Competition)-instr(hfd.Competition, '-')), 1,
+                    length(substr(hfd.Competition, instr(hfd.Competition, '-')+2, length(hfd.Competition)-instr(hfd.Competition, '-')))-15) as "NomCompetitionCourt"
             ,   substr(hfd.Competition, 1, 3)    as "LigueCompetition"
             ,   dat."DateCompet"
             ,   dat."AnneeCompet" 
@@ -181,7 +183,7 @@ def main_code():
                             when 'Mar' then '03'
                             when 'Avr' then '04'
                             when 'Mai' then '05'
-                            when 'Jun' then '06'
+                            when 'Jui' then '06'
                             when 'Jul' then '07'
                             when 'Aoû' then '08'
                             when 'Sep' then '09'
@@ -198,7 +200,7 @@ def main_code():
                                 when 'Mar' then '03'
                                 when 'Avr' then '04'
                                 when 'Mai' then '05'
-                                when 'Jun' then '06'
+                                when 'Jui' then '06'
                                 when 'Jul' then '07'
                                 when 'Aoû' then '08'
                                 when 'Sep' then '09'
@@ -238,6 +240,11 @@ def main_code():
                    """):
             print(res)
 
+        for res in cur.execute("""SELECT   distinct      "NomCompetition"
+            ,  "NomCompetitionCourt"
+            FROM COMPET"""):
+            print(res)
+
         # Table Compétition Athlète
         # Un athlète peut théoriquement changer de club durant la saison donc le club de l'athlète est rattaché à la compétition
         #CREATE table COMPET_ATHLETE as
@@ -253,9 +260,9 @@ def main_code():
                 ,   dat.Arr3
                 ,   mvmt_resultat(dat.Arr1, dat.Arr2, dat.Arr3)         as "Arrache"
                 ,   mvmt_resultatU13(dat.Arr1, dat.Arr2, dat.Arr3)      as "ArracheU13"
-                ,   dat.EpJ1
-                ,   dat.EpJ2
-                ,   dat.EpJ3   
+                ,   dat.EpJ1                                            as "EpJ1"
+                ,   dat.EpJ2                                            as "EpJ2"
+                ,   dat.EpJ3                                            as "EpJ3"   
                 ,   mvmt_resultat(dat.EpJ1, dat.EpJ2, dat.EpJ3)         as "EpJete"
                 ,   mvmt_resultatU13(dat.EpJ1, dat.EpJ2, dat.EpJ3)      as "EpJeteU13"
                 ,   mvmt_resultat(dat.Arr1, dat.Arr2, dat.Arr3) +
@@ -270,8 +277,8 @@ def main_code():
                                    then 'F'
                                    else 'M'
                                end
-                       ,   cast(comp."SaisonAnnee" as Integer))                         as "IWF_Calcul"
-                ,   dat.Série
+                       ,   cast(comp."SaisonAnnee" as Integer))                          as "IWF_Calcul"
+                ,   dat.Série                                                            as "Serie"
                 ,   categorie_poids(dat.Catégorie)                                       as "CatePoids"
                 ,   categorie_age(dat.Catégorie)                                         as "CateAge"
                 ,   replace(dat.Catégorie, cast('\xa0' as text), ' ')                    as "Categorie"               

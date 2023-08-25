@@ -30,22 +30,24 @@ dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
-qry = "SELECT * FROM ATHLETE as ath " \
-      "LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.Licence " \
-      "LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition " \
-      "LEFT JOIN CLUB as clb on clb.Club = cat.CATClub"
-#df = pd.read_csv('C:/Users/joris/PycharmProjects/halterodata/output/haltero_data_full.csv', sep=';')
+# Requête
+qry = """SELECT ath.Nom, ath.DateNaissance as "Né le"
+      , substr(cmp."NomCompetitionCourt",1, 64) as "Competition", cat."PoidsDeCorps" as "PdC", clb.Club
+      , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date"
+      , cat.Arr1, cat.Arr2, cat.Arr3, cat.Arrache as "Arraché", cat.Epj1, cat.Epj2, cat.Epj3, cat.EpJete as "EpJeté"
+      , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF" 
+      FROM ATHLETE as ath 
+      LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.Licence 
+      LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+      LEFT JOIN CLUB as clb on clb.Club = cat.CATClub"""
 df = pd.read_sql_query(qry, conn)
 df.head()
 df = df
-df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["08","09","10","11","12","01","02","03","04","05","06","07"])
-df = df.sort_values(by='MoisCompet')
 
-#df.head()
-#df = df
-#df['MoisCompet'] = df['MoisCompet'].apply(str)
-#df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["8","9","10","11","12","1","2","3","4","5","6", "7"])
-#df = df.sort_values(by='MoisCompet')
+
+df['IWF']=round(df['IWF'], 3)
+df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["08","09","10","11","12","01","02","03","04","05","06","07"])
+
 updated_title='Haltero Data'
 app = dash.Dash(__name__)
 server = app.server
@@ -250,24 +252,27 @@ app.layout = html.Div([
     html.Div([
         dash_table.DataTable(
             id='datatable-interactivity',
-            # tab_selected_columns=['Nom', 'DateNaissance','NomCompetition','Poids de Corps', 'Arrache','EpJete','Total','IWF'],
+            # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
                 columns=[
-                    {"name": i, "id": i, "deletable": True, "selectable": True} for i in
-                    ['Nom', 'DateNaissance', 'NomCompetition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'PoidsTotal', 'IWF_Calcul']
+                    {"name": i, "id": i,  "selectable": True} for i in
+                    ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'EpJ1', 'EpJ2', 'EpJ3', 'Total',  'Série', 'Catégorie', 'IWF']
             ],
             data=df.to_dict('records'),
             editable=True,
             filter_action="native",
             sort_action="native",
-            sort_mode="multi",
+            sort_mode="single",
             column_selectable="single",
             style_header={
                 'backgroundColor': 'white',
-                'fontWeight': 'bold'
+                'fontWeight': 'bold',
+                'text-align': 'left',
+                'text-indent': '0.2em'
             },
             style_data={
                 'backgroundColor': 'rgb(80, 80, 90)',
-                'color': 'white'
+                'color': 'white',
+                'border': '1px solid white'
             },
             row_selectable="multi",
             row_deletable=False,
@@ -276,7 +281,7 @@ app.layout = html.Div([
             style_as_list_view=True,
             page_action="native",
             page_current=0,
-            page_size=10,
+            page_size=25,
         ),
     ], className='data_tab'),
     html.Div(id='datatable-interactivity-container'),
@@ -326,7 +331,8 @@ def update_datalist(none):
 def update_styles(selected_columns):
     return [{
         'if': {'column_id': i},
-        'background_color': '#D2F3FF'
+        'background_color': '#D2F3FF',
+        'color': '#202020'
     } for i in selected_columns]
 
 
@@ -355,22 +361,14 @@ def update_figure(selected_year, txt_inserted, txt_inserted2):
     else:
         filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
 
-    fig = px.scatter(filtered_df, x="AnneeMois", y="IWF_Calcul",
-                     hover_name="NomCompetition", color="Nom",
-                     log_x=False, size_max=55)
-    fig.update_traces(marker = dict(
-                            size=10,
-                            symbol='circle'))
-
+    fig = px.scatter(filtered_df, x="Mois", y="IWF", hover_name="Competition", color="Nom", log_x=False, size_max=55)
+    fig.update_traces(marker = dict(size=10, symbol='circle'))
     fig.update_xaxes(categoryorder="category ascending")
-    fig.update_layout(transition_duration=5,
-                      plot_bgcolor='rgb(40,40,45)',
-                      paper_bgcolor='rgb(40,40,45)',
-                      font_color="white",
-                      title_font_color="white",
-                      legend_title_font_color="white")
-    return fig
+    fig.update_yaxes(categoryorder="category ascending")
+    fig.update_layout(transition_duration=5, plot_bgcolor='rgb(40,40,45)',paper_bgcolor='rgb(40,40,45)', font_color="white",
+                        title_font_color="white", legend_title_font_color="white")
 
+    return fig
 
 @app.callback(
     [Output('datatable-interactivity', "data"),
@@ -386,11 +384,11 @@ def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
     if txt_inserted!='':
         filtered_df = df[((df['Nom'] == txt_inserted) | (df['Nom'] == txt_inserted2)) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     else:
-        filtered_df = df[(df['Nom'] == 'Camille MOUNIER') & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
+        filtered_df = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
 
     columns = [
-            {"name": i, "id": i, "deletable": True, "selectable": True} for i in
-            ['Nom', 'DateNaissance', 'NomCompetition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'PoidsTotal', 'IWF_Calcul']
+            {"name": i, "id": i,  "selectable": True} for i in
+            ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'EpJ1', 'EpJ2', 'EpJ3', 'Total', 'Série', 'Catégorie', 'IWF']
     ]
 
     dat = filtered_df.to_dict('records')
@@ -411,13 +409,17 @@ def update_title(selected_year, txt_inserted, txt_inserted2):
     else:
         year_text = 'Saisons ' + str(min(selected_year)) + '/' + str(max(selected_year))
 
-    if (txt_inserted=='' and txt_inserted2==''):
-        raise PreventUpdate
-    if (txt_inserted!='' and txt_inserted2==''):
+    df_filtered = df[((df['Nom'] == txt_inserted) | (df['Nom'] == txt_inserted2)) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
+    df1 = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
+    df2 = df[(df['Nom'] == txt_inserted2) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
+
+    if ((txt_inserted=='' and txt_inserted2=='') or len(df_filtered )==0):
+        updated_title = "Haltero Data"
+    elif (len(df1)!=0 and len(df2)==0):
         updated_title = f"{txt_inserted}\n{year_text}"
-    if ((txt_inserted=='') and txt_inserted2!=''):
+    elif (len(df1)==0 and len(df2)!=0):
         updated_title = f"{txt_inserted2}\n{year_text}"
-    if (txt_inserted!='' and txt_inserted2!=''):
+    elif (len(df1)!=0 and len(df2)!=0):
         updated_title = f"{txt_inserted} vs {txt_inserted2}\n{year_text}"
 
     return updated_title
@@ -440,19 +442,22 @@ def updated_name(selected_year, txt_inserted):
     else:
         updated_name = txt_inserted
         df1 = df[(df['Nom'] == txt_inserted) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
-        if len(df1['Club'].values[0]) > 21:
-            updated_club = df1['Club'].values[0][0:20] + '.'
+        if len(df1)==0:
+            return '', '', '', '', '', ''
         else:
-            updated_club = df1['Club'].values[0]
-        updated_anniv = df1['DateNaissance'].values[0]
-        updated_max = round(df1['IWF_Calcul'].max(),3)
-        updated_arr = df1['Arrache'].max()
-        updated_epj = df1['EpJete'].max()
-        updated_total = df1['PoidsTotal'].max()
-        pdc_df = df1['PoidsTotal'].idxmax()
-        updated_pdc=df.loc[pdc_df, 'Poids de Corps']
+            if len(df1['Club'].values[0]) > 21:
+                updated_club = df1['Club'].values[0][0:20] + '.'
+            else:
+                updated_club = df1['Club'].values[0]
+            updated_anniv = df1['Né le'].values[0]
+            updated_max = df1['IWF'].max()
+            updated_arr = df1['Arraché'].max()
+            updated_epj = df1['EpJeté'].max()
+            updated_total = df1['Total'].max()
+            pdc_df = df1['Total'].idxmax()
+            updated_pdc=df.loc[pdc_df, 'PdC']
 
-        return f"{updated_name}", f"{updated_club}", f"{updated_anniv}", f"{updated_max} IWF", f"{updated_arr}/{updated_epj}/{updated_total}", f"{updated_pdc} PdC"
+            return f"{updated_name}", f"{updated_club}", f"{updated_anniv}", f"{updated_max} IWF", f"{updated_arr}/{updated_epj}/{updated_total}", f"{updated_pdc} PdC"
 
 @app.callback(
     [Output("athlete2_nom", "children"),
@@ -472,19 +477,22 @@ def updated_name(selected_year, txt_inserted2):
     else:
         updated_name2 = txt_inserted2
         df2 = df[(df['Nom'] == txt_inserted2) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
-        if len(df2['Club'].values[0]) > 21:
-            updated_club2 = df2['Club'].values[0][0:20] + '.'
+        if len(df2)==0:
+            return '', '', '', '', '', ''
         else:
-            updated_club2 = df2['Club'].values[0]
-        updated_anniv2 = df2['DateNaissance'].values[0]
-        updated_max2 = round(df2['IWF_Calcul'].max(),3)
-        updated_arr2 = df2['Arrache'].max()
-        updated_epj2 = df2['EpJete'].max()
-        updated_total2 = df2['PoidsTotal'].max()
-        pdc_df2 = df2['PoidsTotal'].idxmax()
-        updated_pdc2=df.loc[pdc_df2, 'Poids de Corps']
+            if len(df2['Club'].values[0]) > 21:
+                updated_club2 = df2['Club'].values[0][0:20] + '.'
+            else:
+                updated_club2 = df2['Club'].values[0]
+            updated_anniv2 = df2['Né le'].values[0]
+            updated_max2 = df2['IWF'].max()
+            updated_arr2 = df2['Arraché'].max()
+            updated_epj2 = df2['EpJeté'].max()
+            updated_total2 = df2['Total'].max()
+            pdc_df2 = df2['Total'].idxmax()
+            updated_pdc2=df.loc[pdc_df2, 'PdC']
 
-        return f"{updated_name2}", f"{updated_club2}", f"{updated_anniv2}", f"{updated_max2} IWF", f"{updated_arr2}/{updated_epj2}/{updated_total2}", f"{updated_pdc2} PdC"
+            return f"{updated_name2}", f"{updated_club2}", f"{updated_anniv2}", f"{updated_max2} IWF", f"{updated_arr2}/{updated_epj2}/{updated_total2}", f"{updated_pdc2} PdC"
 
 
 if __name__ == '__main__':
