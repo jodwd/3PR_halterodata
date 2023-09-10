@@ -83,7 +83,7 @@ def main_code():
 
         #On remplace les "faux" espaces du data par des "vrais" espaces
         dirname = os.path.dirname(__file__)
-        path_csv = os.path.join(dirname, 'haltero_data_full.csv')
+        path_csv = os.path.join(dirname, '../haltero_data_full.csv')
         #path_csv = 'C:/Users/joris/PycharmProjects/halterodata/python/haltero_data_full.csv'
         print(path_csv)
         with open(path_csv, 'r', newline='', encoding='utf-8') as file:
@@ -114,6 +114,7 @@ def main_code():
         cur.execute("DROP TABLE IF EXISTS COMPET")
         cur.execute("DROP TABLE IF EXISTS ATHLETE")
         cur.execute("DROP TABLE IF EXISTS COMPET_ATHLETE")
+        cur.execute("DROP TABLE IF EXISTS ATHLETE_PR")
 
         #Création des fonctions
         conn.create_function("mvmt_resultat", 3 , resultat)
@@ -223,6 +224,7 @@ def main_code():
                 select
                     dat.Nom                             as "Nom"
                 ,   dat."Date Naissance"                as "DateNaissance"
+                ,   dat.Nom || dat."Date Naissance"     as "AthleteID"
                 ,   dat.Licence                         as "Licence"
                 ,   nat.NAT                             as "Nationalite"               
                 
@@ -254,6 +256,7 @@ def main_code():
                     dat.Licence                                        as "CATLicence"
                 ,   dat.Competition                                    as "CATNomCompetition"
                 ,   dat.Club                                           as "CATClub"
+                ,   dat.Nom || dat."Date Naissance"                    as "AthleteID"
                 ,   dat."P.C."                                         as "PoidsDeCorps"
                 ,   dat.Arr1
                 ,   dat.Arr2
@@ -289,6 +292,35 @@ def main_code():
                     left join COMPET as comp
                         on comp.NomCompetition = dat.competition
                    """):
+            print(res)
+
+        for res in cur.execute(
+                """ CREATE table ATHLETE_PR as
+                    select
+                        dat.Nom || dat."Date Naissance"  as "AthleteID"
+                    ,   comp.SaisonAnnee
+                    ,   pra."MaxIWF" as "MaxIWF"
+                    ,   max(cat."IWF_Calcul") as "MaxIWFSaison"
+                    
+                        from haltero_data_full as dat
+                        left join COMPET as comp
+                            on comp.NomCompetition = dat.competition
+                        left join COMPET_ATHLETE as cat
+                            on cat."AthleteID" = (dat.Nom || dat."Date Naissance")
+                        left join (select
+                            dat.Nom || dat."Date Naissance"  as "AthleteID"
+                        ,   max(cat."IWF_Calcul") as "MaxIWF"
+                        
+                            from haltero_data_full as dat
+                            left join COMPET_ATHLETE as cat
+                                on cat."AthleteID" = (dat.Nom || dat."Date Naissance")
+                            group by dat.Nom || dat."Date Naissance") as pra
+                            on pra."AthleteID" = dat.Nom || dat."Date Naissance" 
+                            
+                        group by dat.Nom || dat."Date Naissance" 
+                             ,   comp.SaisonAnnee
+                             ,   pra."MaxIWF"
+                       """):
             print(res)
 
     finally:
