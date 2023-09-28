@@ -27,17 +27,9 @@ def generate_table(dataframe, max_rows=10):
 
 # Connection à la base SQLite
 dirname = os.path.dirname(__file__)
-path_db = os.path.join(dirname, 'dataltero.db')
+path_db = os.path.join(dirname, 'pages/dataltero.db')
 conn = sql.connect(database=path_db)
 
-cur = conn.cursor()
-qry = "SELECT * from haltero_data_full"
-df = pd.read_sql_query(qry, conn)
-qry = "SELECT * from COMPET_ATHLETE"
-df = pd.read_sql_query(qry, conn)
-qry = "SELECT * from COMPET"
-df = pd.read_sql_query(qry, conn)
-qry = "SELECT * from ATHLETE"
 df = pd.read_sql_query(qry, conn)
 qry = "SELECT * FROM ATHLETE as ath " \
       "LEFT JOIN COMPET_ATHLETE as cat on cat.CATLicence = ath.Licence " \
@@ -259,10 +251,10 @@ app.layout = html.Div([
     html.Div([
         dash_table.DataTable(
             id='datatable-interactivity',
-            # tab_selected_columns=['Nom', 'DateNaissance','NomCompetition','Poids de Corps', 'Arrache','EpJete','Total','IWF'],
+            # tab_selected_columns=['Nom', 'DateNaissance','NomCompetition','PoidsDeCorps', 'Arrache','EpJete','Total','IWF'],
                 columns=[
                     {"name": i, "id": i, "deletable": True, "selectable": True} for i in
-                    ['Nom', 'DateNaissance', 'NomCompetition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'PoidsTotal', 'IWF_Calcul']
+                    ['Nom', 'DateNaissance', 'NomCompetition', 'PoidsDeCorps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'PoidsTotal', 'IWF_Calcul']
             ],
             data=df.to_dict('records'),
             editable=True,
@@ -399,7 +391,7 @@ def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
 
     columns = [
             {"name": i, "id": i, "deletable": True, "selectable": True} for i in
-            ['Nom', 'DateNaissance', 'NomCompetition', 'Poids de Corps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'PoidsTotal', 'IWF_Calcul']
+            ['Nom', 'DateNaissance', 'NomCompetition', 'PoidsDeCorps', 'Arr1', 'Arr2', 'Arr3', 'EpJ1','EpJ2','EpJ3', 'PoidsTotal', 'IWF_Calcul']
     ]
 
     dat = filtered_df.to_dict('records')
@@ -459,7 +451,7 @@ def updated_name(selected_year, txt_inserted):
         updated_epj = df1['EpJete'].max()
         updated_total = df1['PoidsTotal'].max()
         pdc_df = df1['PoidsTotal'].idxmax()
-        updated_pdc=df.loc[pdc_df, 'Poids de Corps']
+        updated_pdc=df.loc[pdc_df, 'PoidsDeCorps']
 
         return f"{updated_name}", f"{updated_club}", f"{updated_anniv}", f"{updated_max} IWF", f"{updated_arr}/{updated_epj}/{updated_total}", f"{updated_pdc} PdC"
 
@@ -491,7 +483,7 @@ def updated_name(selected_year, txt_inserted2):
         updated_epj2 = df2['EpJete'].max()
         updated_total2 = df2['PoidsTotal'].max()
         pdc_df2 = df2['PoidsTotal'].idxmax()
-        updated_pdc2=df.loc[pdc_df2, 'Poids de Corps']
+        updated_pdc2=df.loc[pdc_df2, 'PoidsDeCorps']
 
         return f"{updated_name2}", f"{updated_club2}", f"{updated_anniv2}", f"{updated_max2} IWF", f"{updated_arr2}/{updated_epj2}/{updated_total2}", f"{updated_pdc2} PdC"
 

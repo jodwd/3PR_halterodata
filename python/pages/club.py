@@ -14,20 +14,34 @@ dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
-# Requête
-qry = """SELECT ath.Nom, ath.DateNaissance as "Né le"
-      , substr(cmp."NomCompetitionCourt", 1, 64) as "Competition", cat."PoidsDeCorps" as "PdC", clb.Club as "Club", clb.Ligue as "Ligue"
-      , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date"
-      , cat.Arr1, cat.Arr2, cat.Arr3, cat.Arrache as "Arraché", cat.Epj1, cat.Epj2, cat.Epj3, cat.EpJete as "EpJeté"
-      , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF" 
-      FROM ATHLETE as ath 
-      LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-      LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-      LEFT JOIN CLUB as clb on clb.Club = cat.CATClub"""
+# Requête TODO : associer les max IWF à une compétition précise (lieu, date...) dans la BDD
+qry = """SELECT * FROM
+            (SELECT distinct
+                ath.Nom             as "Nom"
+            ,   clb.Club            as "Club"
+            ,   clb.Ligue           as "Ligue"
+            ,   cat."Sexe"          as "Sexe"
+            ,   cat.Arrache         as "Arr"
+            ,   cat.EpJete          as "EpJ"
+            ,   cat.PoidsTotal      as "Total"
+            ,   cat.PoidsDeCorps    as "PdC"
+            ,   cat.IWF_Calcul      as "IWF"   
+            ,   apr.SaisonAnnee     as "SaisonAnnee"
+            ,   apr.MaxIWFSaison    as "Max IWF Saison"
+            ,   apr.MaxIWF          as "Max IWF"
+            ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee" order by cat.IWF_Calcul desc) as "RowNum"
+          FROM ATHLETE as ath 
+          LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
+          LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+          LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
+          LEFT JOIN ATHLETE_PR as apr on apr.AthleteID = ath.AthleteID and apr.SaisonAnnee = cmp.SaisonAnnee)
+      WHERE RowNum=1"""
+
 df = pd.read_sql_query(qry, conn)
 df.head()
 
-df['IWF']=round(df['IWF'], 3)
+df['Max IWF Saison']=round(df['Max IWF Saison'], 3)
+df['Max IWF']=round(df['Max IWF'], 3)
 
 updated_title='Dashboard Club'
 
@@ -134,17 +148,18 @@ layout = html.Div([
         )],
     ),
     html.Div([
-        dcc.RangeSlider(
-            df['SaisonAnnee'].min(),
-            df['SaisonAnnee'].max(),
-            step=None,
-            value=[df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()],
-            marks={str(year): str(year) for year in df['SaisonAnnee'].unique()},
-            id='year-slider',
-            className='slider_zone')],
-        id='div_output',
-        className='slider_box'
-    ),
+         dcc.Slider(
+             df['SaisonAnnee'].min(),
+             df['SaisonAnnee'].max(),
+             step=1,
+             value=df['SaisonAnnee'].max(),
+             marks=None,
+             tooltip={"placement": "bottom", "always_visible": True},
+             id='year-slider',
+             className='slider_zone')],
+         id='div_output_slider',
+         className='slider_box'
+     ),
 
     html.Br(),
     html.Div([
@@ -152,42 +167,92 @@ layout = html.Div([
         id='div_output',
         className='graph_box'
     ),
+    #top 5 H & F
     html.Div([
-        dash_table.DataTable(
-            id='datatable-h',
-            # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
-                columns=[
-                    {"name": i, "id": i,  "selectable": True} for i in
-                    ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'EpJ1', 'EpJ2', 'EpJ3', 'Total',  'Série', 'Catégorie', 'IWF']
+        html.Div(children=[
+                html.P("Top 5 Hommes : ")
+                ],
+                 id='top_5_score_h',
+                 className='top_5_h'),
+        html.Div(children=[
+                html.P("Top 4 Femmes : ")
+                ],
+                 id='top_5_score_f',
+                className='top_5_f'),
             ],
-            data=df.to_dict('records'),
-            editable=True,
-            filter_action="native",
-            sort_action="native",
-            sort_mode="single",
-            column_selectable="single",
-            style_header={
-                'backgroundColor': 'white',
-                'fontWeight': 'bold',
-                'text-align': 'left',
-                'text-indent': '0.2em'
-            },
-            style_data={
-                'backgroundColor': 'rgb(80, 80, 90)',
-                'color': 'white',
-                'border': '1px solid white'
-            },
-            row_selectable="multi",
-            row_deletable=False,
-            selected_columns=[],
-            selected_rows=[],
-            style_as_list_view=True,
-            page_action="native",
-            page_current=0,
-            page_size=25,
-        ),
-    ], className='data_tab'),
-    html.Div(id='datatable-h-container'),
+    className = 'top_5'),
+
+    html.Div([
+        html.Div([
+            dash_table.DataTable(
+                id='datatable-h',
+                # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
+                    columns=[
+                        {"name": i, "id": i,  "selectable": True} for i in
+                        ['Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+                ],
+                data=df[(df['Sexe'] == 'M')].to_dict('records'),
+                editable=True,
+                sort_action="native",
+                sort_mode="single",
+                column_selectable="single",
+                style_header={
+                    'backgroundColor': 'white',
+                    'fontWeight': 'bold',
+                    'text-align': 'left',
+                    'text-indent': '0.2em'
+                },
+                style_data={
+                    'backgroundColor': 'rgb(80, 80, 90)',
+                    'color': 'white',
+                    'border': '1px solid white'
+                },
+                row_selectable=False,
+                row_deletable=False,
+                selected_columns=[],
+                selected_rows=[],
+                style_as_list_view=True,
+                page_action="native",
+                page_current=0,
+                page_size=25,
+            ),
+        ], className='data_tab_h'),
+        html.Div([
+            dash_table.DataTable(
+                id='datatable-f',
+                # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
+                    columns=[
+                        {"name": i, "id": i,  "selectable": True} for i in
+                        ['Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+                ],
+                data=df[(df['Sexe'] == 'F')].to_dict('records'),
+                editable=True,
+                sort_action="native",
+                sort_mode="single",
+                column_selectable="single",
+                style_header={
+                    'backgroundColor': 'white',
+                    'fontWeight': 'bold',
+                    'text-align': 'left',
+                    'text-indent': '0.2em'
+                },
+                style_data={
+                    'backgroundColor': 'rgb(80, 80, 90)',
+                    'color': 'white',
+                    'border': '1px solid white'
+                },
+                row_selectable=False,
+                row_deletable=False,
+                selected_columns=[],
+                selected_rows=[],
+                style_as_list_view=True,
+                page_action="native",
+                page_current=0,
+                page_size=25,
+            ),
+        ], className='data_tab_f'),
+    ], className='data_tabs'),
+    html.Div(id='datatable-container'),
     html.Link(
         rel='stylesheet',
         href='/assets/02_club.css'
@@ -230,25 +295,110 @@ def update_datalist(none):
      ])
 
 def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
-    filtered_df = df
+    filtered_df = df[(df['Sexe'] == 'M')]
     if selected_year=='':
-        selected_year=df['SaisonAnnee'].max()
+        selected_year=filtered_df['SaisonAnnee'].max()
     if txt_inserted + txt_inserted2 != '':
         if txt_inserted!='':
-            filtered_df = df[(df['Ligue'] == txt_inserted) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
+            filtered_df = filtered_df[(filtered_df['Ligue'] == txt_inserted) & (filtered_df['SaisonAnnee'] == selected_year)]
         if txt_inserted2!='':
-            filtered_df = filtered_df[(filtered_df['Club'] == txt_inserted2) & (filtered_df['SaisonAnnee'] >= min(selected_year)) & (filtered_df['SaisonAnnee'] <= max(selected_year))]
+            filtered_df = filtered_df[(filtered_df['Club'] == txt_inserted2) & (filtered_df['SaisonAnnee'] == selected_year)]
     else:
-        filtered_df = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
+        filtered_df = filtered_df[(filtered_df['SaisonAnnee'] == selected_year)]
 
+    filtered_df=filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'EpJ1', 'EpJ2', 'EpJ3', 'Total', 'Série', 'Catégorie', 'IWF']
+            ['Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
     ]
 
     dat = filtered_df.to_dict('records')
 
     return dat, columns
+
+@callback(
+    [Output('datatable-f', "data"),
+     Output('datatable-f', "columns")],
+    [Input('year-slider', 'value'),
+     Input(component_id='my_txt_input', component_property='value'),
+     Input(component_id='my_txt_input2', component_property='value')
+     ])
+
+def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
+    filtered_df = df[(df['Sexe'] == 'F')]
+    if selected_year=='':
+        selected_year=filtered_df['SaisonAnnee'].max()
+    if txt_inserted + txt_inserted2 != '':
+        if txt_inserted != '':
+            filtered_df = filtered_df[(filtered_df['Ligue'] == txt_inserted) & (filtered_df['SaisonAnnee'] == selected_year)]
+        if txt_inserted2 != '':
+            filtered_df = filtered_df[(filtered_df['Club'] == txt_inserted2) & (filtered_df['SaisonAnnee'] == selected_year)]
+    else:
+        filtered_df = filtered_df[(filtered_df['SaisonAnnee'] == selected_year)]
+
+    filtered_df=filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
+    columns = [
+            {"name": i, "id": i,  "selectable": True} for i in
+            ['Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+    ]
+
+    dat = filtered_df.to_dict('records')
+
+    return dat, columns
+
+@callback(
+    Output("top_5_score_h", "children"),
+    [Input('year-slider', 'value'),
+     Input(component_id='my_txt_input', component_property='value'),
+     Input(component_id='my_txt_input2', component_property='value')
+     ])
+
+def update_title(selected_year, txt_inserted, txt_inserted2):
+    # Perform any manipulation on input_value and return the updated title
+    global updated_title
+    filtered_df = df[(df['Sexe'] == 'M')]
+    if selected_year=='':
+        selected_year=df['SaisonAnnee'].max()
+    if txt_inserted + txt_inserted2 != '':
+        if txt_inserted != '':
+            filtered_df = filtered_df[(df['Ligue'] == txt_inserted) & (filtered_df['SaisonAnnee'] == selected_year)]
+        if txt_inserted2 != '':
+            filtered_df = filtered_df[(filtered_df['Club'] == txt_inserted2) & (filtered_df['SaisonAnnee'] == selected_year)]
+    else:
+        filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+
+    filtered_df=filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
+    filtered_df=round(filtered_df.head(5),0)
+    res = filtered_df['Max IWF Saison'].sum()
+    updated_title = "Top 5 Hommes : " + str(int(res))
+
+    return updated_title
+
+@callback(
+    Output("top_5_score_f", "children"),
+    [Input('year-slider', 'value'),
+     Input(component_id='my_txt_input', component_property='value'),
+     Input(component_id='my_txt_input2', component_property='value')
+     ])
+
+def update_title(selected_year, txt_inserted, txt_inserted2):
+    # Perform any manipulation on input_value and return the updated title
+    global updated_title
+    filtered_df = df[(df['Sexe'] == 'F')]
+    if selected_year=='':
+        selected_year=df['SaisonAnnee'].max()
+    if txt_inserted + txt_inserted2 != '':
+        if txt_inserted!='':
+            filtered_df = filtered_df[(df['Ligue'] == txt_inserted) & (filtered_df['SaisonAnnee'] == selected_year)]
+        if txt_inserted2!='':
+            filtered_df = filtered_df[(filtered_df['Club'] == txt_inserted2) & (filtered_df['SaisonAnnee'] == selected_year)]
+
+    filtered_df=filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
+    filtered_df=round(filtered_df.head(4),0)
+    res = filtered_df['Max IWF Saison'].sum()
+    updated_title = "Top 4 Femmes : " + str(int(res))
+
+    return updated_title
 
 
 if __name__ == '__main__':

@@ -307,6 +307,7 @@ def main_code():
                             on comp.NomCompetition = dat.competition
                         left join COMPET_ATHLETE as cat
                             on cat."AthleteID" = (dat.Nom || dat."Date Naissance")
+                            and cat.CATNomCompetition = comp.NomCompetition
                         left join (select
                             dat.Nom || dat."Date Naissance"  as "AthleteID"
                         ,   max(cat."IWF_Calcul") as "MaxIWF"
@@ -321,6 +322,29 @@ def main_code():
                              ,   comp.SaisonAnnee
                              ,   pra."MaxIWF"
                        """):
+            print(res)
+
+        for res in cur.execute(
+            """SELECT * FROM
+                        (SELECT distinct
+                            ath.Nom             as "Nom"
+                        ,   clb.Club            as "Club"
+                        ,   clb.Ligue           as "Ligue"
+                        ,   cat."Sexe"          as "Sexe"
+                        ,   cat.Arrache         as "Arr"
+                        ,   cat.EpJete          as "EpJ"
+                        ,   cat.PoidsTotal      as "Total"
+                        ,   cat.PoidsDeCorps    as "PdC"    
+                        ,   apr.SaisonAnnee     as "SaisonAnnee"
+                        ,   apr.MaxIWFSaison    as "Max IWF Saison"
+                        ,   apr.MaxIWF          as "Max IWF"
+                        ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee" order by apr.MaxIWFSaison desc) as "RowNum"
+                      FROM ATHLETE as ath 
+                      LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
+                      LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+                      LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
+                      LEFT JOIN ATHLETE_PR as apr on apr.AthleteID = ath.AthleteID and apr.SaisonAnnee = cmp.SaisonAnnee)
+                  WHERE Nom='Benjamin\xa0FERRE'"""):
             print(res)
 
     finally:

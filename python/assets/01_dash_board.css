@@ -82,13 +82,13 @@
 
 .athl1_info {
   margin-left: 20px;
-  width: 160px;
+  width: 190px;
   height: 100px;
   display: inline-block;
 }
 
 .athl1_nom {
-  width: 150px;
+  width: 180px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
@@ -97,7 +97,7 @@
 }
 
 .athl1_club {
-  width: 150px;
+  width: 180px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
@@ -117,7 +117,7 @@
 }
 
 .athl1_max {
-  width: 75px;
+  width: 105px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
@@ -128,7 +128,7 @@
 }
 
 .athl1_total {
-  width: 90px;
+  width: 100px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
@@ -138,7 +138,7 @@
 }
 
 .athl1_pdc {
-  width: 60px;
+  width: 80px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
@@ -150,7 +150,7 @@
 
 .athl2_info {
   margin-left: 20px;
-  width: 160px;
+  width: 190px;
   height: 100px;
   color: white;
   display: inline-block;
@@ -158,7 +158,7 @@
 }
 
 .athl2_nom {
-  width: 150px;
+  width: 180px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
@@ -168,7 +168,7 @@
 }
 
 .athl2_club {
-  width: 150px;
+  width: 180px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
@@ -188,7 +188,7 @@
 }
 
 .athl2_max {
-  width: 75px;
+  width: 105px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
@@ -199,7 +199,7 @@
 }
 
 .athl2_total {
-  width: 90px;
+  width: 100px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
@@ -209,7 +209,7 @@
 }
 
 .athl2_pdc {
-  width: 60px;
+  width: 80px;
   height: 15px;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
