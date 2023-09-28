@@ -75,7 +75,7 @@ layout = html.Div([
         # Titre
         html.Div(
             children=[
-                html.P("Haltero Data")
+                html.P("Listings")
             ],
             id='filter_info',
             className="text-box",
