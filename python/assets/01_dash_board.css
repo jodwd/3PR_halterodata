@@ -17,13 +17,10 @@
 
 .text-box {
      margin-left: 0px;
-     border: 10px solid #000;
-     border-color: rgb(40,40,45);
      width: 500px;
      height: 80px;
      /* Additional CSS properties for styling */
-
-     background-color: rgb(80,80,90);
+     background-color: rgb(161,28,15);
      font-family: 'Segoe UI', sans-serif;
      font-size: 24px;
      color: white;
