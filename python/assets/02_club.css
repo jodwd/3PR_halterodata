@@ -1,0 +1,228 @@
+
+.body {
+  background-color: rgb(40,40,45);
+  margin: 0;
+  padding: 0;
+}
+.margins {
+  background-color: rgb(40,40,45);
+}
+
+.filter_zone {
+    width: 1300px;
+    height: 90px;
+    margin-left: 10px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.text-box {
+     margin-left: 0px;
+     width: 500px;
+     height: 80px;
+     /* Additional CSS properties for styling */
+
+     background-color: rgb(0, 0, 131);
+     font-family: 'Segoe UI', sans-serif;
+     font-size: 24px;
+     color: white;
+     text-align: center;
+     vertical-align: top;
+     display: inline-block;
+}
+
+
+.pick_zone {
+  vertical-align: top;
+  display: inline-block;
+  color: white;
+}
+
+
+.ligue_zone {
+  margin-left: 20px;
+  width: 280px;
+  height: 40px;
+  color: white;
+}
+.ligue_box {
+  width: 80px;
+  height: 40px;
+  margin-left: 10px;
+  color: white;
+  display: inline-block;
+}
+.input_box1 {
+  margin-left: 20px;
+  width: 150px;
+  height: 40px;
+  display: inline-block;
+}
+
+.club_zone {
+  margin-left: 20px;
+  width: 280px;
+  height: 40px;
+  color: white;
+}
+.club_box {
+  width: 80px;
+  height: 40px;
+  margin-left: 10px;
+  display: inline-block;
+}
+.input_box2 {
+  margin-left: 20px;
+  width: 150px;
+  height: 40px;
+  display: inline-block;
+}
+
+
+.athl1_info {
+  margin-left: 20px;
+  width: 190px;
+  height: 100px;
+  display: inline-block;
+}
+
+.athl1_nom {
+  width: 180px;
+  height: 15px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: white;
+  display: inline-block;
+}
+
+.athl1_club {
+  width: 180px;
+  height: 15px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: white;
+  display: inline-block;
+  text-align: justify;
+}
+
+.graph_box {
+  margin-top: -20px;
+  margin-left: 20px;
+  /* background-color: #163651; */
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: white;
+ }
+
+.data_tab {
+  margin-top: -20px;
+  margin-left: 20px;
+  background-color: rgb(40,40,45);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 12px;
+  color: black;
+ }
+
+ .slider_zone {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: white;
+}
+ .graph-with-slider {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  rgb(40,40,45);
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 200px;
+  background-color: #f1f1f1;
+  padding: 0px;
+  overflow-x: hidden;
+}
+
+.sidebar a {
+  display: block;
+  color: #000;
+  padding: 0px;
+  text-decoration: none;
+}
+
+.sidebar a:hover {
+  background-color: #ddd;
+}
+
+/* Content */
+
+
+.top_5 {
+  display: inline-block;
+  width: 90%;
+  height: 30px;
+  margin-left: 20px;
+  font-family: "Goudy Bookletter 1911", sans-serif;
+  color: white;
+  border-width: 10px;
+  border-color: red;
+}
+
+.top_5_h {
+  position: relative;
+  display: inline-block;
+  width: 40%;
+  height: 30px;
+  margin-left: 30px;
+  padding: 0px;
+  font-family: "Goudy Bookletter 1911", sans-serif;
+  backgroundColor: rgb(80, 80, 90);
+  color: white;
+}
+
+.top_5_f {
+  position: relative;
+  display: inline-block;
+  width: 40%;
+  height: 30px;
+  margin-left: auto;
+  margin-right: 0px;
+  font-family: "Goudy Bookletter 1911", sans-serif;
+  backgroundColor: rgb(80, 80, 90);
+  color: white;
+}
+
+.data_tabs {
+  width: 90%;
+  height: 1500px;
+  margin-left: 20px;
+}
+
+.data_tab_h {
+  display: inline-block;
+  width: 40%;
+  margin-left: 20px;
+  font-family: "Goudy Bookletter 1911", sans-serif;
+  backgroundColor: rgb(80, 80, 90);
+  color: white;
+}
+
+.data_tab_f {
+  display: inline-block;
+  width: 40%;
+  margin-left: 20px;
+  border: 10px solid #000;
+  border-color: rgb(40,40,45);
+  font-family: "Goudy Bookletter 1911", sans-serif;
+  backgroundColor: rgb(80, 80, 90);
+  color: white;
+}
+
+/* Charts */
+.plot {
+  width: 100%;
+  height: 500px;
+  margin-bottom: 20px;
+}

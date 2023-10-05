@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dynamic List of Children</title>
+</head>
+<body>
+  <input type="text" id="myInput" list="Nom_athl">
+  <datalist id="Nom_athl">
+    {% for child in children %}  <!-- Use Flask template syntax to loop through children -->
+      <option value="{{ child }}">{{ child }}</option>  <!-- Add children dynamically from Python -->
+    {% endfor %}
+  </datalist>
+
+  <script>
+    // Update the input field with the datalist
+    const input = document.getElementById('myInput');
+    input.setAttribute('list', 'myList');
+  </script>
+</body>
+</html>
+    <r> </r>
