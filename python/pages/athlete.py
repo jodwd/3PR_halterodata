@@ -35,7 +35,7 @@ conn = sql.connect(database=path_db)
 qry = """SELECT ath.Nom, ath.DateNaissance as "Né le"
       , substr(cmp."NomCompetitionCourt", 1, 64) as "Competition", cat."PoidsDeCorps" as "PdC", clb.Club
       , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date"
-      , cat.Arr1, cat.Arr2, cat.Arr3, cat.Arrache as "Arraché", cat.Epj1, cat.Epj2, cat.Epj3, cat.EpJete as "EpJeté"
+      , cat.Arr1, cat.Arr2, cat.Arr3, cat.Arrache as "Arr", cat.Epj1, cat.Epj2, cat.Epj3, cat.EpJete as "EpJ"
       , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF" 
       FROM ATHLETE as ath 
       LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
@@ -243,9 +243,10 @@ layout = html.Div([
                     id="athlete4_pdc",
                     className="athl4_pdc"
                     )], xs=1, sm=1, md=2, lg=1, xl=1)
-                ]),
+                ],
+            className="top_zone",),
 
-    html.Br(),
+    #html.Br(),
     dbc.Row([
         dbc.Col([
             html.Div([
@@ -274,15 +275,20 @@ layout = html.Div([
                     # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
                     columns=[
                         {"name": i, "id": i, "selectable": True} for i in
-                        ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'EpJ1', 'EpJ2', 'EpJ3', 'Total', 'Série',
+                        ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'Série',
                          'Catégorie', 'IWF']
                     ],
                     data=df.to_dict('records'),
                     editable=False,
                     filter_action="native",
+                    fixed_rows={'headers': True},
                     sort_action="native",
                     sort_mode="single",
+                    virtualization=True,
                     column_selectable="single",
+                    style_table={
+                        'overflowX': 'scroll'
+                    },
                     style_header={
                         'backgroundColor': 'white',
                         'fontWeight': 'bold',
@@ -290,14 +296,15 @@ layout = html.Div([
                         'text-indent': '0.2em'
                     },
                     style_data={
-                        'backgroundColor': 'rgb(80, 80, 90)',
+                        'backgroundColor': 'dimgray',
                         'color': 'white',
                         'border': '1px solid white'
                     },
                     style_cell={
                         'overflow': 'hidden',
                         'textOverflow': 'ellipsis',
-                        'maxWidth': '10vw'
+                        'minWidth': '6vw',
+                        'maxWidth': '20vw'
                     },
                     style_data_conditional=[
                         {
@@ -305,7 +312,7 @@ layout = html.Div([
                                 'filter_query': '{Arr1} <= 0',
                                 'column_id': 'Arr1'
                             },
-                            'backgroundColor': 'tomato',
+                            'backgroundColor': 'rgb(161, 28, 15)',
                             'color': 'white'
                         },
                         {
@@ -313,7 +320,7 @@ layout = html.Div([
                                 'filter_query': '{Arr1} > 0',
                                 'column_id': 'Arr1'
                             },
-                            'backgroundColor': 'green',
+                            'backgroundColor': 'rgb(0, 107, 61)',
                             'color': 'white'
                         },
                         {
@@ -321,7 +328,7 @@ layout = html.Div([
                                 'filter_query': '{Arr2} <= 0',
                                 'column_id': 'Arr2'
                             },
-                            'backgroundColor': 'tomato',
+                            'backgroundColor': 'rgb(161, 28, 15)',
                             'color': 'white'
                         },
                         {
@@ -329,7 +336,7 @@ layout = html.Div([
                                 'filter_query': '{Arr2} > 0',
                                 'column_id': 'Arr2'
                             },
-                            'backgroundColor': 'green',
+                            'backgroundColor': 'rgb(0, 107, 61)',
                             'color': 'white'
                         },
                         {
@@ -337,7 +344,7 @@ layout = html.Div([
                                 'filter_query': '{Arr3} <= 0',
                                 'column_id': 'Arr3'
                             },
-                            'backgroundColor': 'tomato',
+                            'backgroundColor': 'rgb(161, 28, 15)',
                             'color': 'white'
                         },
                         {
@@ -345,7 +352,23 @@ layout = html.Div([
                                 'filter_query': '{Arr3} > 0',
                                 'column_id': 'Arr3'
                             },
-                            'backgroundColor': 'green',
+                            'backgroundColor': 'rgb(0, 107, 61)',
+                            'color': 'white'
+                        },
+                        {
+                            'if': {
+                                'filter_query': '{Arr} <= 0',
+                                'column_id': 'Arr'
+                            },
+                            'backgroundColor': 'darkred',
+                            'color': 'white'
+                        },
+                        {
+                            'if': {
+                                'filter_query': '{Arr} > 0',
+                                'column_id': 'Arr'
+                            },
+                            'backgroundColor': 'rgb(0, 0, 131)',
                             'color': 'white'
                         },
                         {
@@ -353,7 +376,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ1} <=0',
                                 'column_id': 'EpJ1'
                             },
-                            'backgroundColor': 'tomato',
+                            'backgroundColor': 'rgb(161, 28, 15)',
                             'color': 'white'
                         },
                         {
@@ -361,7 +384,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ1} >0',
                                 'column_id': 'EpJ1'
                             },
-                            'backgroundColor': 'green',
+                            'backgroundColor': 'rgb(0, 107, 61)',
                             'color': 'white'
                         },
                         {
@@ -369,7 +392,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ2} <=0',
                                 'column_id': 'EpJ2'
                             },
-                            'backgroundColor': 'tomato',
+                            'backgroundColor': 'rgb(161, 28, 15)',
                             'color': 'white'
                         },
                         {
@@ -377,7 +400,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ2} >0',
                                 'column_id': 'EpJ2'
                             },
-                            'backgroundColor': 'green',
+                            'backgroundColor': 'rgb(0, 107, 61)',
                             'color': 'white'
                         },
                         {
@@ -385,7 +408,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ3} <=0',
                                 'column_id': 'EpJ3'
                             },
-                            'backgroundColor': 'tomato',
+                            'backgroundColor': 'rgb(161, 28, 15)',
                             'color': 'white'
                         },
                         {
@@ -393,25 +416,25 @@ layout = html.Div([
                                 'filter_query': '{EpJ3} >0',
                                 'column_id': 'EpJ3'
                             },
-                            'backgroundColor': 'green',
+                            'backgroundColor': 'rgb(0, 107, 61)',
                             'color': 'white'
                         },
                         {
                             'if': {
-                                'filter_query': '{Arr} <=0',
-                                'column_id': 'Arr'
-                            },
-                            'backgroundColor': 'tomato',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{EpJ} <=0',
+                                'filter_query': '{EpJ} <= 0',
                                 'column_id': 'EpJ'
                             },
-                            'backgroundColor': 'tomato',
+                            'backgroundColor': 'darkred',
                             'color': 'white'
-                        }
+                        },
+                        {
+                            'if': {
+                                'filter_query': '{EpJ} > 0',
+                                'column_id': 'EpJ'
+                            },
+                            'backgroundColor': 'rgb(0, 0, 131)',
+                            'color': 'white'
+                        },
                     ],
                     row_selectable="multi",
                     row_deletable=False,
@@ -484,8 +507,7 @@ def update_athletes_list(selected_year):
     Output('graph-with-slider', 'figure'),
     [Input('year-slider', 'value'),
      Input(component_id='my_txt_input', component_property='value')
-     ],
-    prevent_initial_call=True)
+     ])
 def update_figure(selected_year, txt_inserted):
     if selected_year == '':
         selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
@@ -494,21 +516,21 @@ def update_figure(selected_year, txt_inserted):
         filtered_df = filtered_df[(filtered_df['Nom'].isin(txt_inserted))]
     else:
         filtered_df = filtered_df[(filtered_df['Nom'] == 'Camille MOUNIER')]
-    off_set = -0.1
 
-    fig = px.scatter(filtered_df, x="Mois", y="IWF", hover_name="Competition", color="Nom", log_x=False, size_max=55)
+    fig = px.scatter(filtered_df, x="Mois", y="IWF", hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"], color="Nom", log_x=False, size_max=55)
     fig.update_traces(marker=dict(size=10, symbol='circle'))
     fig.update_xaxes(categoryorder="category ascending")
     fig.update_yaxes(categoryorder="category ascending")
     fig.update_layout(transition_duration=5, plot_bgcolor='rgb(40,40,45)', paper_bgcolor='rgb(40,40,45)',
-                      font_color="white",
+                      font_color="white", font_size=8,
                       title_font_color="white", legend_title_font_color="white",
                       legend=dict(
-                          yanchor="top",
-                          y=off_set,
+                          orientation="h",
+                          yanchor="bottom",
+                          y=1.05,
                           xanchor="left",
-                          x=0.01
-                      )
+                          x=-0.05
+                        )
                       )
 
     return fig
@@ -516,171 +538,29 @@ def update_figure(selected_year, txt_inserted):
 
 @callback(
     [Output('datatable-interactivity', "data"),
-     Output('datatable-interactivity', "style_data_conditional"),
      Output('datatable-interactivity', "columns")],
     [Input('year-slider', 'value'),
      Input(component_id='my_txt_input', component_property='value')
-     ],
-    prevent_initial_call=True)
+     ])
+
 def update_data(selected_year, txt_inserted):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     if txt_inserted:
-        filtered_df = df[df['Nom'].isin(txt_inserted) & (df['SaisonAnnee'] >= min(selected_year)) & (
-                    df['SaisonAnnee'] <= max(selected_year))]
+        filtered_df = df[df['Nom'].isin(txt_inserted) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     else:
         filtered_df = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
 
     columns = [
              {"name": i, "id": i, "selectable": True} for i in
-             ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'EpJ1', 'EpJ2', 'EpJ3', 'Total', 'Série',
-          'Catégorie', 'IWF']
-     ],
-    c_style = [
-        {
-            'if': {
-                'filter_query': '{Arr1} <= 0',
-                'column_id': 'Arr1'
-            },
-            'backgroundColor': 'tomato',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{Arr1} > 0',
-                'column_id': 'Arr1'
-            },
-            'backgroundColor': 'green',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{Arr2} <= 0',
-                'column_id': 'Arr2'
-            },
-            'backgroundColor': 'tomato',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{Arr2} > 0',
-                'column_id': 'Arr2'
-            },
-            'backgroundColor': 'green',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{Arr3} <= 0',
-                'column_id': 'Arr3'
-            },
-            'backgroundColor': 'tomato',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{Arr3} > 0',
-                'column_id': 'Arr3'
-            },
-            'backgroundColor': 'green',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{EpJ1} <=0',
-                'column_id': 'EpJ1'
-            },
-            'backgroundColor': 'tomato',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{EpJ1} >0',
-                'column_id': 'EpJ1'
-            },
-            'backgroundColor': 'green',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{EpJ2} <=0',
-                'column_id': 'EpJ2'
-            },
-            'backgroundColor': 'tomato',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{EpJ2} >0',
-                'column_id': 'EpJ2'
-            },
-            'backgroundColor': 'green',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{EpJ3} <=0',
-                'column_id': 'EpJ3'
-            },
-            'backgroundColor': 'tomato',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{EpJ3} >0',
-                'column_id': 'EpJ3'
-            },
-            'backgroundColor': 'green',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{Arr} <=0',
-                'column_id': 'Arr'
-            },
-            'backgroundColor': 'tomato',
-            'color': 'white'
-        },
-        {
-            'if': {
-                'filter_query': '{EpJ} <=0',
-                'column_id': 'EpJ'
-            },
-            'backgroundColor': 'tomato',
-            'color': 'white'
-        }
-    ],
+             ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'Série', 'Catégorie', 'IWF']
+     ]
 
+    filtered_df = filtered_df.sort_values(by=['IWF'], ascending=False)
     dat = filtered_df.to_dict('records')
+    print(len(dat))
 
-    return dat, c_style, columns
-
-
-# @callback(
-#    Output("filter_info", "children"),
-#    [Input('year-slider', 'value'),
-#    Input(component_id='my_txt_input', component_property='value')
-#    ])
-
-
-# def update_title(selected_year, txt_inserted):
-#     # Perform any manipulation on input_value and return the updated title
-#     global updated_title
-#     if min(selected_year)==max(selected_year):
-#         year_text = 'Saison ' + str(max(selected_year))
-#     else:
-#         year_text = 'Saisons ' + str(min(selected_year)) + '/' + str(max(selected_year))
-#
-#     if txt_inserted:
-#         df_filtered = df[df['Nom'].isin(txt_inserted) & (df['SaisonAnnee'] >= min(selected_year) & (df['SaisonAnnee'] <= max(selected_year)))]
-#         df1 = df[df['Nom'].isin(txt_inserted) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
-#
-#     if ((not txt_inserted) or len(df_filtered )==0):
-#         updated_title = "Haltero Data"
-#     elif (len(df1)!=0):
-#         updated_title = f"{txt_inserted}\n{year_text}"
-#
-#     return updated_title
+    return dat, columns
 
 
 @callback(
@@ -736,13 +616,13 @@ def updated_athletes(selected_year, txt_inserted):
             updated_club[n] = df1['Club'].values[0][0:20] + '.'
         else:
             updated_club[n] = df1['Club'].values[0]
-        updated_anniv[n] = df1['Né le'].values[0]
+        updated_anniv[n] = (df1['Né le'].values[0])[-4:]
         updated_max[n] = str(df1['IWF'].max()) + ' IWF'
-        updated_arr[n] = str(df1['Arraché'].max()) + '/'
-        updated_epj[n] = str(df1['EpJeté'].max()) + '/'
+        updated_arr[n] = str(df1['Arr'].max()) + '/'
+        updated_epj[n] = str(df1['EpJ'].max()) + '/'
         updated_total[n] = df1['Total'].max()
         pdc_df = df1['Total'].idxmax()
-        updated_pdc[n] = str(df.loc[pdc_df, 'PdC']) + ' PdC'
+        updated_pdc[n] = str(df.loc[pdc_df, 'PdC']) + 'kg'
         n = n + 1
 
     return f"{updated_name[0]}", f"{updated_club[0]}", f"{updated_anniv[0]}", f"{updated_max[0]}", f"{updated_arr[0]}{updated_epj[0]}{updated_total[0]}", f"{updated_pdc[0]}", \
