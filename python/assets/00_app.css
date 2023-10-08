@@ -24,6 +24,12 @@
   border-top: 1px solid black
 }
 
+.info_button {
+    float: inline-end;
+    margin-top: -46px;
+    margin-right: 10px;
+}
+
 .hr1 {
   background-color: rgb(0, 0, 131);
   width: 100%;
