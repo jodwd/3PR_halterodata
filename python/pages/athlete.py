@@ -522,7 +522,7 @@ def update_figure(selected_year, txt_inserted):
     fig.update_xaxes(categoryorder="category ascending")
     fig.update_yaxes(categoryorder="category ascending")
     fig.update_layout(transition_duration=5, plot_bgcolor='rgb(40,40,45)', paper_bgcolor='rgb(40,40,45)',
-                      font_color="white", font_size=8,
+                      font_color="white", font_size=10,
                       title_font_color="white", legend_title_font_color="white",
                       legend=dict(
                           orientation="h",
