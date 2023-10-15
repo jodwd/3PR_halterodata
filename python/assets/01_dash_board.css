@@ -16,20 +16,16 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-.text-box {
-     background-color: rgb(161,28,15);
+.title-box {
      font-family: 'Segoe UI', sans-serif;
-     color: white;
-     font: 2vmin;
      width: 95%;
-     height: 16vmin;
      margin-top: 2%;
      margin-left: 2%;
      text-align: center;
 }
 
 .input_box1 {
-  font-size: 1.5vmin;
+  font-size: 2vmin;
   color: black;
   width: 90%;
   height: 20vmin;
@@ -37,252 +33,18 @@
   margin-left: 2%;
 }
 
-.athl1_info {
-  margin-left: 20px;
-  width: 100%;
-  color: white;
+
+.card-title{
   font-size: 2vmin;
+  font-weight: bold;
+  line-height: 2vmin;
   text-align: justify;
 }
-
-.athl1_nom {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
+.card-text{
   font-size: 2vmin;
-  color: white;
+  line-height: 3vmin;
   text-align: justify;
 }
-
-.athl1_club {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl1_anniv {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl1_max {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  text_align: right;
-  color: white;
-  text-align: justify;
-}
-
-.athl1_total {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl1_pdc {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  text_align: right;
-  color: white;
-  text-align: justify;
-}
-
-.athl2_info {
-  margin-left: 20px;
-  width: 100%;
-  height: 100px;
-  color: white;
-  font-size: 2vmin;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl2_nom {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl2_club {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl2_anniv {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl2_max {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl2_total {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl2_pdc {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl3_info {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl3_nom {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl3_club {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl3_anniv {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl3_max {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl3_total {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl3_pdc {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl4_info {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-
-.athl4_info {
-  margin-left: 20px;
-  width: 100%;
-  height: 100px;
-  color: white;
-  font-size: 2vmin;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl4_nom {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl4_club {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl4_anniv {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl4_max {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl4_total {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.athl4_pdc {
-  width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vmin;
-  color: white;
-  text-align: justify;
-}
-
-.graph_box {
-  margin-top: -0vmin;
-  /* background-color: #163651; */
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 2vw;
-  color: white;
- }
 
 .data_tab {
   margin-top: -20px;
