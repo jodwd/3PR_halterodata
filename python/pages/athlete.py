@@ -63,14 +63,20 @@ list_names = list(set(df['Nom'].tolist()))
 layout = html.Div([
     # Header & filtres
         dbc.Row([            # Titre
-            dbc.Col(
+            dbc.Col([
                 html.Div(
                     children=[
-                        html.P("Dashboard Athlètes")
-                    ],
+                        dbc.Button(
+                            "  Dashboard Athlètes  ", outline=False, color="danger", className="me-1", href="/club", size="lg"),
+                        #dbc.Collapse(
+                        #    info_button,
+                        #    id="navbar-collapse",
+                        #    is_open=False
+                        #)
+                        ],
                     id='filter_info',
-                    className="text-box",
-                ), xs=6, sm=6, md=6, lg=2, xl=2),
+                    className="title-box",
+                )], xs=6, sm=6, md=6, lg=2, xl=2),
 
             # Zone filtres athlètes
 
@@ -90,163 +96,84 @@ layout = html.Div([
 
             dbc.Col([
                 html.Div([
-                        html.P("")
-                    ],
-                        id="athlete1_nom",
-                        className="athl1_nom"
-                ),
-                html.Div([
-                        html.P("")
-                    ],
-                        id="athlete2_nom",
-                        className="athl2_nom"
-                ),
-                html.Div([
-                        html.P("")
-                    ],
-                        id="athlete3_nom",
-                        className="athl3_nom"
-                ),
-                html.Div([
-                        html.P("")
-                    ],
-                        id="athlete4_nom",
-                        className="athl4_nom"
-                )], xs=3, sm=3, md=2, lg=2, xl=2),
-
-                dbc.Col([
-                    html.Div([
-                        html.P("")
-                        ],
-                            id="athlete1_club",
-                            className="athl1_club"
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.Div([html.P("Card 1")], id="athlete1_nom", className="card-title"),
+                                html.Div([
+                                    html.Div([html.P("Club")], id="athlete1_club"),
+                                    html.Div([html.P("Naissance")], id="athlete1_anniv"),
+                                    html.Div([html.P("Max")], id="athlete1_max")
+                                  ],   className="card-text",
+                                ),
+                                dbc.Button(
+                                    "+ Info", color="danger", className="mt-auto", size="sm"
+                                ),
+                            ]
                         ),
-                    html.Div([
-                        html.P("")
-                        ],
-                            id="athlete2_club",
-                            className="athl2_club"
+                    ),
+                ], id="athl_card1",  style= {'display': 'none'}),
+            ], xs=6, sm=3, md=3, lg=2, xl=2),
+            dbc.Col([
+                html.Div([
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.Div([html.P("Card 2")], id="athlete2_nom", className="card-title"),
+                                html.Div([
+                                    html.Div([html.P("Club")], id="athlete2_club"),
+                                    html.Div([html.P("Naissance")], id="athlete2_anniv"),
+                                    html.Div([html.P("Max")], id="athlete2_max")],   className="card-text",
+                                ),
+                                dbc.Button(
+                                    "+ Info", color="primary", className="mt-auto", size="sm"
+                                ),
+                            ]
                         ),
-                    html.Div([
-                        html.P("")
-                        ],
-                            id="athlete3_club",
-                            className="athl3_club"
+                    )
+                ], id="athl_card2",  style= {'display': 'none'}),
+            ], xs=6, sm=3, md=3, lg=2, xl=2),
+            dbc.Col([
+                html.Div([
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.Div([html.P("Card 3")], id="athlete3_nom", className="card-title"),
+                                html.Div([
+                                    html.Div([html.P("Club")], id="athlete3_club"),
+                                    html.Div([html.P("Naissance")], id="athlete3_anniv"),
+                                    html.Div([html.P("Max")], id="athlete3_max")],   className="card-text",
+                                ),
+                                dbc.Button(
+                                    "+ Info", color="warning", className="mt-auto", size="sm"
+                                ),
+                            ]
                         ),
-                    html.Div([
-                        html.P("")
-                        ],
-                            id="athlete4_club",
-                            className="athl4_club"
-                        )], xs=3, sm=3, md=3, lg=2, xl=2),
+                    )
+                ], id="athl_card3",  style= {'display': 'none'}),
+            ], xs=6, sm=3, md=3, lg=2, xl=2),
+            dbc.Col([
+                html.Div([
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.Div([html.P("Card 4")], id="athlete4_nom", className="card-title"),
+                                html.Div([
+                                    html.Div([html.P("Club")], id="athlete4_club"),
+                                    html.Div([html.P("Naissance")], id="athlete4_anniv"),
+                                    html.Div([html.P("Max")], id="athlete4_max")],   className="card-text",
+                                ),
+                                dbc.Button(
+                                    "+ Info", color="success", className="mt-auto", size="sm"
+                                ),
+                            ]
+                        ),
+                    )
+                ], id="athl_card4",  style= {'display': 'none'}),
+            ], xs=6, sm=3, md=3, lg=2, xl=2),
+        ],  className="top_zone",),
 
-                dbc.Col([
-                    html.Div([
-                        html.P("")
-                        ],
-                            id="athlete1_anniv",
-                            className="athl1_anniv"
-                    ),
-                    html.Div([
-                        html.P("")
-                        ],
-                            id="athlete2_anniv",
-                            className="athl2_anniv"
-                    ),
-                    html.Div([
-                        html.P("")
-                        ],
-                            id="athlete3_anniv",
-                            className="athl3_anniv"
-                    ),
-                    html.Div([
-                        html.P("")
-                        ],
-                            id="athlete4_anniv",
-                            className="athl4_anniv"
-                    )], xs=1, sm=1, md=2, lg=1, xl=1),
-
-                dbc.Col([
-                    html.Div([
-                        html.P("")
-                    ],
-                        id="athlete1_max",
-                        className="athl1_max"
-                    ),
-                    html.Div([
-                        html.P("")
-                    ],
-                        id="athlete2_max",
-                        className="athl2_max"
-                    ),
-                    html.Div([
-                        html.P("")
-                    ],
-                        id="athlete3_max",
-                        className="athl3_max"
-                    ),
-                    html.Div([
-                        html.P("")
-                    ],
-                        id="athlete4_max",
-                        className="athl4_max"
-                    )], xs=2, sm=2, md=2, lg=1, xl=1),
-
-                dbc.Col([
-                    html.Div([
-                        html.P("")
-                    ],
-                        id="athlete1_total",
-                        className="athl1_total"
-                    ),
-                    html.Div([
-                        html.P("")
-                    ],
-                        id="athlete2_total",
-                        className="athl2_total"
-                    ),
-                    html.Div([
-                        html.P("")
-                    ],
-                        id="athlete3_total",
-                        className="athl3_total"
-                    ),
-                    html.Div([
-                        html.P("")
-                    ],
-                        id="athlete4_total",
-                        className="athl4_total"
-                    )], xs=2, sm=2, md=1, lg=1, xl=1),
-
-                dbc.Col([
-                    html.Div([
-                        html.P("")
-                    ],
-                    id="athlete1_pdc",
-                    className="athl1_pdc"
-                    ),
-                    html.Div([
-                        html.P("")
-                    ],
-                    id="athlete2_pdc",
-                    className="athl2_pdc"
-                    ),
-                    html.Div([
-                        html.P("")
-                    ],
-                    id="athlete3_pdc",
-                    className="athl3_pdc"
-                    ),
-                    html.Div([
-                        html.P("")
-                    ],
-                    id="athlete4_pdc",
-                    className="athl4_pdc"
-                    )], xs=1, sm=1, md=2, lg=1, xl=1)
-                ],
-            className="top_zone",),
-
-    #html.Br(),
+    html.Br(),
     dbc.Row([
         dbc.Col([
             html.Div([
@@ -517,8 +444,9 @@ def update_figure(selected_year, txt_inserted):
     else:
         filtered_df = filtered_df[(filtered_df['Nom'] == 'Camille MOUNIER')]
 
-    fig = px.scatter(filtered_df, x="Mois", y="IWF", hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"], color="Nom", log_x=False, size_max=55)
-    fig.update_traces(marker=dict(size=10, symbol='circle'))
+    fig = px.scatter(filtered_df, x="Mois", y="IWF", hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
+                                  color="Nom", log_x=False, size_max=55,color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"], )
+    fig.update_traces(marker=dict(size=10, symbol='circle') )
     fig.update_xaxes(categoryorder="category ascending")
     fig.update_yaxes(categoryorder="category ascending")
     fig.update_layout(transition_duration=5, plot_bgcolor='rgb(40,40,45)', paper_bgcolor='rgb(40,40,45)',
@@ -564,36 +492,42 @@ def update_data(selected_year, txt_inserted):
 
 
 @callback(
-    [Output("athlete1_nom", "children"),
+    [Output('athl_card1', 'style'),
+     Output("athlete1_nom", "children"),
      Output("athlete1_club", "children"),
      Output("athlete1_anniv", "children"),
      Output("athlete1_max", "children"),
-     Output("athlete1_total", "children"),
-     Output("athlete1_pdc", "children"),
+     #Output("athlete1_total", "children"),
+     #Output("athlete1_pdc", "children"),
+     Output('athl_card2', 'style'),
      Output("athlete2_nom", "children"),
      Output("athlete2_club", "children"),
      Output("athlete2_anniv", "children"),
      Output("athlete2_max", "children"),
-     Output("athlete2_total", "children"),
-     Output("athlete2_pdc", "children"),
+     #Output("athlete2_total", "children"),
+     #Output("athlete2_pdc", "children"),
+     Output('athl_card3', 'style'),
      Output("athlete3_nom", "children"),
      Output("athlete3_club", "children"),
      Output("athlete3_anniv", "children"),
      Output("athlete3_max", "children"),
-     Output("athlete3_total", "children"),
-     Output("athlete3_pdc", "children"),
+     #Output("athlete3_total", "children"),
+     #Output("athlete3_pdc", "children"),
+     Output('athl_card4', 'style'),
      Output("athlete4_nom", "children"),
      Output("athlete4_club", "children"),
      Output("athlete4_anniv", "children"),
-     Output("athlete4_max", "children"),
-     Output("athlete4_total", "children"),
-     Output("athlete4_pdc", "children")],
+     Output("athlete4_max", "children")],
+     #Output("athlete4_total", "children"),
+     #Output("athlete4_pdc", "children")],
+
     [Input('year-slider', 'value'),
      Input(component_id='my_txt_input', component_property='value')
      ])
 
 def updated_athletes(selected_year, txt_inserted):
     # Perform any manipulation on input_value and return the updated title
+    updated_show = [{'display': 'none'}] * 4
     updated_name = [''] * 4
     updated_club = [''] * 4
     updated_anniv = [''] * 4
@@ -606,6 +540,7 @@ def updated_athletes(selected_year, txt_inserted):
     n = 0
     if txt_inserted is None:
         raise PreventUpdate
+    txt_inserted=sorted(txt_inserted)
     for i in txt_inserted:
         print(str(min(selected_year)) + ' ' + i)
         updated_name[n] = i
@@ -616,6 +551,7 @@ def updated_athletes(selected_year, txt_inserted):
             updated_club[n] = df1['Club'].values[0][0:20] + '.'
         else:
             updated_club[n] = df1['Club'].values[0]
+        updated_show[n] = {'display': 'block'}
         updated_anniv[n] = (df1['Né le'].values[0])[-4:]
         updated_max[n] = str(df1['IWF'].max()) + ' IWF'
         updated_arr[n] = str(df1['Arr'].max()) + '/'
@@ -625,11 +561,12 @@ def updated_athletes(selected_year, txt_inserted):
         updated_pdc[n] = str(df.loc[pdc_df, 'PdC']) + 'kg'
         n = n + 1
 
-    return f"{updated_name[0]}", f"{updated_club[0]}", f"{updated_anniv[0]}", f"{updated_max[0]}", f"{updated_arr[0]}{updated_epj[0]}{updated_total[0]}", f"{updated_pdc[0]}", \
-        f"{updated_name[1]}", f"{updated_club[1]}", f"{updated_anniv[1]}", f"{updated_max[1]}", f"{updated_arr[1]}{updated_epj[1]}{updated_total[1]}", f"{updated_pdc[1]}", \
-        f"{updated_name[2]}", f"{updated_club[2]}", f"{updated_anniv[2]}", f"{updated_max[2]}", f"{updated_arr[2]}{updated_epj[2]}{updated_total[2]}", f"{updated_pdc[2]}", \
-        f"{updated_name[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}", f"{updated_max[3]}", f"{updated_arr[3]}{updated_epj[3]}{updated_total[3]}", f"{updated_pdc[3]}",
+    return updated_show[0], f"{updated_name[0]}", f"{updated_club[0]}", f"{updated_anniv[0]}", f"{updated_max[0]}",\
+        updated_show[1], f"{updated_name[1]}", f"{updated_club[1]}", f"{updated_anniv[1]}", f"{updated_max[1]}",  \
+        updated_show[2], f"{updated_name[2]}", f"{updated_club[2]}", f"{updated_anniv[2]}", f"{updated_max[2]}", \
+        updated_show[3], f"{updated_name[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}", f"{updated_max[3]}" #f"{updated_arr[3]}{updated_epj[3]}{updated_total[3]}", f"{updated_pdc[3]}",
 
 
 if __name__ == '__main__':
     run_server(debug=True)
+
