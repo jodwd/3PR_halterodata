@@ -10,14 +10,14 @@
     width: 95%;
     height: 20vmin;
     margin-left: 10px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
 }
 .top_zone {
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
 }
 
 .title-box {
-     font-family: 'Segoe UI', sans-serif;
+     font-family: 'Helvetica Neue', sans-serif;
      width: 95%;
      margin-top: 2%;
      margin-left: 2%;
@@ -25,7 +25,7 @@
 }
 
 .input_box1 {
-  font-size: 2vmin;
+  font-size: 14px;
   color: black;
   width: 90%;
   height: 20vmin;
@@ -35,14 +35,14 @@
 
 
 .card-title{
-  font-size: 2vmin;
+  font-size: 14px;
   font-weight: bold;
-  line-height: 2vmin;
+  line-height: 14px;
   text-align: justify;
 }
 .card-text{
-  font-size: 2vmin;
-  line-height: 3vmin;
+  font-size: 14px;
+  line-height: 16px;
   text-align: justify;
 }
 
@@ -50,20 +50,20 @@
   margin-top: -20px;
   margin-left: -20px;
   /*background-color: rgb(40,40,45);*/
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 2vmin;
+  font-family: 'Helvetica Neue', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 12px;
   color: black;
   width=100%;
  }
 
  .slider_zone {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 1.5vw;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 14px;
   color: white;
 }
  .graph-with-slider {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 1.5vmin;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 14px;
   rgb(40,40,45);
 }
 

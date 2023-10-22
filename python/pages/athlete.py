@@ -87,7 +87,8 @@ layout = html.Div([
                             dcc.Dropdown(
                                 options=[x for x in sorted(list_names)],
                                 multi=True,
-                                id='my_txt_input'
+                                id='my_txt_input',
+                                placeholder="Choisir des athlètes...",
                                 )
                             ],
                             className="input_box1",),
@@ -178,7 +179,8 @@ layout = html.Div([
         dbc.Col([
             html.Div([
                 dcc.Graph(
-                    id='graph-with-slider'
+                    id='graph-with-slider',
+                    style= {'display': 'none'}
                 ),
                 dcc.RangeSlider(
                     df['SaisonAnnee'].min(),
@@ -202,8 +204,7 @@ layout = html.Div([
                     # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
                     columns=[
                         {"name": i, "id": i, "selectable": True} for i in
-                        ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'Série',
-                         'Catégorie', 'IWF']
+                            ['Nom',  'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'IWF', 'Série', 'Catégorie', 'Competition']
                     ],
                     data=df.to_dict('records'),
                     editable=False,
@@ -212,7 +213,6 @@ layout = html.Div([
                     sort_action="native",
                     sort_mode="single",
                     virtualization=True,
-                    column_selectable="single",
                     style_table={
                         'overflowX': 'scroll'
                     },
@@ -230,8 +230,8 @@ layout = html.Div([
                     style_cell={
                         'overflow': 'hidden',
                         'textOverflow': 'ellipsis',
-                        'minWidth': '6vw',
-                        'maxWidth': '20vw'
+                        'minWidth': '40px',
+                        'maxWidth': '200px'
                     },
                     style_data_conditional=[
                         {
@@ -239,7 +239,7 @@ layout = html.Div([
                                 'filter_query': '{Arr1} <= 0',
                                 'column_id': 'Arr1'
                             },
-                            'backgroundColor': 'rgb(161, 28, 15)',
+                            'backgroundColor': 'rgb(220, 76, 100)',
                             'color': 'white'
                         },
                         {
@@ -247,7 +247,7 @@ layout = html.Div([
                                 'filter_query': '{Arr1} > 0',
                                 'column_id': 'Arr1'
                             },
-                            'backgroundColor': 'rgb(0, 107, 61)',
+                            'backgroundColor': 'rgb(20, 164, 77)',
                             'color': 'white'
                         },
                         {
@@ -255,7 +255,7 @@ layout = html.Div([
                                 'filter_query': '{Arr2} <= 0',
                                 'column_id': 'Arr2'
                             },
-                            'backgroundColor': 'rgb(161, 28, 15)',
+                            'backgroundColor': 'rgb(220, 76, 100)',
                             'color': 'white'
                         },
                         {
@@ -263,7 +263,7 @@ layout = html.Div([
                                 'filter_query': '{Arr2} > 0',
                                 'column_id': 'Arr2'
                             },
-                            'backgroundColor': 'rgb(0, 107, 61)',
+                            'backgroundColor': 'rgb(20, 164, 77)',
                             'color': 'white'
                         },
                         {
@@ -271,7 +271,7 @@ layout = html.Div([
                                 'filter_query': '{Arr3} <= 0',
                                 'column_id': 'Arr3'
                             },
-                            'backgroundColor': 'rgb(161, 28, 15)',
+                            'backgroundColor': 'rgb(220, 76, 100)',
                             'color': 'white'
                         },
                         {
@@ -279,7 +279,7 @@ layout = html.Div([
                                 'filter_query': '{Arr3} > 0',
                                 'column_id': 'Arr3'
                             },
-                            'backgroundColor': 'rgb(0, 107, 61)',
+                            'backgroundColor': 'rgb(20, 164, 77)',
                             'color': 'white'
                         },
                         {
@@ -295,7 +295,7 @@ layout = html.Div([
                                 'filter_query': '{Arr} > 0',
                                 'column_id': 'Arr'
                             },
-                            'backgroundColor': 'rgb(0, 0, 131)',
+                            'backgroundColor': 'rgb(59, 113, 202)',
                             'color': 'white'
                         },
                         {
@@ -303,7 +303,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ1} <=0',
                                 'column_id': 'EpJ1'
                             },
-                            'backgroundColor': 'rgb(161, 28, 15)',
+                            'backgroundColor': 'rgb(220, 76, 100)',
                             'color': 'white'
                         },
                         {
@@ -311,7 +311,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ1} >0',
                                 'column_id': 'EpJ1'
                             },
-                            'backgroundColor': 'rgb(0, 107, 61)',
+                            'backgroundColor': 'rgb(20, 164, 77)',
                             'color': 'white'
                         },
                         {
@@ -319,7 +319,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ2} <=0',
                                 'column_id': 'EpJ2'
                             },
-                            'backgroundColor': 'rgb(161, 28, 15)',
+                            'backgroundColor': 'rgb(220, 76, 100)',
                             'color': 'white'
                         },
                         {
@@ -327,7 +327,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ2} >0',
                                 'column_id': 'EpJ2'
                             },
-                            'backgroundColor': 'rgb(0, 107, 61)',
+                            'backgroundColor': 'rgb(20, 164, 77)',
                             'color': 'white'
                         },
                         {
@@ -335,7 +335,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ3} <=0',
                                 'column_id': 'EpJ3'
                             },
-                            'backgroundColor': 'rgb(161, 28, 15)',
+                            'backgroundColor': 'rgb(220, 76, 100)',
                             'color': 'white'
                         },
                         {
@@ -343,7 +343,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ3} >0',
                                 'column_id': 'EpJ3'
                             },
-                            'backgroundColor': 'rgb(0, 107, 61)',
+                            'backgroundColor': 'rgb(20, 164, 77)',
                             'color': 'white'
                         },
                         {
@@ -359,7 +359,7 @@ layout = html.Div([
                                 'filter_query': '{EpJ} > 0',
                                 'column_id': 'EpJ'
                             },
-                            'backgroundColor': 'rgb(0, 0, 131)',
+                            'backgroundColor': 'rgb(59, 113, 202)',
                             'color': 'white'
                         },
                     ],
@@ -420,7 +420,7 @@ def update_datalist(none):
 )
 def update_athletes_list(selected_year):
     filtered_df = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
-    options = list(set(filtered_df['Nom'].tolist()))
+    options = [x for x in sorted(list_names)]
     return options
 
 
@@ -431,7 +431,8 @@ def update_athletes_list(selected_year):
 
 
 @callback(
-    Output('graph-with-slider', 'figure'),
+    [Output('graph-with-slider', 'figure'),
+     Output('graph-with-slider', 'style')],
     [Input('year-slider', 'value'),
      Input(component_id='my_txt_input', component_property='value')
      ])
@@ -441,27 +442,30 @@ def update_figure(selected_year, txt_inserted):
     filtered_df = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     if txt_inserted:
         filtered_df = filtered_df[(filtered_df['Nom'].isin(txt_inserted))]
+        display_graph = {'display': 'block'}
+
+        fig = px.scatter(filtered_df, x="Mois", y="IWF", hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
+                                      color="Nom", log_x=False, size_max=55,color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"], )
+        fig.update_traces(marker=dict(size=10, symbol='circle') )
+        fig.update_xaxes(categoryorder="category ascending")
+        fig.update_yaxes(categoryorder="category ascending")
+        fig.update_layout(transition_duration=5, plot_bgcolor='rgb(40,40,45)', paper_bgcolor='rgb(40,40,45)',
+                          font_color="white", font_size=10,
+                          title_font_color="white", legend_title_font_color="white",
+                          legend=dict(
+                              orientation="h",
+                              yanchor="bottom",
+                              y=1.05,
+                              xanchor="left",
+                              x=-0.05
+                            )
+                          )
     else:
-        filtered_df = filtered_df[(filtered_df['Nom'] == 'Camille MOUNIER')]
+        #filtered_df = filtered_df[(filtered_df['Nom'] == 'NoData')]
+        fig = px.scatter()
+        display_graph = {'display': 'none'}
 
-    fig = px.scatter(filtered_df, x="Mois", y="IWF", hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
-                                  color="Nom", log_x=False, size_max=55,color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"], )
-    fig.update_traces(marker=dict(size=10, symbol='circle') )
-    fig.update_xaxes(categoryorder="category ascending")
-    fig.update_yaxes(categoryorder="category ascending")
-    fig.update_layout(transition_duration=5, plot_bgcolor='rgb(40,40,45)', paper_bgcolor='rgb(40,40,45)',
-                      font_color="white", font_size=10,
-                      title_font_color="white", legend_title_font_color="white",
-                      legend=dict(
-                          orientation="h",
-                          yanchor="bottom",
-                          y=1.05,
-                          xanchor="left",
-                          x=-0.05
-                        )
-                      )
-
-    return fig
+    return fig, display_graph
 
 
 @callback(
@@ -481,7 +485,7 @@ def update_data(selected_year, txt_inserted):
 
     columns = [
              {"name": i, "id": i, "selectable": True} for i in
-             ['Nom', 'Competition', 'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'Série', 'Catégorie', 'IWF']
+             ['Nom',  'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'IWF', 'Série', 'Catégorie', 'Competition']
      ]
 
     filtered_df = filtered_df.sort_values(by=['IWF'], ascending=False)
