@@ -12,7 +12,7 @@
     width: 1300px;
     height: 90px;
     margin-left: 10px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
 }
 
 .text-box {
@@ -22,7 +22,7 @@
      /* Additional CSS properties for styling */
 
      background-color: rgb(253, 204, 12);
-     font-family: 'Segoe UI', sans-serif;
+     font-family: 'Helvetica Neue', sans-serif;
      font-size: 24px;
      color: white;
      text-align: center;
@@ -38,118 +38,13 @@
 }
 
 
-.sexe_zone {
-  margin-left: 20px;
-  width: 280px;
-  height: 40px;
-  color: white;
-}
-.sexe_box {
-  width: 80px;
-  height: 40px;
-  margin-left: 10px;
-  color: white;
-  display: inline-block;
-}
-.input_box1 {
-  margin-left: 20px;
-  width: 150px;
-  height: 40px;
-  display: inline-block;
-}
-
-.poids_zone {
-  margin-left: 20px;
-  width: 280px;
-  height: 40px;
-  color: white;
-}
-.poids_box {
-  width: 80px;
-  height: 40px;
-  margin-left: 10px;
-  display: inline-block;
-}
-.input_box2 {
-  margin-left: 20px;
-  width: 150px;
-  height: 40px;
-  display: inline-block;
-}
-
-.age_zone {
-  margin-left: 20px;
-  width: 280px;
-  height: 40px;
-  color: white;
-}
-.age_box {
-  width: 80px;
-  height: 40px;
-  margin-left: 10px;
-  display: inline-block;
-}
-
-.input_box3 {
-  margin-left: 20px;
-  width: 150px;
-  height: 40px;
-  display: inline-block;
-}
-
-.ligue_zone {
-  margin-left: 20px;
-  width: 280px;
-  height: 40px;
-  color: white;
-}
-.ligue_box {
-  width: 80px;
-  height: 40px;
-  margin-left: 10px;
-  display: inline-block;
-}
-.input_box4 {
-  margin-left: 20px;
-  width: 150px;
-  height: 40px;
-  display: inline-block;
-}
-
-
-.athl1_info {
-  margin-left: 20px;
-  width: 190px;
-  height: 100px;
-  display: inline-block;
-}
-
-.athl1_nom {
-  width: 180px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-}
-
-.athl1_club {
-  width: 180px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
  .slider_zone {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Helvetica Neue', sans-serif;
   font-size: 12px;
   color: white;
 }
  .graph-with-slider {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Helvetica Neue', sans-serif;
   font-size: 12px;
   rgb(40,40,45);
 }
@@ -183,7 +78,7 @@
   display: inline-block;
   width: 100%;
   margin-left: 20px;
-  font-family: "Goudy Bookletter 1911", sans-serif;
+  font-family: "Helvetica Neue", sans-serif;
   backgroundColor: rgb(80, 80, 90);
   color: white;
 }

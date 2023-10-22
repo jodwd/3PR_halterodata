@@ -7,6 +7,7 @@ import sqlite3 as sql
 import numpy as np
 import os
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 from flask import Flask, render_template
 
 # Connection à la base SQLite
@@ -43,6 +44,11 @@ df.head()
 df['Max IWF Saison']=round(df['Max IWF Saison'], 3)
 df['Max IWF']=round(df['Max IWF'], 3)
 
+dfh = df
+dff = df
+dfh['Rang'] = df[(df['Sexe'] == 'M') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
+dff['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
+
 updated_title='Dashboard Club'
 
 #app = dash.Dash(__name__)
@@ -57,96 +63,41 @@ nom_club = list(set(df['Club'].tolist()))
 #body
 layout = html.Div([
     #Header & filtres
-    html.Div([
-        # Titre
-        html.Div(
-            children=[
-                html.P("Dashboard Clubs")
-            ],
-            id='filter_info',
-            className="text-box",
-        ),
-        # Zone filtres Ligue / Club
-        html.Div([
-            html.Div([
-                # Selection Ligue
-                html.Div(
-                    children=[
-                        html.P("Ligue")
-                    ],
-                    id='ligue_info',
-                    className="ligue_box",
-                ),
-                html.Div([
-                        dcc.Input(
-                            id='my_txt_input',
-                            value='',
-                            type='text',
-                            debounce=True,  # changes to input are sent to Dash server only on enter or losing focus
-                            pattern=r"^[A-Za-z].*",  # Regex: string must start with letters only
-                            spellCheck=True,
-                            inputMode='latin',  # provides a hint to browser on type of data that might be entered by the user.
-                            name='text',  # the name of the control, which is submitted with the form data
-                            list='list_ligues',  # identifies a list of pre-defined options to suggest to the user
-                            n_submit=0,  # number of times the Enter key was pressed while the input had focus
-                            n_submit_timestamp=-1,  # last time that Enter was pressed
-                            autoFocus=True,  # the element should be automatically focused after the page loaded
-                            n_blur=0,  # number of times the input lost focus
-                            n_blur_timestamp=-1,  # last time the input lost focus.
-
-                                    # Dynamically generate options
-                            # selectionDirection='', # the direction in which selection occurred
-                            # selectionStart='',     # the offset into the element's text content of the first selected character
-                            # selectionEnd='',       # the offset into the element's text content of the last selected character
-                        )
-                    ],
-                    className="input_box1",
-                )] ,
-                className="ligue_zone",
-            ),
-            html.Datalist(id='list_ligues'),
-
-            #Selection Athlète #2
-            html.Div([
-                html.Div(
-                    children=[
-                        html.P("Club")
-                    ],
-                    id='club_info',
-                    className="club_box",
-                ),
-                html.Div([
-                    dcc.Input(
-                        id='my_txt_input2',
-                        value='',
-                        type='text',
-                        debounce=True,  # changes to input are sent to Dash server only on enter or losing focus
-                        pattern=r"^[A-Za-z].*",  # Regex: string must start with letters only
-                        spellCheck=True,
-                        inputMode='latin',  # provides a hint to browser on type of data that might be entered by the user.
-                        name='text',  # the name of the control, which is submitted with the form data
-                        list='list_clubs',  # identifies a list of pre-defined options to suggest to the user
-                        n_submit=0,  # number of times the Enter key was pressed while the input had focus
-                        n_submit_timestamp=-1,  # last time that Enter was pressed
-                        autoFocus=True,  # the element should be automatically focused after the page loaded
-                        n_blur=0,  # number of times the input lost focus
-                        n_blur_timestamp=-1,  # last time the input lost focus.
-
-                        # Dynamically generate options
-                        # selectionDirection='', # the direction in which selection occurred
-                        # selectionStart='',     # the offset into the element's text content of the first selected character
-                        # selectionEnd='',       # the offset into the element's text content of the last selected character
-                    )
+    dbc.Row([
+        dbc.Col([
+            html.Div(
+                children=[
+                    dbc.Button(
+                        "  Dashboard Clubs  ", outline=False, color="primary", className="me-1", href="/club", size="lg"),
+                    # dbc.Collapse(
+                    #    info_button,
+                    #    id="navbar-collapse",
+                    #    is_open=False
+                    # )
                 ],
-                    className="input_box2",
-                )],
-                className="club_zone",
-            ),
-            html.Datalist(id='list_clubs'),
-            ],
-        className="pick_zone",
-        )],
-    ),
+                id='filter_info',
+                className="title-box",
+            )], xs=6, sm=6, md=6, lg=2, xl=2),
+
+            # Zone filtres Ligue / Club
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in sorted(nom_ligue)],
+                    multi=True,
+                    id='my_txt_input1-c',
+                    placeholder="Ligue",
+                )
+            ], xs=6, sm=6, md=6, lg=5, xl=5),
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in sorted(nom_club)],
+                    multi=True,
+                    id='my_txt_input2-c',
+                    placeholder="Club"
+                )
+            ], xs=12, sm=12, md=12, lg=5, xl=5),
+        ]),
+
     html.Div([
          dcc.Slider(
              df['SaisonAnnee'].min(),
@@ -167,45 +118,45 @@ layout = html.Div([
         id='div_output',
         className='graph_box'
     ),
-    #top 5 H & F
-    html.Div([
-        html.Div(children=[
-                html.P("Top 5 Hommes : ")
-                ],
-                 id='top_5_score_h',
-                 className='top_5_h'),
-        html.Div(children=[
-                html.P("Top 4 Femmes : ")
-                ],
-                 id='top_5_score_f',
-                className='top_5_f'),
-            ],
-    className = 'top_5'),
 
-    html.Div([
-        html.Div([
+
+    #top 5 H & F
+    dbc.Row([
+        dbc.Col([
+            dbc.Button(
+                title="  Top 5 Hommes  ", id="top_5_h", outline=True, color="primary", className="me-1", href="/club", size="md"),
             dash_table.DataTable(
                 id='datatable-h',
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
-                    columns=[
-                        {"name": i, "id": i,  "selectable": True} for i in
-                        ['Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+                columns=[
+                    {"name": i, "id": i, "selectable": True} for i in
+                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
                 ],
-                data=df[(df['Sexe'] == 'M')].to_dict('records'),
+                data=dfh.to_dict('records'),
                 editable=True,
                 sort_action="native",
                 sort_mode="single",
-                column_selectable="single",
+                style_table={
+                    'overflowX': 'scroll'
+                },
                 style_header={
                     'backgroundColor': 'white',
                     'fontWeight': 'bold',
                     'text-align': 'left',
+                    'font-size': '14px',
                     'text-indent': '0.2em'
                 },
                 style_data={
                     'backgroundColor': 'rgb(80, 80, 90)',
                     'color': 'white',
+                    'font-size': '14px',
                     'border': '1px solid white'
+                },
+                style_cell={
+                    'overflow': 'hidden',
+                    'textOverflow': 'ellipsis',
+                    'minWidth': '40px',
+                    'maxWidth': '200px'
                 },
                 row_selectable=False,
                 row_deletable=False,
@@ -214,32 +165,46 @@ layout = html.Div([
                 style_as_list_view=True,
                 page_action="native",
                 page_current=0,
-                page_size=25,
-            ),
-        ], className='data_tab_h'),
-        html.Div([
+                page_size=25),
+            ], xs=12, sm=12, md=6, lg=6, xl=6),
+
+
+        dbc.Col([
+            dbc.Button(
+                title="  Top 5 Femmes  ", id="top_5_f", outline=True, color="primary", className="me-1", href="/club", size="md"),
+
             dash_table.DataTable(
                 id='datatable-f',
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
-                    columns=[
-                        {"name": i, "id": i,  "selectable": True} for i in
-                        ['Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+                columns=[
+                    {"name": i, "id": i, "selectable": True} for i in
+                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
                 ],
-                data=df[(df['Sexe'] == 'F')].to_dict('records'),
+                data=dff.to_dict('records'),
                 editable=True,
                 sort_action="native",
                 sort_mode="single",
-                column_selectable="single",
+                style_table={
+                    'overflowX': 'scroll'
+                },
                 style_header={
                     'backgroundColor': 'white',
                     'fontWeight': 'bold',
                     'text-align': 'left',
+                    'font-size': '14px',
                     'text-indent': '0.2em'
                 },
                 style_data={
                     'backgroundColor': 'rgb(80, 80, 90)',
                     'color': 'white',
+                    'font-size': '14px',
                     'border': '1px solid white'
+                },
+                style_cell={
+                    'overflow': 'hidden',
+                    'textOverflow': 'ellipsis',
+                    'minWidth': '40px',
+                    'maxWidth': '200px'
                 },
                 row_selectable=False,
                 row_deletable=False,
@@ -250,69 +215,69 @@ layout = html.Div([
                 page_current=0,
                 page_size=25,
             ),
-        ], className='data_tab_f'),
+        ] , xs=12, sm=12, md=6, lg=6, xl=6),
+    ]),
+
+
+
+    html.Div([
     ], className='data_tabs'),
     html.Div(id='datatable-container'),
     html.Link(
         rel='stylesheet',
         href='/assets/02_club.css'
         ),
-    html.Div(id='none',children=[],style={'display': 'none'})
+    html.Div(id='none', children=[], style={'display': 'none'})
     ],
     id='app_code',
     className='body'
 )
 
-
 @callback(
-    Output('list_ligues', 'children'),
-    [Input('none', 'children')]
+    Output('my_txt_input2-c', 'options'),
+    [Input('year-slider', 'value'),
+     Input('my_txt_input1-c', 'value')]
 )
-def update_datalist(none):
-    children = []  # List to store dynamic options
 
-    children = [html.Option(value=val, children=val) for val in nom_ligue]
+def update_datalist(selected_year, txt_inserted1):
+    if selected_year == '':
+        selected_year = df['SaisonAnnee'].max()
+    filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+    if txt_inserted1:
+        filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted1))]
 
-    return children
-
-@callback(
-    Output('list_clubs', 'children'),
-    [Input('none', 'children')]
-)
-def update_datalist(none):
-    children = []  # List to store dynamic options
-
-    children = [html.Option(value=val, children=val) for val in nom_club]
-
-    return children
+    nom_club = list(set(filtered_df['Club'].tolist()))
+    opt = [x for x in sorted(nom_club)]
+    return opt
 
 @callback(
     [Output('datatable-h', "data"),
      Output('datatable-h', "columns")],
     [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value'),
-     Input(component_id='my_txt_input2', component_property='value')
+     Input(component_id='my_txt_input1-c', component_property='value'),
+     Input(component_id='my_txt_input2-c', component_property='value')
      ])
 
 def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
-    filtered_df = df[(df['Sexe'] == 'M')]
-    if selected_year=='':
-        selected_year=filtered_df['SaisonAnnee'].max()
-    if txt_inserted + txt_inserted2 != '':
-        if txt_inserted!='':
-            filtered_df = filtered_df[(filtered_df['Ligue'] == txt_inserted) & (filtered_df['SaisonAnnee'] == selected_year)]
-        if txt_inserted2!='':
-            filtered_df = filtered_df[(filtered_df['Club'] == txt_inserted2) & (filtered_df['SaisonAnnee'] == selected_year)]
+    fdfh = df[(df['Sexe'] == 'M')]
+    if selected_year == '':
+        selected_year = fdfh['SaisonAnnee'].max()
+    if txt_inserted or txt_inserted2:
+        if txt_inserted:
+            fdfh = fdfh[(fdfh['Ligue'].isin(txt_inserted)) & (fdfh['SaisonAnnee'] == selected_year)]
+        if txt_inserted2:
+            fdfh = fdfh[(fdfh['Club'].isin(txt_inserted2)) & (fdfh['SaisonAnnee'] == selected_year)]
     else:
-        filtered_df = filtered_df[(filtered_df['SaisonAnnee'] == selected_year)]
+        fdfh = fdfh[(fdfh['SaisonAnnee'] == selected_year)]
 
-    filtered_df=filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
+    fdfh=fdfh.sort_values(by=['Max IWF Saison'], ascending=False)
+    fdfh['Rang'] = fdfh.groupby(['SaisonAnnee']).cumcount()+1
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
     ]
 
-    dat = filtered_df.to_dict('records')
+    dat = fdfh.to_dict('records')
 
     return dat, columns
 
@@ -320,85 +285,91 @@ def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
     [Output('datatable-f', "data"),
      Output('datatable-f', "columns")],
     [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value'),
-     Input(component_id='my_txt_input2', component_property='value')
+     Input(component_id='my_txt_input1-c', component_property='value'),
+     Input(component_id='my_txt_input2-c', component_property='value')
      ])
 
-def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
-    filtered_df = df[(df['Sexe'] == 'F')]
-    if selected_year=='':
-        selected_year=filtered_df['SaisonAnnee'].max()
-    if txt_inserted + txt_inserted2 != '':
-        if txt_inserted != '':
-            filtered_df = filtered_df[(filtered_df['Ligue'] == txt_inserted) & (filtered_df['SaisonAnnee'] == selected_year)]
-        if txt_inserted2 != '':
-            filtered_df = filtered_df[(filtered_df['Club'] == txt_inserted2) & (filtered_df['SaisonAnnee'] == selected_year)]
+def update_data(selected_year, txt_inserted, txt_inserted2):
+    fdff = df[(df['Sexe'] == 'F')]
+    if selected_year == '':
+        selected_year = fdff['SaisonAnnee'].max()
+    if txt_inserted or txt_inserted2:
+        if txt_inserted:
+            fdff = fdff[(fdff['Ligue'].isin(txt_inserted)) & (fdff['SaisonAnnee'] == selected_year)]
+        if txt_inserted2:
+            fdff = fdff[(fdff['Club'].isin(txt_inserted2)) & (fdff['SaisonAnnee'] == selected_year)]
     else:
-        filtered_df = filtered_df[(filtered_df['SaisonAnnee'] == selected_year)]
+        fdff = fdff[(fdff['SaisonAnnee'] == selected_year)]
 
-    filtered_df=filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
+    fdff=fdff.sort_values(by=['Max IWF Saison'], ascending=False)
+    fdff['Rang'] = fdff.groupby(['SaisonAnnee']).cumcount()+1
+
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
     ]
 
-    dat = filtered_df.to_dict('records')
+    dat = fdff.to_dict('records')
 
     return dat, columns
 
 @callback(
-    Output("top_5_score_h", "children"),
+    Output("top_5_h", "children"),
     [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value'),
-     Input(component_id='my_txt_input2', component_property='value')
+     Input(component_id='my_txt_input1-c', component_property='value'),
+     Input(component_id='my_txt_input2-c', component_property='value')
      ])
 
 def update_title(selected_year, txt_inserted, txt_inserted2):
     # Perform any manipulation on input_value and return the updated title
-    global updated_title
-    filtered_df = df[(df['Sexe'] == 'M')]
+    global updated_title_h
+    fdfh = df[(df['Sexe'] == 'M')]
     if selected_year=='':
-        selected_year=df['SaisonAnnee'].max()
-    if txt_inserted + txt_inserted2 != '':
-        if txt_inserted != '':
-            filtered_df = filtered_df[(df['Ligue'] == txt_inserted) & (filtered_df['SaisonAnnee'] == selected_year)]
-        if txt_inserted2 != '':
-            filtered_df = filtered_df[(filtered_df['Club'] == txt_inserted2) & (filtered_df['SaisonAnnee'] == selected_year)]
+        selected_year=fdfh['SaisonAnnee'].max()
+    if txt_inserted or txt_inserted2:
+        if txt_inserted:
+            fdfh = fdfh[(fdfh['Ligue'].isin(txt_inserted)) & (fdfh['SaisonAnnee'] == selected_year)]
+        if txt_inserted2:
+            fdfh = fdfh[(fdfh['Club'].isin(txt_inserted2)) & (fdfh['SaisonAnnee'] == selected_year)]
     else:
-        filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+        fdfh = fdfh[(fdfh['SaisonAnnee'] == selected_year)]
 
-    filtered_df=filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
-    filtered_df=round(filtered_df.head(5),0)
+    fdfh=fdfh.sort_values(by=['Max IWF Saison'], ascending=False)
+    filtered_df=round(fdfh.head(5),0)
     res = filtered_df['Max IWF Saison'].sum()
-    updated_title = "Top 5 Hommes : " + str(int(res))
+    updated_title_h = "Top 5 Hommes : " + str(int(res))
 
-    return updated_title
+    return updated_title_h
 
 @callback(
-    Output("top_5_score_f", "children"),
+    Output("top_5_f", "children"),
     [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value'),
-     Input(component_id='my_txt_input2', component_property='value')
+     Input(component_id='my_txt_input1-c', component_property='value'),
+     Input(component_id='my_txt_input2-c', component_property='value')
      ])
 
 def update_title(selected_year, txt_inserted, txt_inserted2):
     # Perform any manipulation on input_value and return the updated title
-    global updated_title
-    filtered_df = df[(df['Sexe'] == 'F')]
-    if selected_year=='':
-        selected_year=df['SaisonAnnee'].max()
-    if txt_inserted + txt_inserted2 != '':
-        if txt_inserted!='':
-            filtered_df = filtered_df[(df['Ligue'] == txt_inserted) & (filtered_df['SaisonAnnee'] == selected_year)]
-        if txt_inserted2!='':
-            filtered_df = filtered_df[(filtered_df['Club'] == txt_inserted2) & (filtered_df['SaisonAnnee'] == selected_year)]
+    global updated_title_f
+    fdff = df[(df['Sexe'] == 'F')]
+    if selected_year == '':
+        selected_year = fdff['SaisonAnnee'].max()
+    if txt_inserted or txt_inserted2:
+        if txt_inserted:
+            fdff = fdff[
+                (fdff['Ligue'].isin(txt_inserted)) & (fdff['SaisonAnnee'] == selected_year)]
+        if txt_inserted2:
+            fdff = fdff[
+                (fdff['Club'].isin(txt_inserted2)) & (fdff['SaisonAnnee'] == selected_year)]
+    else:
+        fdff = fdff[(fdff['SaisonAnnee'] == selected_year)]
 
-    filtered_df=filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
-    filtered_df=round(filtered_df.head(4),0)
+    fdff = fdff.sort_values(by=['Max IWF Saison'], ascending=False)
+    filtered_df=round(fdff.head(4),0)
     res = filtered_df['Max IWF Saison'].sum()
-    updated_title = "Top 4 Femmes : " + str(int(res))
+    updated_title_f = "Top 4 Femmes : " + str(int(res))
 
-    return updated_title
+    return updated_title_f
 
 
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ import sqlite3 as sql
 import numpy as np
 import os
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 from flask import Flask, render_template
 
 # Connection à la base SQLite
@@ -26,6 +27,7 @@ qry = """SELECT * FROM
             ,   cat."Serie"                 as "Serie"
             ,   cat."CatePoids"             as "CatePoids"
             ,   cat."CateAge"               as "CateAge"
+            ,   cat."Serie"                 as "Série"
             ,   cat.Arrache                 as "Arr"
             ,   cat.EpJete                  as "EpJ"
             ,   cat.PoidsTotal              as "Total"
@@ -50,210 +52,89 @@ qry = """SELECT * FROM
 df = pd.read_sql_query(qry, conn)
 df.head()
 
-#Arrondi à 3 virgule pour l'IWF pour le display
-df['Max IWF Saison']=round(df['Max IWF Saison'], 3)
-df['Max IWF']=round(df['Max IWF'], 3)
-df['IWF']=round(df['IWF'], 3)
+# Arrondi à 3 virgule pour l'IWF pour le display
+df['Max IWF Saison'] = round(df['Max IWF Saison'], 3)
+df['Max IWF'] = round(df['Max IWF'], 3)
+df['IWF'] = round(df['IWF'], 3)
 
-updated_title='Listings'
+updated_title = 'Listings'
 
-#app = dash.Dash(__name__)
+# app = dash.Dash(__name__)
 dash.register_page(__name__)
-#server = server
+# server = server
 
 
-#df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
+# df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
 nom_ligue = list(set(df['Ligue'].tolist()))
 nom_age = list(set(df['CateAge'].tolist()))
 nom_poids = list(set(df['CatePoids'].tolist()))
 nom_sexe = list(set(df['Sexe'].tolist()))
 
-#body
+# body
 layout = html.Div([
-    #Header & filtres
-    html.Div([
-        # Titre
-        html.Div(
-            children=[
-                html.P("Listings")
-            ],
-            id='filter_info',
-            className="text-box",
-        ),
+    # Header & filtres
+    dbc.Row([
+        dbc.Col([
+            html.Div(
+                children=[
+                    dbc.Button(
+                        "  Listings  ", outline=False, color="warning", className="me-1", href="/listings",
+                        size="lg"),
+                    # dbc.Collapse(
+                    #    info_button,
+                    #    id="navbar-collapse",
+                    #    is_open=False
+                    # )
+                ],
+                id='filter_info',
+                className="title-box",
+            )], xs=4, sm=4, md=4, lg=4, xl=4),
         # Zone filtres Sexe / Catégorie de Poids / Catégorie d'Age / Ligue
-        html.Div([
-            html.Div([
-                # Selection Ligue
-                html.Div(
-                    children=[
-                        html.P("Sexe")
-                    ],
-                    id='sexe_info',
-                    className="sexe_box",
-                ),
-                html.Div([
-                        dcc.Input(
-                            id='my_txt_input',
-                            value='',
-                            type='text',
-                            debounce=True,  # changes to input are sent to Dash server only on enter or losing focus
-                            pattern=r"^[A-Za-z].*",  # Regex: string must start with letters only
-                            spellCheck=True,
-                            inputMode='latin',  # provides a hint to browser on type of data that might be entered by the user.
-                            name='text',  # the name of the control, which is submitted with the form data
-                            list='list_sexe',  # identifies a list of pre-defined options to suggest to the user
-                            n_submit=0,  # number of times the Enter key was pressed while the input had focus
-                            n_submit_timestamp=-1,  # last time that Enter was pressed
-                            autoFocus=True,  # the element should be automatically focused after the page loaded
-                            n_blur=0,  # number of times the input lost focus
-                            n_blur_timestamp=-1,  # last time the input lost focus.
-
-                                    # Dynamically generate options
-                            # selectionDirection='', # the direction in which selection occurred
-                            # selectionStart='',     # the offset into the element's text content of the first selected character
-                            # selectionEnd='',       # the offset into the element's text content of the last selected character
-                        )
-                    ],
-                    className="input_box1",
-                )] ,
-                className="sexe_zone",
+        dbc.Col([
+            dcc.Dropdown(
+                options=[x for x in sorted(nom_sexe)],
+                multi=False,
+                id='my_txt_input1',
+                placeholder="Sexe",
             ),
-            html.Datalist(id='list_sexe'),
-
-            #Selection Athlète #2
-            html.Div([
-                html.Div(
-                    children=[
-                        html.P("CatePoids")
-                    ],
-                    id='poids_info',
-                    className="poids_box",
-                ),
-                html.Div([
-                    dcc.Input(
-                        id='my_txt_input2',
-                        value='',
-                        type='text',
-                        debounce=True,  # changes to input are sent to Dash server only on enter or losing focus
-                        pattern=r"^[A-Za-z].*",  # Regex: string must start with letters only
-                        spellCheck=True,
-                        inputMode='latin',  # provides a hint to browser on type of data that might be entered by the user.
-                        name='text',  # the name of the control, which is submitted with the form data
-                        list='list_poids',  # identifies a list of pre-defined options to suggest to the user
-                        n_submit=0,  # number of times the Enter key was pressed while the input had focus
-                        n_submit_timestamp=-1,  # last time that Enter was pressed
-                        autoFocus=True,  # the element should be automatically focused after the page loaded
-                        n_blur=0,  # number of times the input lost focus
-                        n_blur_timestamp=-1,  # last time the input lost focus.
-
-                        # Dynamically generate options
-                        # selectionDirection='', # the direction in which selection occurred
-                        # selectionStart='',     # the offset into the element's text content of the first selected character
-                        # selectionEnd='',       # the offset into the element's text content of the last selected character
-                    )
-                ],
-                    className="input_box2",
-                )],
-                className="poids_zone",
-            ),
-            html.Datalist(id='list_poids'),
-
-            #Selection Athlète #3
-            html.Div([
-                html.Div(
-                    children=[
-                        html.P("CateAge")
-                    ],
-                    id='age_info',
-                    className="age_box",
-                ),
-                html.Div([
-                    dcc.Input(
-                        id='my_txt_input3',
-                        value='',
-                        type='text',
-                        debounce=True,  # changes to input are sent to Dash server only on enter or losing focus
-                        pattern=r"^[A-Za-z].*",  # Regex: string must start with letters only
-                        spellCheck=True,
-                        inputMode='latin',  # provides a hint to browser on type of data that might be entered by the user.
-                        name='text',  # the name of the control, which is submitted with the form data
-                        list='list_age',  # identifies a list of pre-defined options to suggest to the user
-                        n_submit=0,  # number of times the Enter key was pressed while the input had focus
-                        n_submit_timestamp=-1,  # last time that Enter was pressed
-                        autoFocus=True,  # the element should be automatically focused after the page loaded
-                        n_blur=0,  # number of times the input lost focus
-                        n_blur_timestamp=-1,  # last time the input lost focus.
-
-                        # Dynamically generate options
-                        # selectionDirection='', # the direction in which selection occurred
-                        # selectionStart='',     # the offset into the element's text content of the first selected character
-                        # selectionEnd='',       # the offset into the element's text content of the last selected character
-                    )
-                ],
-                    className="input_box2",
-                )],
-                className="age_zone",
-            ),
-            html.Datalist(id='list_age'),
-
-            #Selection Athlète #4
-            html.Div([
-                html.Div(
-                    children=[
-                        html.P("Ligue")
-                    ],
-                    id='ligue_info',
-                    className="ligue_box",
-                ),
-                html.Div([
-                    dcc.Input(
-                        id='my_txt_input4',
-                        value='',
-                        type='text',
-                        debounce=True,  # changes to input are sent to Dash server only on enter or losing focus
-                        pattern=r"^[A-Za-z].*",  # Regex: string must start with letters only
-                        spellCheck=True,
-                        inputMode='latin',  # provides a hint to browser on type of data that might be entered by the user.
-                        name='text',  # the name of the control, which is submitted with the form data
-                        list='list_ligues_l',  # identifies a list of pre-defined options to suggest to the user
-                        n_submit=0,  # number of times the Enter key was pressed while the input had focus
-                        n_submit_timestamp=-1,  # last time that Enter was pressed
-                        autoFocus=True,  # the element should be automatically focused after the page loaded
-                        n_blur=0,  # number of times the input lost focus
-                        n_blur_timestamp=-1,  # last time the input lost focus.
-
-                        # Dynamically generate options
-                        # selectionDirection='', # the direction in which selection occurred
-                        # selectionStart='',     # the offset into the element's text content of the first selected character
-                        # selectionEnd='',       # the offset into the element's text content of the last selected character
-                    )
-                ],
-                    className="input_box2",
-                )],
-                className="ligue_zone",
-            ),
-            html.Datalist(id='list_ligues_l'),
-            ],
-        className="pick_zone",
-        )],
-    ),
+            dcc.Dropdown(
+                options=[x for x in sorted(nom_poids)],
+                multi=True,
+                id='my_txt_input2',
+                placeholder="Catégorie Poids"
+            )
+        ], xs=4, sm=4, md=4, lg=4, xl=4),
+        dbc.Col([
+            dcc.Dropdown(
+                options=[x for x in sorted(nom_age)],
+                multi=True,
+                id='my_txt_input3',
+                placeholder="Catégorie Age"),
+            dcc.Dropdown(
+                options=[x for x in sorted(nom_ligue)],
+                multi=True,
+                id='my_txt_input4',
+                placeholder="Ligue"
+            )
+        ], xs=4, sm=4, md=4, lg=4, xl=4),
+    ]),
     html.Div([
-         dcc.Slider(
-             df['SaisonAnnee'].min(),
-             df['SaisonAnnee'].max(),
-             step=1,
-             value=df['SaisonAnnee'].max(),
-             marks=None,
-             tooltip={"placement": "bottom", "always_visible": True},
-             id='year-slider',
-             className='slider_zone')],
-         id='div_output_slider',
-         className='slider_box'
-     ),
+        dcc.Slider(
+            df['SaisonAnnee'].min(),
+            df['SaisonAnnee'].max(),
+            step=1,
+            value=df['SaisonAnnee'].max(),
+            marks=None,
+            tooltip={"placement": "bottom", "always_visible": True},
+            id='year-slider',
+            className='slider_zone')],
+        id='div_output_slider',
+        className='slider_box'
+    ),
 
     html.Br(),
     html.Div([
-        ],
+    ],
         id='div_output',
         className='graph_box'
     ),
@@ -263,15 +144,17 @@ layout = html.Div([
             dash_table.DataTable(
                 id='datatable-l',
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
-                    columns=[
-                        {"name": i, "id": i,  "selectable": True} for i in
-                        ['Nom', 'Pays', 'Né le', 'Club', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Date', 'Compet']
+                columns=[
+                    {"name": i, "id": i, "selectable": True} for i in
+                    ['Nom', 'Pays', 'Né le', 'Club', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Date', 'Compet']
                 ],
                 data=df[(df['Sexe'] == 'M')].to_dict('records'),
                 editable=True,
                 sort_action="native",
                 sort_mode="single",
-                column_selectable="single",
+                style_table={
+                    'overflowX': 'scroll'
+                },
                 style_header={
                     'backgroundColor': 'white',
                     'fontWeight': 'bold',
@@ -287,7 +170,8 @@ layout = html.Div([
                 style_cell={
                     'overflow': 'hidden',
                     'textOverflow': 'ellipsis',
-                    'maxWidth': 200
+                    'minWidth': '40px',
+                    'maxWidth': '200px'
                 },
                 row_selectable=False,
                 row_deletable=False,
@@ -304,80 +188,139 @@ layout = html.Div([
     html.Link(
         rel='stylesheet',
         href='/assets/03_listings.css'
-        ),
-    html.Div(id='none',children=[],style={'display': 'none'})
-    ],
+    ),
+    html.Div(id='none', children=[], style={'display': 'none'})
+],
     id='app_code',
     className='body'
 )
 
 
 @callback(
-    Output('list_ligues_l', 'children'),
-    [Input('none', 'children')]
+    Output('my_txt_input1', 'options'),
+    [Input('year-slider', 'value'),
+     Input('my_txt_input2', 'value'),
+     Input('my_txt_input3', 'value'),
+     Input('my_txt_input4', 'value')]
 )
-def update_datalist(none):
-    children = [html.Option(value=val, children=val) for val in nom_ligue]
-    return children
+def update_datalist(selected_year, txt_inserted2, txt_inserted3, txt_inserted4):
+    if selected_year == '':
+        selected_year = df['SaisonAnnee'].max()
+    filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+    if txt_inserted2:
+        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
+    if txt_inserted3:
+        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+    if txt_inserted4:
+        filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+
+    nom_sexe = list(set(filtered_df['Sexe'].tolist()))
+    opt = [x for x in sorted(nom_sexe)]
+    return opt
+
 @callback(
-    Output('list_age', 'children'),
-    [Input('none', 'children')]
+    Output('my_txt_input2', 'options'),
+    [Input('year-slider', 'value'),
+     Input('my_txt_input1', 'value'),
+     Input('my_txt_input3', 'value'),
+     Input('my_txt_input4', 'value')]
 )
-def update_datalist(none):
-    children = [html.Option(value=val, children=val) for val in nom_age]
-    return children
+
+def update_datalist(selected_year, txt_inserted1, txt_inserted3, txt_inserted4):
+    if selected_year == '':
+        selected_year = df['SaisonAnnee'].max()
+    filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+    if txt_inserted1:
+        filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
+    if txt_inserted3:
+        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+    if txt_inserted4:
+        filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+
+    nom_poids = list(set(filtered_df['CatePoids'].tolist()))
+    opt = [x for x in sorted(nom_poids)]
+    return opt
+
 @callback(
-    Output('list_sexe', 'children'),
-    [Input('none', 'children')]
+    Output('my_txt_input3', 'options'),
+    [Input('year-slider', 'value'),
+     Input('my_txt_input1', 'value'),
+     Input('my_txt_input2', 'value'),
+     Input('my_txt_input4', 'value')]
 )
-def update_datalist(none):
-    children = [html.Option(value=val, children=val) for val in nom_sexe]
-    return children
+def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4):
+    if selected_year == '':
+        selected_year = df['SaisonAnnee'].max()
+    filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+    if txt_inserted1:
+        filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
+    if txt_inserted2:
+        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
+    if txt_inserted4:
+        filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+
+    nom_age = list(set(filtered_df['CateAge'].tolist()))
+    opt = [x for x in sorted(nom_age)]
+    return opt
+
 @callback(
-    Output('list_poids', 'children'),
-    [Input('none', 'children')]
+    Output('my_txt_input4', 'options'),
+    [Input('year-slider', 'value'),
+     Input('my_txt_input1', 'value'),
+     Input('my_txt_input2', 'value'),
+     Input('my_txt_input3', 'value')]
 )
-def update_datalist(none):
-    children = [html.Option(value=val, children=val) for val in nom_poids]
-    return children
+def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3):
+    if selected_year == '':
+        selected_year = df['SaisonAnnee'].max()
+    filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+    if txt_inserted1:
+        filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
+    if txt_inserted2:
+        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
+    if txt_inserted3:
+        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+
+    nom_ligue = list(set(filtered_df['Ligue'].tolist()))
+    opt = [x for x in sorted(nom_ligue)]
+    return opt
 
 @callback(
     [Output('datatable-l', "data"),
      Output('datatable-l', "columns")],
     [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value'), #sexe
-     Input(component_id='my_txt_input2', component_property='value'), #poids
-     Input(component_id='my_txt_input3', component_property='value'), #age
-     Input(component_id='my_txt_input4', component_property='value') #ligue
+     Input(component_id='my_txt_input1', component_property='value'),  # sexe
+     Input(component_id='my_txt_input2', component_property='value'),  # poids
+     Input(component_id='my_txt_input3', component_property='value'),  # age
+     Input(component_id='my_txt_input4', component_property='value')  # ligue
      ])
-
-def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None, txt_inserted3=None, txt_inserted4=None):
-    if selected_year=='':
-        selected_year=df['SaisonAnnee'].max()
+def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4):
+    if selected_year == '':
+        selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
-    if txt_inserted != '':
-        filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted)]
-    if txt_inserted2 == '':
+    if txt_inserted1:
+        filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
+    if not txt_inserted2:
         filtered_df = filtered_df[(filtered_df['RowNumMaxSaison'] == 1)]
-    if txt_inserted3 != '':
-        filtered_df = filtered_df[(filtered_df['CateAge'] == txt_inserted3)]
-    if txt_inserted4 != '':
-        filtered_df = filtered_df[(filtered_df['Ligue'] == txt_inserted4)]
-    if txt_inserted2 != '':
-        filtered_df = filtered_df[(filtered_df['CatePoids'] == txt_inserted2)]
-        filtered_df=filtered_df.sort_values(by=['Total'], ascending=False)
-    else:
-        filtered_df=filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
+    if txt_inserted3:
+        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+    if txt_inserted4:
+        filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+    if txt_inserted2:
+        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
+        filtered_df = filtered_df.sort_values(by=['Total'], ascending=False)
+    if not txt_inserted2:
+        filtered_df = filtered_df.sort_values(by=['Max IWF Saison'], ascending=False)
 
+    filtered_df['Rang'] = filtered_df.groupby(['SaisonAnnee']).cumcount()+1
     columns = [
-            {"name": i, "id": i,  "selectable": True} for i in
-            ['Nom', 'Pays', 'Né le', 'Club', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Date', 'Compet']
+        {"name": i, "id": i, "selectable": True} for i in
+        ['Rang', 'Nom', 'Pays', 'Né le', 'Club', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Série', 'Date', 'Compet']
     ]
 
     dat = filtered_df.to_dict('records')
 
     return dat, columns
-
 
 
 if __name__ == '__main__':

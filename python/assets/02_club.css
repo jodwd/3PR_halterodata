@@ -12,7 +12,7 @@
     width: 1300px;
     height: 90px;
     margin-left: 10px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
 }
 
 .text-box {
@@ -22,7 +22,7 @@
      /* Additional CSS properties for styling */
 
      background-color: rgb(0, 0, 131);
-     font-family: 'Segoe UI', sans-serif;
+     font-family: 'Helvetica Neue', sans-serif;
      font-size: 24px;
      color: white;
      text-align: center;
@@ -37,79 +37,12 @@
   color: white;
 }
 
-
-.ligue_zone {
-  margin-left: 20px;
-  width: 280px;
-  height: 40px;
-  color: white;
-}
-.ligue_box {
-  width: 80px;
-  height: 40px;
-  margin-left: 10px;
-  color: white;
-  display: inline-block;
-}
-.input_box1 {
-  margin-left: 20px;
-  width: 150px;
-  height: 40px;
-  display: inline-block;
-}
-
-.club_zone {
-  margin-left: 20px;
-  width: 280px;
-  height: 40px;
-  color: white;
-}
-.club_box {
-  width: 80px;
-  height: 40px;
-  margin-left: 10px;
-  display: inline-block;
-}
-.input_box2 {
-  margin-left: 20px;
-  width: 150px;
-  height: 40px;
-  display: inline-block;
-}
-
-
-.athl1_info {
-  margin-left: 20px;
-  width: 190px;
-  height: 100px;
-  display: inline-block;
-}
-
-.athl1_nom {
-  width: 180px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-}
-
-.athl1_club {
-  width: 180px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
 .graph_box {
   margin-top: -20px;
   margin-left: 20px;
   /* background-color: #163651; */
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 16px;
   color: white;
  }
 
@@ -117,20 +50,15 @@
   margin-top: -20px;
   margin-left: 20px;
   background-color: rgb(40,40,45);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 12px;
+  font-family: 'Helvetica Neue', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
   color: black;
  }
 
  .slider_zone {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 16px;
   color: white;
-}
- .graph-with-slider {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  rgb(40,40,45);
 }
 
 /* Sidebar */
