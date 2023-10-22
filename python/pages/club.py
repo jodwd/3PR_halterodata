@@ -274,7 +274,7 @@ def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
     fdfh['Rang'] = fdfh.groupby(['SaisonAnnee']).cumcount()+1
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'PdC', 'IWF']
     ]
 
     dat = fdfh.to_dict('records')
@@ -306,7 +306,7 @@ def update_data(selected_year, txt_inserted, txt_inserted2):
 
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'PdC', 'IWF']
     ]
 
     dat = fdff.to_dict('records')
