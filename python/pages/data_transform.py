@@ -21,7 +21,7 @@ def sinclair_history(total, pdc, sexe, annee):
             b = 193.609
         else:
             a = 0.787004341
-            b = 153.655
+            b = 153.757
     res = total*(10**(a*((math.log10(pdc/b))**2)))
     return res;
 
