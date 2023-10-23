@@ -146,7 +146,7 @@ layout = html.Div([
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
                 columns=[
                     {"name": i, "id": i, "selectable": True} for i in
-                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né le', 'Club', 'Série', 'Date', 'Compet']
+                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né le', 'Série', 'Club', 'Date', 'Compet']
                 ],
                 data=df[(df['Sexe'] == 'M')].to_dict('records'),
                 editable=True,
@@ -165,6 +165,8 @@ layout = html.Div([
                 style_data={
                     'backgroundColor': 'rgb(80, 80, 90)',
                     'color': 'white',
+                    'fontWeight': 'light',
+                    'font-size': '14px',
                     'border': '1px solid white'
                 },
                 style_cell={
@@ -315,7 +317,7 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
     filtered_df['Rang'] = filtered_df.groupby(['SaisonAnnee']).cumcount()+1
     columns = [
         {"name": i, "id": i, "selectable": True} for i in
-        ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né le', 'Club', 'Série', 'Date', 'Compet']
+        ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né le', 'Série', 'Club', 'Date', 'Compet']
     ]
 
     dat = filtered_df.to_dict('records')

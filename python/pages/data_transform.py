@@ -344,7 +344,7 @@ def main_code():
                       LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
                       LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
                       LEFT JOIN ATHLETE_PR as apr on apr.AthleteID = ath.AthleteID and apr.SaisonAnnee = cmp.SaisonAnnee)
-                  WHERE Nom='Benjamin\xa0FERRE'"""):
+                  WHERE "PdC"="73,50" """):
             print(res)
 
     finally:
