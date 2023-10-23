@@ -196,6 +196,7 @@ layout = html.Div([
         ], width=12),
     ]),
 
+    html.Br(),
     html.Div([
         dbc.Row([
             dbc.Col([
