@@ -40,7 +40,7 @@ qry = """SELECT * FROM
 df = pd.read_sql_query(qry, conn)
 df.head()
 
-df['Max IWF Saison']=round(df['Max IWF Saison'], 3)
+df['Max IWF']=round(df['Max IWF'], 3)
 df['Max IWF']=round(df['Max IWF'], 3)
 
 dfh = df
@@ -269,7 +269,7 @@ def update_data(selected_year=None, txt_inserted=None, txt_inserted2=None):
     else:
         fdfh = fdfh[(fdfh['SaisonAnnee'] == selected_year)]
 
-    fdfh=fdfh.sort_values(by=['Max IWF Saison'], ascending=False)
+    fdfh=fdfh.sort_values(by=['Max IWF'], ascending=False)
     fdfh['Rang'] = fdfh.groupby(['SaisonAnnee']).cumcount()+1
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
@@ -300,12 +300,12 @@ def update_data(selected_year, txt_inserted, txt_inserted2):
     else:
         fdff = fdff[(fdff['SaisonAnnee'] == selected_year)]
 
-    fdff=fdff.sort_values(by=['Max IWF Saison'], ascending=False)
+    fdff=fdff.sort_values(by=['Max IWF'], ascending=False)
     fdff['Rang'] = fdff.groupby(['SaisonAnnee']).cumcount()+1
 
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'PdC', 'Max IWF Saison']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'PdC', 'Max IWF']
     ]
 
     dat = fdff.to_dict('records')
@@ -333,9 +333,9 @@ def update_title(selected_year, txt_inserted, txt_inserted2):
     else:
         fdfh = fdfh[(fdfh['SaisonAnnee'] == selected_year)]
 
-    fdfh=fdfh.sort_values(by=['Max IWF Saison'], ascending=False)
+    fdfh=fdfh.sort_values(by=['Max IWF'], ascending=False)
     filtered_df=round(fdfh.head(5),0)
-    res = filtered_df['Max IWF Saison'].sum()
+    res = filtered_df['Max IWF'].sum()
     updated_title_h = "Top 5 Hommes : " + str(int(res))
 
     return updated_title_h
@@ -363,9 +363,9 @@ def update_title(selected_year, txt_inserted, txt_inserted2):
     else:
         fdff = fdff[(fdff['SaisonAnnee'] == selected_year)]
 
-    fdff = fdff.sort_values(by=['Max IWF Saison'], ascending=False)
+    fdff = fdff.sort_values(by=['Max IWF'], ascending=False)
     filtered_df=round(fdff.head(4),0)
-    res = filtered_df['Max IWF Saison'].sum()
+    res = filtered_df['Max IWF'].sum()
     updated_title_f = "Top 4 Femmes : " + str(int(res))
 
     return updated_title_f
