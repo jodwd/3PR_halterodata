@@ -28,8 +28,7 @@ qry = """SELECT * FROM
             ,   cat.PoidsDeCorps    as "PdC"
             ,   cat.IWF_Calcul      as "IWF"   
             ,   apr.SaisonAnnee     as "SaisonAnnee"
-            ,   apr.MaxIWFSaison    as "Max IWF Saison"
-            ,   apr.MaxIWF          as "Max IWF"
+            ,   apr.MaxIWFSaison    as "Max IWF"
             ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee" order by cat.IWF_Calcul desc) as "RowNum"
           FROM ATHLETE as ath 
           LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
@@ -130,7 +129,7 @@ layout = html.Div([
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
                 columns=[
                     {"name": i, "id": i, "selectable": True} for i in
-                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF']
                 ],
                 data=dfh.to_dict('records'),
                 editable=True,
@@ -178,7 +177,7 @@ layout = html.Div([
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
                 columns=[
                     {"name": i, "id": i, "selectable": True} for i in
-                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF Saison']
+                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF']
                 ],
                 data=dff.to_dict('records'),
                 editable=True,
@@ -306,7 +305,7 @@ def update_data(selected_year, txt_inserted, txt_inserted2):
 
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'PdC', 'IWF']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'PdC', 'Max IWF Saison']
     ]
 
     dat = fdff.to_dict('records')
