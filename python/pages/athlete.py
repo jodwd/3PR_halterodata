@@ -572,6 +572,18 @@ def updated_athletes(selected_year, txt_inserted):
         updated_show[3], f"{updated_name[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}", f"{updated_max[3]}" #f"{updated_arr[3]}{updated_epj[3]}{updated_total[3]}", f"{updated_pdc[3]}",
 
 
+@app.callback(
+    Output("athl1-modal", "is_open"),
+    [Input("open", "n_clicks"),
+    Input("close-button", "n_clicks")],
+    State("athl1-modal", "is_open"),
+)
+
+def toggle_modal(open_clicks, close_clicks, is_open):
+    if open_clicks or close_clicks:
+        return not is_open
+    return is_open
+
 if __name__ == '__main__':
     run_server(debug=True)
 
