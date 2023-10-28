@@ -10,7 +10,7 @@ app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
 
 server = app.server
 
-HalDat_LOGO = "https://cdn.vectorstock.com/i/preview-1x/33/03/three-horizontal-dots-menu-dark-mode-glyph-ui-icon-vector-43353303.jpg"
+HalDat_LOGO = "assets/3PR.png"
 
 
 
@@ -34,7 +34,8 @@ nav_button = dbc.Row(
             dbc.Modal([
                 dbc.ModalHeader("Information"),
                 dbc.ModalBody([
-                    html.P("Développé par Joris Dawid (CH Arbresle)"),
+                    html.P("Développé à partir des données FFHM Scoresheet"),
+                    html.P("👨‍💻 https://github.com/jodwd/3PR_halterodata"),
                     html.P("📧 joris.dawid@gmail.com"),
                 ]),
                 dbc.ModalFooter(
@@ -54,8 +55,8 @@ navbar = dbc.Navbar(
                 # Use row and col to control vertical alignment of logo / brand
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src=HalDat_LOGO, height="30px")),
-                        dbc.Col(dbc.NavbarBrand("Haltero Data", className="ms-2")),
+                        dbc.Col(html.Img(src=HalDat_LOGO, height="52px")),
+                        dbc.Col(dbc.NavbarBrand("Tableau de Bord Haltero", className="ms-2")),
                     ],
                     align="center",
                     className="g-0",
@@ -111,67 +112,6 @@ def toggle_modal(open_clicks, close_clicks, is_open):
     if open_clicks or close_clicks:
         return not is_open
     return is_open
-
-
-"""
-    html.Div([
-        dbc.Row([
-            dbc.Col(
-                # main app framework
-                html.Div([
-                    html.Div(
-                        html.Div([
-                            dbc.Button("Info", id="open", color="info", outline=True, className="me-1"),
-                            dbc.Modal([
-                                    dbc.ModalHeader("Information"),
-                                    dbc.ModalBody([
-                                        html.P("Développé par Joris Dawid (CH Arbresle)"),
-                                        html.P("📧 joris.dawid@gmail.com"),
-                                    ]),
-                                    dbc.ModalFooter(
-                                        dbc.Button("Close", id="close-button", color="secondary", className="ml-auto")
-                                    ),
-                                ], id="info-modal", size="lg", centered=True, is_open=False),
-                            ], className='info_button'),
-                            html.Div([
-                                dcc.Link(page['name']+"  |  ",
-                                         href=page['path'],
-                                         style = {'fontSize': 20,
-                                         'color': 'White',
-                                         'backgroundColor': 'rgba(0,0,0,0.5)',
-                                         'font-family': 'Segoe UI'}, className='links')
-                                for page in dash.page_registry.values()
-                                ],
-                                className='link_zone'
-                            ),
-                    html.Div(className='hr1'),
-                    html.Div(className='hr2'),
-                    html.Div(className='hr3'),
-                    html.Div(className='hr4')])
-            , width=12)
-        ]),
-
-        # content of each page
-
-
-        dash.page_container
-
-    ]
-)
-
-@app.callback(
-    Output("info-modal", "is_open"),
-    [Input("open", "n_clicks"),
-    Input("close-button", "n_clicks")],
-    State("info-modal", "is_open"),
-)
-
-def toggle_modal(open_clicks, close_clicks, is_open):
-    if open_clicks or close_clicks:
-        return not is_open
-    return is_open
-
-"""
 
 if __name__ == "__main__":
     app.run(debug=True)
