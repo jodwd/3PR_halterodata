@@ -1,6 +1,7 @@
 import dash
 from dash import html, dcc, Input, Output, State, html
 import dash_bootstrap_components as dbc
+import os
 from dash_bootstrap_components._components.Container import Container
 
 app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
@@ -10,7 +11,7 @@ app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
 
 server = app.server
 
-HalDat_LOGO = "assets/3PR.png"
+HalDat_LOGO = os.path.join(dirname, 'assets/3PR.png')
 
 
 
