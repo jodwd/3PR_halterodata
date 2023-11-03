@@ -77,7 +77,6 @@ navbar = dbc.Navbar(
     dark=True,
 )
 
-
 app.layout = \
 dbc.Container(
     [navbar,
