@@ -35,7 +35,7 @@ nav_button = dbc.Row(
                 dbc.ModalBody([
                     html.P("Développé à partir des données FFHM Scoresheet"),
                     html.P("👨‍💻 https://github.com/jodwd/3PR_halterodata"),
-                    html.P("📧 joris.dawid@gmail.com"),
+                    html.P("📧 trois3pr@gmail.com"),
                 ]),
                 dbc.ModalFooter(
                     dbc.Button("Close", id="close-button", color="secondary", className="ml-auto")
