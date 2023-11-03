@@ -561,7 +561,6 @@ def update_data(selected_year, txt_inserted):
      Output("athlete4_club", "children"),
      Output("athlete4_anniv", "children"),
      Output("athlete4_max", "children")],
-
     [Input('year-slider', 'value'),
      Input(component_id='my_txt_input', component_property='value')
      ])
