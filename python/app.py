@@ -1,6 +1,8 @@
 import dash
 from dash import html, dcc, Input, Output, State, html
 import dash_bootstrap_components as dbc
+import sqlite3 as sql
+import pandas as pd
 import os
 from dash_bootstrap_components._components.Container import Container
 
@@ -12,6 +14,18 @@ app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
                 use_pages=True)
 
 server = app.server
+
+
+# Connection à la base SQLite
+dirname = os.path.dirname(__file__)
+path_db = os.path.join(dirname, 'pages\\dataltero.db')
+conn = sql.connect(database=path_db)
+
+# Requête
+qry = """SELECT max(cmp.DateCompet) as "Date"
+      FROM COMPET as cmp """
+df = pd.read_sql_query(qry, conn)
+df.head()
 
 nav_button = dbc.Row(
     [
@@ -33,7 +47,8 @@ nav_button = dbc.Row(
             dbc.Modal([
                 dbc.ModalHeader("Information"),
                 dbc.ModalBody([
-                    html.P("Développé à partir des données FFHM Scoresheet"),
+                    html.P("🐓 Basé sur les données FFHM Scoresheet"),
+                    html.P("🏋️ Données à jour au " + df.iloc[0,0]),
                     html.P("👨‍💻 https://github.com/jodwd/3PR_halterodata"),
                     html.P("📧 trois3pr@gmail.com"),
                 ]),
