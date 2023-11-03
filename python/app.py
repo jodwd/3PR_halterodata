@@ -4,18 +4,14 @@ import dash_bootstrap_components as dbc
 import os
 from dash_bootstrap_components._components.Container import Container
 
+
+
 app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'}],
                 use_pages=True)
 
 server = app.server
-
-#logo
-dirname = os.path.dirname(__file__)
-HalDat_LOGO = os.path.join(dirname, 'assets/3PR.png')
-
-
 
 nav_button = dbc.Row(
     [
@@ -58,7 +54,7 @@ navbar = dbc.Navbar(
                 # Use row and col to control vertical alignment of logo / brand
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src=HalDat_LOGO, height="52px")),
+                        dbc.Col(html.Img(src=r'assets/3PR.png', height="52px")),
                         dbc.Col(dbc.NavbarBrand("Tableau de Bord Haltero", className="ms-2")),
                     ],
                     align="center",
