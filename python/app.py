@@ -18,7 +18,7 @@ server = app.server
 
 # Connection à la base SQLite
 dirname = os.path.dirname(os.path.abspath(__file__))
-path_db = os.path.join(dirname, 'pages\\dataltero.db')
+path_db = os.path.join(dirname, 'pages\dataltero.db')
 print(path_db)
 conn = sql.connect(database=path_db)
 
