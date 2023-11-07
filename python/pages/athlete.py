@@ -595,13 +595,14 @@ def updated_athletes(selected_year, txt_inserted):
 
 @callback(
     Output("athl1-modal", "is_open"),
-    Input("open_athl1", "n_clicks"),
+    [Input("open_athl1", "n_clicks"),
+    Input("close-athl1", "n_clicks")],
     State("athl1-modal", "is_open"),
     prevent_initial_call=True
 )
 
-def toggle_modal_athl(open_clicks, is_open_athl1):
-    if open_clicks: # or close_clicks:
+def toggle_modal_athl(open_clicks, close_clicks, is_open_athl1):
+    if open_clicks or close_clicks:
         return not is_open_athl1
     return is_open_athl1
 
@@ -661,13 +662,14 @@ def update_table_athl1(txt_inserted, is_open_athl1):
         return fig_athl1, display_graph_athl1, [dbc.Table.from_dataframe(df_athl1, responsive = True, striped=True, bordered=True, hover=True)]
 @callback(
     Output("athl2-modal", "is_open"),
-    Input("open_athl2", "n_clicks"),
+    [Input("open_athl2", "n_clicks"),
+    Input("close-athl2", "n_clicks")],
     State("athl2-modal", "is_open"),
     prevent_initial_call=True
 )
 
-def toggle_modal_athl(open_clicks, is_open_athl2):
-    if open_clicks: # or close_clicks:
+def toggle_modal_athl(open_clicks, close_clicks, is_open_athl2):
+    if open_clicks or close_clicks:
         return not is_open_athl2
     return is_open_athl2
 
@@ -725,13 +727,14 @@ def update_table_athl2(txt_inserted, is_open_athl2):
 
 @callback(
     Output("athl3-modal", "is_open"),
-    Input("open_athl3", "n_clicks"),
+    [Input("open_athl3", "n_clicks"),
+    Input("close-athl3", "n_clicks")],
     State("athl3-modal", "is_open"),
     prevent_initial_call=True
 )
 
-def toggle_modal_athl(open_clicks, is_open_athl3):
-    if open_clicks: # or close_clicks:
+def toggle_modal_athl(open_clicks, close_clicks, is_open_athl3):
+    if open_clicks or close_clicks:
         return not is_open_athl3
     return is_open_athl3
 
@@ -788,13 +791,14 @@ def update_table_athl3(txt_inserted, is_open_athl3):
 
 @callback(
     Output("athl4-modal", "is_open"),
-    Input("open_athl4", "n_clicks"),
+    [Input("open_athl4", "n_clicks"),
+    Input("close-athl4", "n_clicks")],
     State("athl4-modal", "is_open"),
     prevent_initial_call=True
 )
 
-def toggle_modal_athl(open_clicks, is_open_athl4):
-    if open_clicks: # or close_clicks:
+def toggle_modal_athl(open_clicks, close_clicks, is_open_athl4):
+    if open_clicks or close_clicks:
         return not is_open_athl4
     return is_open_athl4
 
