@@ -1,0 +1,84 @@
+
+.body {
+  background-color: rgb(40,40,45);
+  margin: 0;
+  padding: 0;
+}
+.margins {
+  background-color: rgb(40,40,45);
+}
+
+.filter_zone {
+    width: 1300px;
+    height: 90px;
+    margin-left: 10px;
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+.text-box {
+     margin-left: 0px;
+     width: 500px;
+     height: 80px;
+     /* Additional CSS properties for styling */
+
+     background-color: rgb(253, 204, 12);
+     font-family: 'Helvetica Neue', sans-serif;
+     font-size: 24px;
+     color: white;
+     text-align: center;
+     vertical-align: top;
+     display: inline-block;
+}
+
+
+.pick_zone {
+  vertical-align: top;
+  display: inline-block;
+  color: white;
+}
+
+
+ .slider_zone {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  color: white;
+}
+ .graph-with-slider {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  rgb(40,40,45);
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 200px;
+  background-color: #f1f1f1;
+  padding: 0px;
+  overflow-x: hidden;
+}
+
+.sidebar a {
+  display: block;
+  color: #000;
+  padding: 0px;
+  text-decoration: none;
+}
+
+.sidebar a:hover {
+  background-color: #ddd;
+}
+
+/* Content */
+
+.data_tab_l {
+  display: inline-block;
+  width: 100%;
+  margin-left: 2%;
+  font-family: "Helvetica Neue", sans-serif;
+  backgroundColor: rgb(80, 80, 90);
+  color: white;
+}

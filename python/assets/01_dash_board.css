@@ -1,250 +1,76 @@
 
 .body {
   background-color: rgb(40,40,45);
-  margin: 0;
-  padding: 0;
 }
 .margins {
   background-color: rgb(40,40,45);
 }
 
 .filter_zone {
-    width: 1300px;
-    height: 90px;
+    width: 95%;
+    height: 20vmin;
     margin-left: 10px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
+}
+.top_zone {
+    font-family: 'Helvetica Neue', sans-serif;
 }
 
-.text-box {
-     margin-left: 0px;
-     border: 10px solid #000;
-     border-color: rgb(40,40,45);
-     width: 500px;
-     height: 80px;
-     /* Additional CSS properties for styling */
-
-     background-color: rgb(80,80,90);
-     font-family: 'Segoe UI', sans-serif;
-     font-size: 24px;
-     color: white;
+.title-box {
+     font-family: 'Helvetica Neue', sans-serif;
+     width: 95%;
+     margin-top: 2%;
+     margin-left: 2%;
      text-align: center;
-     vertical-align: top;
-     display: inline-block;
 }
 
-
-.athl_zone {
-  vertical-align: top;
-  display: inline-block;
-  color: white;
-}
-
-
-.athl1_zone {
-  margin-left: 20px;
-  width: 280px;
-  height: 40px;
-  color: white;
-}
-.athl1_box {
-  width: 80px;
-  height: 40px;
-  margin-left: 10px;
-  color: white;
-  display: inline-block;
-}
 .input_box1 {
-  margin-left: 20px;
-  width: 150px;
-  height: 40px;
-  display: inline-block;
-}
-
-.athl2_zone {
-  margin-left: 20px;
-  width: 280px;
-  height: 40px;
-  color: white;
-}
-.athl2_box {
-  width: 80px;
-  height: 40px;
-  margin-left: 10px;
-  display: inline-block;
-}
-.input_box2 {
-  margin-left: 20px;
-  width: 150px;
-  height: 40px;
-  display: inline-block;
+  font-size: 14px;
+  color: black;
+  width: 90%;
+  height: 20vmin;
+  margin-top: 2%;
+  margin-left: 2%;
 }
 
 
-.athl1_info {
-  margin-left: 20px;
-  width: 160px;
-  height: 100px;
-  display: inline-block;
-}
-
-.athl1_nom {
-  width: 150px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-}
-
-.athl1_club {
-  width: 150px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
+.card-title{
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 14px;
   text-align: justify;
 }
-
-.athl1_anniv {
-  width: 75px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
+.card-text{
+  font-size: 14px;
+  line-height: 16px;
   text-align: justify;
 }
-
-.athl1_max {
-  width: 75px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  text_align: right;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl1_total {
-  width: 90px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl1_pdc {
-  width: 60px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  text_align: right;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl2_info {
-  margin-left: 20px;
-  width: 160px;
-  height: 100px;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl2_nom {
-  width: 150px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl2_club {
-  width: 150px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl2_anniv {
-  width: 75px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl2_max {
-  width: 75px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  text_align: right;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl2_total {
-  width: 90px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.athl2_pdc {
-  width: 60px;
-  height: 15px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  text_align: right;
-  color: white;
-  display: inline-block;
-  text-align: justify;
-}
-
-.graph_box {
-  margin-top: -20px;
-  margin-left: 20px;
-  /* background-color: #163651; */
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: white;
- }
 
 .data_tab {
   margin-top: -20px;
-  margin-left: 20px;
-  background-color: rgb(40,40,45);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-left: -20px;
+  /*background-color: rgb(40,40,45);*/
+  font-family: 'Helvetica Neue', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 12px;
   color: black;
+  width=100%;
+ }
+
+.athl_data_tab {
+  font-family: 'Helvetica Neue', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 12px;
+  color: black;
+  width=100%;
  }
 
  .slider_zone {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 14px;
   color: white;
 }
  .graph-with-slider {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 14px;
   rgb(40,40,45);
 }
 
@@ -274,9 +100,9 @@
 /* Content */
 
 .data_tab {
-  margin-left: 20px;
-  margin-right: 20px;
-  padding: 20px;
+  margin-left: 2vw;
+  margin-right: 2vw;
+  padding: 2vw;
   font-family: "Goudy Bookletter 1911", sans-serif;
 }
 
