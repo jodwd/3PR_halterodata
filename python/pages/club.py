@@ -24,7 +24,7 @@ qry = """SELECT * FROM
             ,   cat."Sexe"          as "Sexe"
             ,   cat.Arrache         as "Arr"
             ,   cat.EpJete          as "EpJ"
-            ,   cat.PoidsTotal      as "Total"
+            ,   cat.PoidsTotal      as "Tot"
             ,   cat.PoidsDeCorps    as "PdC"
             ,   cat.IWF_Calcul      as "IWF"   
             ,   apr.SaisonAnnee     as "SaisonAnnee"
