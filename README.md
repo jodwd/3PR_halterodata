@@ -1,5 +1,8 @@
 # 3PR : Tableau de bord halterophilie France
 
+![image](https://github.com/jodwd/3PR_halterodata/assets/127698154/7e2dceb7-50b4-4113-82ab-bd105ae39798)
+
+
 # Infos clés
 Ce projet est basé sur les données Scoresheet appartenant la FFHM.
 
