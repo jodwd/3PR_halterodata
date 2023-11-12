@@ -80,7 +80,7 @@ layout = html.Div([
                                 options=[x for x in sorted(list_names)],
                                 multi=True,
                                 id='my_txt_input',
-                                placeholder="Choisir des athlètes...",
+                                placeholder="Choisir des athlètes..."
                                 )
                             ],
                             className="input_box1",),
@@ -97,8 +97,7 @@ layout = html.Div([
                                 html.Div([html.P("Card 1")], id="athlete1_nom", className="card-title"),
                                 html.Div([
                                     html.Div([html.P("Club")], id="athlete1_club"),
-                                    html.Div([html.P("Naissance")], id="athlete1_anniv"),
-                                    html.Div([html.P("Max")], id="athlete1_max")
+                                    html.Div([html.P("NaissanceMax")], id="athlete1_annivmax")
                                   ],   className="card-text",
                                 ),
                                 dbc.Button("+ Info", id="open_athl1", color="danger", className="mt-auto", size="sm"),
@@ -125,8 +124,7 @@ layout = html.Div([
                                 html.Div([html.P("Card 2")], id="athlete2_nom", className="card-title"),
                                 html.Div([
                                     html.Div([html.P("Club")], id="athlete2_club"),
-                                    html.Div([html.P("Naissance")], id="athlete2_anniv"),
-                                    html.Div([html.P("Max")], id="athlete2_max")],   className="card-text",
+                                    html.Div([html.P("NaissanceMax")], id="athlete2_annivmax")],   className="card-text",
                                 ),
                                 dbc.Button("+ Info", id="open_athl2", color="primary", className="mt-auto", size="sm"),
                                 dbc.Modal([
@@ -152,8 +150,7 @@ layout = html.Div([
                                 html.Div([html.P("Card 3")], id="athlete3_nom", className="card-title"),
                                 html.Div([
                                     html.Div([html.P("Club")], id="athlete3_club"),
-                                    html.Div([html.P("Naissance")], id="athlete3_anniv"),
-                                    html.Div([html.P("Max")], id="athlete3_max")],   className="card-text",
+                                    html.Div([html.P("NaissanceMax")], id="athlete3_annivmax")],   className="card-text",
                                 ),
                                 dbc.Button("+ Info", id="open_athl3", color="warning", className="mt-auto", size="sm"),
                                 dbc.Modal([
@@ -179,8 +176,7 @@ layout = html.Div([
                                 html.Div([html.P("Card 4")], id="athlete4_nom", className="card-title"),
                                 html.Div([
                                     html.Div([html.P("Club")], id="athlete4_club"),
-                                    html.Div([html.P("Naissance")], id="athlete4_anniv"),
-                                    html.Div([html.P("Max")], id="athlete4_max")],   className="card-text",
+                                    html.Div([html.P("NaissanceMax")], id="athlete4_annivmax")],   className="card-text",
                                 ),
                                 dbc.Button("+ Info", id="open_athl4", color="success", className="mt-auto", size="sm"),
                                 dbc.Modal([
@@ -498,26 +494,22 @@ def update_data(selected_year, txt_inserted):
      Output("athlete1_nom", "children"),
      Output("athlete1_nom_info", "children"),
      Output("athlete1_club", "children"),
-     Output("athlete1_anniv", "children"),
-     Output("athlete1_max", "children"),
+     Output("athlete1_annivmax", "children"),
      Output('athl_card2', 'style'),
      Output("athlete2_nom", "children"),
      Output("athlete2_nom_info", "children"),
      Output("athlete2_club", "children"),
-     Output("athlete2_anniv", "children"),
-     Output("athlete2_max", "children"),
+     Output("athlete2_annivmax", "children"),
      Output('athl_card3', 'style'),
      Output("athlete3_nom", "children"),
      Output("athlete3_nom_info", "children"),
      Output("athlete3_club", "children"),
-     Output("athlete3_anniv", "children"),
-     Output("athlete3_max", "children"),
+     Output("athlete3_annivmax", "children"),
      Output('athl_card4', 'style'),
      Output("athlete4_nom", "children"),
      Output("athlete4_nom_info", "children"),
      Output("athlete4_club", "children"),
-     Output("athlete4_anniv", "children"),
-     Output("athlete4_max", "children")],
+     Output("athlete4_annivmax", "children")],
     [Input('year-slider', 'value'),
      Input(component_id='my_txt_input', component_property='value')
      ])
@@ -542,8 +534,8 @@ def updated_athletes(selected_year, txt_inserted):
         updated_name[n] = i
         df1 = df[(df['Nom'] == i) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
         df1 = df1.sort_values(by=['Date'], ascending=False)
-        if len(df1['Club'].values[0]) > 21:
-            updated_club[n] = df1['Club'].values[0][0:20] + '.'
+        if len(df1['Club'].values[0]) > 19:
+            updated_club[n] = df1['Club'].values[0][0:18] + '.'
         else:
             updated_club[n] = df1['Club'].values[0]
         updated_show[n] = {'display': 'block'}
@@ -557,10 +549,10 @@ def updated_athletes(selected_year, txt_inserted):
         updated_pdc[n] = str(df.loc[pdc_df, 'PdC']) + 'kg'
         n = n + 1
 
-    return updated_show[0], f"{updated_name[0]}", f"{updated_name[0]}" + ' ' + f"{updated_date_naiss[0]}", f"{updated_club[0]}", f"{updated_anniv[0]}", f"{updated_max[0]}",\
-        updated_show[1], f"{updated_name[1]}", f"{updated_name[1]}" + ' ' + f"{updated_date_naiss[1]}",f"{updated_club[1]}", f"{updated_anniv[1]}", f"{updated_max[1]}",  \
-        updated_show[2], f"{updated_name[2]}", f"{updated_name[2]}" + ' ' + f"{updated_date_naiss[2]}",f"{updated_club[2]}", f"{updated_anniv[2]}", f"{updated_max[2]}", \
-        updated_show[3], f"{updated_name[3]}", f"{updated_name[3]}" + ' ' + f"{updated_date_naiss[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}", f"{updated_max[3]}" #f"{updated_arr[3]}{updated_epj[3]}{updated_total[3]}", f"{updated_pdc[3]}",
+    return updated_show[0], f"{updated_name[0]}", f"{updated_name[0]}" + ' ' + f"{updated_date_naiss[0]}", f"{updated_club[0]}", f"{updated_anniv[0]}" + ' | PR ' + f"{updated_max[0]}",\
+        updated_show[1], f"{updated_name[1]}", f"{updated_name[1]}" + ' ' + f"{updated_date_naiss[1]}",f"{updated_club[1]}", f"{updated_anniv[1]}"+ ' | PR ' + f"{updated_max[1]}",  \
+        updated_show[2], f"{updated_name[2]}", f"{updated_name[2]}" + ' ' + f"{updated_date_naiss[2]}",f"{updated_club[2]}", f"{updated_anniv[2]}"+ ' | PR ' + f"{updated_max[2]}", \
+        updated_show[3], f"{updated_name[3]}", f"{updated_name[3]}" + ' ' + f"{updated_date_naiss[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}"+ ' | PR ' + f"{updated_max[3]}" #f"{updated_arr[3]}{updated_epj[3]}{updated_total[3]}", f"{updated_pdc[3]}",
 
 # Gestion ouverture +Info Carte 1
 @callback(
