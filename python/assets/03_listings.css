@@ -4,49 +4,22 @@
   margin: 0;
   padding: 0;
 }
-.margins {
-  background-color: rgb(40,40,45);
+
+.title-box {
+  float: left;
 }
 
-.filter_zone {
-    width: 1300px;
-    height: 90px;
-    margin-left: 10px;
-    font-family: 'Helvetica Neue', sans-serif;
+.input-box {
+  font-size: 12px;
+  color: black;
+  width: 100%;
+  margin-top: 1%;
 }
-
-.text-box {
-     margin-left: 0px;
-     width: 500px;
-     height: 80px;
-     /* Additional CSS properties for styling */
-
-     background-color: rgb(253, 204, 12);
-     font-family: 'Helvetica Neue', sans-serif;
-     font-size: 24px;
-     color: white;
-     text-align: center;
-     vertical-align: top;
-     display: inline-block;
-}
-
-
-.pick_zone {
-  vertical-align: top;
-  display: inline-block;
-  color: white;
-}
-
 
  .slider_zone {
   font-family: 'Helvetica Neue', sans-serif;
   font-size: 12px;
   color: white;
-}
- .graph-with-slider {
-  font-family: 'Helvetica Neue', sans-serif;
-  font-size: 12px;
-  rgb(40,40,45);
 }
 
 /* Sidebar */

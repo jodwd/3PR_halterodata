@@ -51,7 +51,7 @@ dff['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'
 updated_title='Dashboard Club'
 
 #app = dash.Dash(__name__)
-dash.register_page(__name__)
+dash.register_page(__name__, name='Clubs', title='Dashboard Clubs', image='/assets/3PR.png', description='Tableau de bord des performances des clubs d''haltérophilie français')
 #server = server
 
 
@@ -85,14 +85,16 @@ layout = html.Div([
                     multi=True,
                     id='my_txt_input1-c',
                     placeholder="Ligue",
+                    className="input-box",
                 )
-            ], xs=6, sm=6, md=6, lg=5, xl=5),
+            ],  xs=6, sm=6, md=6, lg=5, xl=5),
             dbc.Col([
                 dcc.Dropdown(
                     options=[x for x in sorted(nom_club)],
                     multi=True,
                     id='my_txt_input2-c',
-                    placeholder="Club"
+                    placeholder="Club",
+                    className="input-box",
                 )
             ], xs=12, sm=12, md=12, lg=5, xl=5),
         ]),
@@ -112,12 +114,6 @@ layout = html.Div([
      ),
 
     html.Br(),
-    html.Div([
-        ],
-        id='div_output',
-        className='graph_box'
-    ),
-
 
     #top 5 H & F
     dbc.Row([
@@ -246,6 +242,7 @@ def update_datalist(selected_year, txt_inserted1):
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted1))]
 
     nom_club = list(set(filtered_df['Club'].tolist()))
+    print(nom_club)
     opt = [x for x in sorted(nom_club)]
     return opt
 

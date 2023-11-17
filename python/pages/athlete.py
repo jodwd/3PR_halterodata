@@ -46,7 +46,7 @@ df2['Série'] = pd.Categorical(df2['Série'],
                                   ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"], ordered=True)
 
 
-dash.register_page(__name__, path='/')
+dash.register_page(__name__, path='/', name='Athletes', title='Dashboard Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
 
 # Liste d'athlètes = ceux qui ont tiré sur la plage par défaut càd l'année dernière + l'année en cours
 selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
@@ -516,6 +516,7 @@ def update_data(selected_year, txt_inserted):
 
 def updated_athletes(selected_year, txt_inserted):
     # Perform any manipulation on input_value and return the updated title
+    print(txt_inserted)
     updated_show = [{'display': 'none'}] * 4
     updated_name = [''] * 4
     updated_club = [''] * 4

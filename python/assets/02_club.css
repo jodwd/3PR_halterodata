@@ -4,56 +4,17 @@
   margin: 0;
   padding: 0;
 }
+
 .margins {
   background-color: rgb(40,40,45);
 }
 
-.filter_zone {
-    width: 1300px;
-    height: 90px;
-    margin-left: 10px;
-    font-family: 'Helvetica Neue', sans-serif;
-}
-
-.text-box {
-     margin-left: 0px;
-     width: 500px;
-     height: 80px;
-     /* Additional CSS properties for styling */
-
-     background-color: rgb(0, 0, 131);
-     font-family: 'Helvetica Neue', sans-serif;
-     font-size: 24px;
-     color: white;
-     text-align: center;
-     vertical-align: top;
-     display: inline-block;
-}
-
-
-.pick_zone {
-  vertical-align: top;
-  display: inline-block;
-  color: white;
-}
-
-.graph_box {
-  margin-top: -20px;
-  margin-left: 20px;
-  /* background-color: #163651; */
-  font-family: 'Helvetica Neue', sans-serif;
-  font-size: 16px;
-  color: white;
- }
-
-.data_tab {
-  margin-top: -20px;
-  margin-left: 2%;
-  background-color: rgb(40,40,45);
-  font-family: 'Helvetica Neue', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 14px;
+.input-box {
+  font-size: 12px;
   color: black;
- }
+  width: 100%;
+  margin-top: 1%;
+}
 
  .slider_zone {
   font-family: 'Helvetica Neue', sans-serif;

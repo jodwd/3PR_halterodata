@@ -60,7 +60,7 @@ df['IWF'] = round(df['IWF'], 3)
 updated_title = 'Listings'
 
 # app = dash.Dash(__name__)
-dash.register_page(__name__)
+dash.register_page(__name__, name='Listings', title='Listings', image='/assets/3PR.png', description='Listings et classements des haltérophiles français')
 # server = server
 
 
@@ -69,6 +69,8 @@ nom_ligue = list(set(df['Ligue'].tolist()))
 nom_age = list(set(df['CateAge'].tolist()))
 nom_poids = list(set(df['CatePoids'].tolist()))
 nom_sexe = list(set(df['Sexe'].tolist()))
+nom_nat = list(set(df['Pays'].tolist()))
+nom_serie = list(set(df['Série'].tolist()))
 
 # body
 layout = html.Div([
@@ -88,7 +90,7 @@ layout = html.Div([
                 ],
                 id='filter_info',
                 className="title-box",
-            )], xs=4, sm=4, md=4, lg=4, xl=4),
+            )], xs=6, sm=6, md=3, lg=2, xl=2),
         # Zone filtres Sexe / Catégorie de Poids / Catégorie d'Age / Ligue
         dbc.Col([
             dcc.Dropdown(
@@ -96,27 +98,48 @@ layout = html.Div([
                 multi=False,
                 id='my_txt_input1',
                 placeholder="Sexe",
+                className="input-box",
             ),
             dcc.Dropdown(
                 options=[x for x in sorted(nom_poids)],
                 multi=True,
                 id='my_txt_input2',
-                placeholder="Catégorie Poids"
+                placeholder="Catégorie Poids",
+                className="input-box"
             )
-        ], xs=4, sm=4, md=4, lg=4, xl=4),
+        ], xs=6, sm=6, md=3, lg=3, xl=3),
         dbc.Col([
             dcc.Dropdown(
                 options=[x for x in sorted(nom_age)],
                 multi=True,
                 id='my_txt_input3',
-                placeholder="Catégorie Age"),
+                placeholder="Catégorie Age",
+                className="input-box",
+                ),
             dcc.Dropdown(
                 options=[x for x in sorted(nom_ligue)],
                 multi=True,
                 id='my_txt_input4',
-                placeholder="Ligue"
+                placeholder="Ligue",
+                className="input-box"
             )
-        ], xs=4, sm=4, md=4, lg=4, xl=4),
+        ], xs=6, sm=6, md=3, lg=3, xl=3),
+        dbc.Col([
+            dcc.Dropdown(
+                options=[x for x in sorted(nom_nat)],
+                multi=True,
+                id='my_txt_input5',
+                placeholder="Nationalité",
+                className="input-box",
+                ),
+            dcc.Dropdown(
+                options=[x for x in sorted(nom_serie)],
+                multi=True,
+                id='my_txt_input6',
+                placeholder="Serie",
+                className="input-box"
+            )
+        ], xs=6, sm=6, md=3, lg=3, xl=3),
     ]),
     html.Div([
         dcc.Slider(
@@ -203,9 +226,11 @@ layout = html.Div([
     [Input('year-slider', 'value'),
      Input('my_txt_input2', 'value'),
      Input('my_txt_input3', 'value'),
-     Input('my_txt_input4', 'value')]
+     Input('my_txt_input4', 'value'),
+     Input('my_txt_input5', 'value'),
+     Input('my_txt_input6', 'value')]
 )
-def update_datalist(selected_year, txt_inserted2, txt_inserted3, txt_inserted4):
+def update_datalist(selected_year, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -215,6 +240,10 @@ def update_datalist(selected_year, txt_inserted2, txt_inserted3, txt_inserted4):
         filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+    if txt_inserted5:
+        filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
+    if txt_inserted6:
+        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
 
     nom_sexe = list(set(filtered_df['Sexe'].tolist()))
     opt = [x for x in sorted(nom_sexe)]
@@ -225,10 +254,12 @@ def update_datalist(selected_year, txt_inserted2, txt_inserted3, txt_inserted4):
     [Input('year-slider', 'value'),
      Input('my_txt_input1', 'value'),
      Input('my_txt_input3', 'value'),
-     Input('my_txt_input4', 'value')]
+     Input('my_txt_input4', 'value'),
+     Input('my_txt_input5', 'value'),
+     Input('my_txt_input6', 'value')]
 )
 
-def update_datalist(selected_year, txt_inserted1, txt_inserted3, txt_inserted4):
+def update_datalist(selected_year, txt_inserted1, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -238,6 +269,10 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted3, txt_inserted4):
         filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+    if txt_inserted5:
+        filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
+    if txt_inserted6:
+        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
 
     nom_poids = list(set(filtered_df['CatePoids'].tolist()))
     opt = [x for x in sorted(nom_poids)]
@@ -248,9 +283,11 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted3, txt_inserted4):
     [Input('year-slider', 'value'),
      Input('my_txt_input1', 'value'),
      Input('my_txt_input2', 'value'),
-     Input('my_txt_input4', 'value')]
+     Input('my_txt_input4', 'value'),
+     Input('my_txt_input5', 'value'),
+     Input('my_txt_input6', 'value')]
 )
-def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4):
+def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4, txt_inserted5, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -260,6 +297,10 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4):
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+    if txt_inserted5:
+        filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
+    if txt_inserted6:
+        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
 
     nom_age = list(set(filtered_df['CateAge'].tolist()))
     opt = [x for x in sorted(nom_age)]
@@ -270,9 +311,11 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4):
     [Input('year-slider', 'value'),
      Input('my_txt_input1', 'value'),
      Input('my_txt_input2', 'value'),
-     Input('my_txt_input3', 'value')]
+     Input('my_txt_input3', 'value'),
+     Input('my_txt_input5', 'value'),
+     Input('my_txt_input6', 'value')]
 )
-def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3):
+def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted5, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -282,9 +325,68 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3):
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
     if txt_inserted3:
         filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+    if txt_inserted5:
+        filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
+    if txt_inserted6:
+        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
 
     nom_ligue = list(set(filtered_df['Ligue'].tolist()))
     opt = [x for x in sorted(nom_ligue)]
+    return opt
+
+@callback(
+    Output('my_txt_input5', 'options'),
+    [Input('year-slider', 'value'),
+     Input('my_txt_input1', 'value'),
+     Input('my_txt_input2', 'value'),
+     Input('my_txt_input3', 'value'),
+     Input('my_txt_input4', 'value'),
+     Input('my_txt_input6', 'value')]
+)
+def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted6):
+    if selected_year == '':
+        selected_year = df['SaisonAnnee'].max()
+    filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+    if txt_inserted1:
+        filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
+    if txt_inserted2:
+        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
+    if txt_inserted3:
+        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+    if txt_inserted4:
+        filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+    if txt_inserted6:
+        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
+
+    nom_nat = list(set(filtered_df['Pays'].tolist()))
+    opt = [x for x in sorted(nom_nat)]
+    return opt
+@callback(
+    Output('my_txt_input6', 'options'),
+    [Input('year-slider', 'value'),
+     Input('my_txt_input1', 'value'),
+     Input('my_txt_input2', 'value'),
+     Input('my_txt_input3', 'value'),
+     Input('my_txt_input4', 'value'),
+     Input('my_txt_input5', 'value')]
+)
+def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5):
+    if selected_year == '':
+        selected_year = df['SaisonAnnee'].max()
+    filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+    if txt_inserted1:
+        filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
+    if txt_inserted2:
+        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
+    if txt_inserted3:
+        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+    if txt_inserted4:
+        filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+    if txt_inserted5:
+        filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
+
+    nom_serie = list(set(filtered_df['Série'].tolist()))
+    opt = [x for x in sorted(nom_serie)]
     return opt
 
 @callback(
@@ -294,9 +396,11 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3):
      Input(component_id='my_txt_input1', component_property='value'),  # sexe
      Input(component_id='my_txt_input2', component_property='value'),  # poids
      Input(component_id='my_txt_input3', component_property='value'),  # age
-     Input(component_id='my_txt_input4', component_property='value')  # ligue
+     Input(component_id='my_txt_input4', component_property='value'),  # ligue
+     Input(component_id='my_txt_input5', component_property='value'),  # nationalité
+     Input(component_id='my_txt_input6', component_property='value')  # série
      ])
-def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4):
+def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -308,6 +412,10 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
         filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
+    if txt_inserted5:
+        filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
+    if txt_inserted6:
+        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
     if txt_inserted2:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
         filtered_df = filtered_df.sort_values(by=['Total'], ascending=False)
