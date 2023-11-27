@@ -113,117 +113,123 @@ layout = html.Div([
          className='slider_box'
      ),
 
-    html.Br(),
 
     # Nombre athlètes par catégorie
-    dbc.Col([
-        html.Div([
-            dbc.Card(
-                dbc.CardBody(
-                    [
-                        html.Div([html.P("U10/U13")], id="u10_u13_card", className="card-title"),
-                        html.Div([
-                            html.Div([html.P("Nb Athl")], id="u10_u13_nb_athl"),
-                            html.Div([html.P("Nb Comp")], id="u10_u13_nb_comp")
-                        ], className="card-text",
-                        ),
-                        dbc.Button("+ Info", id="open_u10_u13", color="danger", className="mt-auto", size="sm"),
-                        dbc.Modal([
-                            dbc.ModalHeader("Information", id="u10_u13_info"),
-                            dbc.ModalBody([
-                                dcc.Graph(id='u10_u13-graph', style={'display': 'none'}),
-                                html.Div(id="u10_u13-table", className="athl_data_tab"),
-                            ]),
-                            dbc.ModalFooter(
-                                dbc.Button("Close", id="close-u10_u13", color="secondary", className="ml-auto")
+    dbc.Row([
+        dbc.Col([
+            html.Div([
+                dbc.Card(
+                    dbc.CardBody(
+                        [
+                            html.Div([html.P("U10/U13")], id="u10_u13_card", className="card-title"),
+                            html.Div([
+                                html.Div([html.P("Nb Athl")], id="u10_u13_nb_athl"),
+                                html.Div([html.P("Nb Comp")], id="u10_u13_nb_comp")
+                            ], className="card-text",
                             ),
-                        ], id="u10_u13-modal", size="lg", centered=True, is_open=False),
-                    ]
+                            dbc.Button("+ Info", id="open_u10_u13", color="danger", className="mt-auto", size="sm"),
+                            dbc.Modal([
+                                dbc.ModalHeader("Information", id="u10_u13_info"),
+                                dbc.ModalBody([
+                                    dcc.Graph(id='u10_u13-graph', style={'display': 'none'}),
+                                    html.Div(id="u10_u13-table", className="athl_data_tab"),
+                                ]),
+                                dbc.ModalFooter(
+                                    dbc.Button("Fermer", id="close-u10_u13", color="secondary", className="ml-auto")
+                                ),
+                            ], id="u10_u13-modal", size="lg", centered=True, is_open=False),
+                        ]
+                    ),
                 ),
-            ),
-        ], id="cateage_card1", style={'display': 'none'}),
-    ], xs=6, sm=3, md=3, lg=2, xl=2),
-    
-    
-#     dbc.Col([
-#         html.Div([
-#             dbc.Card(
-#                 dbc.CardBody(
-#                     [
-#                         html.Div([html.P("Card 2")], id="athlete2_nom", className="card-title"),
-#                         html.Div([
-#                             html.Div([html.P("Club")], id="athlete2_club"),
-#                             html.Div([html.P("NaissanceMax")], id="athlete2_annivmax")], className="card-text",
-#                         ),
-#                         dbc.Button("+ Info", id="open_athl2", color="primary", className="mt-auto", size="sm"),
-#                         dbc.Modal([
-#                             dbc.ModalHeader("Information", id="athlete2_nom_info"),
-#                             dbc.ModalBody([
-#                                 dcc.Graph(id='athl2-graph', style={'display': 'none'}),
-#                                 html.Div(id="athl2-table", className="athl_data_tab"),
-#                             ]),
-#                             dbc.ModalFooter(
-#                                 dbc.Button("Close", id="close-athl2", color="secondary", className="ml-auto")
-#                             ),
-#                         ], id="athl2-modal", size="lg", centered=True, is_open=False),
-#                     ]
-#                 ),
-#             )
-#         ], id="athl_card2", style={'display': 'none'}),
-#     ], xs=6, sm=3, md=3, lg=2, xl=2),
-#     dbc.Col([
-#         html.Div([
-#             dbc.Card(
-#                 dbc.CardBody(
-#                     [
-#                         html.Div([html.P("Card 3")], id="athlete3_nom", className="card-title"),
-#                         html.Div([
-#                             html.Div([html.P("Club")], id="athlete3_club"),
-#                             html.Div([html.P("NaissanceMax")], id="athlete3_annivmax")], className="card-text",
-#                         ),
-#                         dbc.Button("+ Info", id="open_athl3", color="warning", className="mt-auto", size="sm"),
-#                         dbc.Modal([
-#                             dbc.ModalHeader("Information", id="athlete3_nom_info"),
-#                             dbc.ModalBody([
-#                                 dcc.Graph(id='athl3-graph', style={'display': 'none'}),
-#                                 html.Div(id="athl3-table", className="athl_data_tab"),
-#                             ]),
-#                             dbc.ModalFooter(
-#                                 dbc.Button("Close", id="close-athl3", color="secondary", className="ml-auto")
-#                             ),
-#                         ], id="athl3-modal", size="lg", centered=True, is_open=False),
-#                     ]
-#                 ),
-#             )
-#         ], id="athl_card3", style={'display': 'none'}),
-#     ], xs=6, sm=3, md=3, lg=2, xl=2),
-#     dbc.Col([
-#         html.Div([
-#             dbc.Card(
-#                 dbc.CardBody(
-#                     [
-#                         html.Div([html.P("Card 4")], id="athlete4_nom", className="card-title"),
-#                         html.Div([
-#                             html.Div([html.P("Club")], id="athlete4_club"),
-#                             html.Div([html.P("NaissanceMax")], id="athlete4_annivmax")], className="card-text",
-#                         ),
-#                         dbc.Button("+ Info", id="open_athl4", color="success", className="mt-auto", size="sm"),
-#                         dbc.Modal([
-#                             dbc.ModalHeader("Information", id="athlete4_nom_info"),
-#                             dbc.ModalBody([
-#                                 dcc.Graph(id='athl4-graph', style={'display': 'none'}),
-#                                 html.Div(id="athl4-table", className="athl_data_tab"),
-#                             ]),
-#                             dbc.ModalFooter(
-#                                 dbc.Button("Close", id="close-athl4", color="secondary", className="ml-auto")
-#                             ),
-#                         ], id="athl4-modal", size="lg", centered=True, is_open=False),
-#                     ]
-#                 ),
-#             )
-#         ], id="athl_card4", style={'display': 'none'}),
-#     ], xs=6, sm=3, md=3, lg=2, xl=2),
-# ], className="top_zone", ),
+            ], id="cateage_card1", style={'display': 'none'}),
+        ], xs=6, sm=3, md=3, lg=2, xl=2),
+
+        dbc.Col([
+            html.Div([
+                dbc.Card(
+                    dbc.CardBody(
+                        [
+                            html.Div([html.P("U15/U17")], id="u15_u17_card", className="card-title"),
+                            html.Div([
+                                html.Div([html.P("Nb Athl")], id="u15_u17_nb_athl"),
+                                html.Div([html.P("Nb Comp")], id="u15_u17_nb_comp")
+                            ], className="card-text",
+                            ),
+                            dbc.Button("+ Info", id="open_u15_u17", color="primary", className="mt-auto", size="sm"),
+                            dbc.Modal([
+                                dbc.ModalHeader("Information", id="u15_u17_info"),
+                                dbc.ModalBody([
+                                    dcc.Graph(id='u15_u17-graph', style={'display': 'none'}),
+                                    html.Div(id="u15_u17-table", className="athl_data_tab"),
+                                ]),
+                                dbc.ModalFooter(
+                                    dbc.Button("Fermer", id="close-u15_u17", color="secondary", className="ml-auto")
+                                ),
+                            ], id="u15_u17-modal", size="lg", centered=True, is_open=False),
+                        ]
+                    ),
+                ),
+            ], id="cateage_card2", style={'display': 'none'}),
+        ], xs=6, sm=3, md=3, lg=2, xl=2),
+
+        dbc.Col([
+            html.Div([
+                dbc.Card(
+                    dbc.CardBody(
+                        [
+                            html.Div([html.P("U20")], id="u20_card", className="card-title"),
+                            html.Div([
+                                html.Div([html.P("Nb Athl")], id="u20_nb_athl"),
+                                html.Div([html.P("Nb Comp")], id="u20_nb_comp")
+                            ], className="card-text",
+                            ),
+                            dbc.Button("+ Info", id="open_u20", color="warning", className="mt-auto", size="sm"),
+                            dbc.Modal([
+                                dbc.ModalHeader("Information", id="u20_info"),
+                                dbc.ModalBody([
+                                    dcc.Graph(id='u20-graph', style={'display': 'none'}),
+                                    html.Div(id="u20-table", className="athl_data_tab"),
+                                ]),
+                                dbc.ModalFooter(
+                                    dbc.Button("Fermer", id="close-u20", color="secondary", className="ml-auto")
+                                ),
+                            ], id="u20-modal", size="lg", centered=True, is_open=False),
+                        ]
+                    ),
+                ),
+            ], id="cateage_card3", style={'display': 'none'}),
+        ], xs=6, sm=3, md=3, lg=2, xl=2),
+
+        dbc.Col([
+            html.Div([
+                dbc.Card(
+                    dbc.CardBody(
+                        [
+                            html.Div([html.P("SEN")], id="sen_card", className="card-title"),
+                            html.Div([
+                                html.Div([html.P("Nb Athl")], id="sen_nb_athl"),
+                                html.Div([html.P("Nb Comp")], id="sen_nb_comp")
+                            ], className="card-text",
+                            ),
+                            dbc.Button("+ Info", id="open_sen", color="success", className="mt-auto", size="sm"),
+                            dbc.Modal([
+                                dbc.ModalHeader("Information", id="sen_info"),
+                                dbc.ModalBody([
+                                    dcc.Graph(id='sen-graph', style={'display': 'none'}),
+                                    html.Div(id="sen-table", className="athl_data_tab"),
+                                ]),
+                                dbc.ModalFooter(
+                                    dbc.Button("Fermer", id="close-sen", color="secondary", className="ml-auto")
+                                ),
+                            ], id="sen-modal", size="lg", centered=True, is_open=False),
+                        ]
+                    ),
+                ),
+            ], id="cateage_card4", style={'display': 'none'}),
+        ], xs=6, sm=3, md=3, lg=2, xl=2),
+    ],  className="top_zone",),
+
+    html.Br(),
 
     #top 5 H & F
     dbc.Row([
@@ -483,7 +489,16 @@ def update_title(selected_year, txt_ligue, txt_club):
 @callback(
     [Output('cateage_card1', 'style'),
      Output("u10_u13_nb_athl", "children"),
-     Output("u10_u13_nb_comp", "children")],
+     Output("u10_u13_nb_comp", "children"),
+     Output('cateage_card2', 'style'),
+     Output("u15_u17_nb_athl", "children"),
+     Output("u15_u17_nb_comp", "children"),
+     Output('cateage_card3', 'style'),
+     Output("u20_nb_athl", "children"),
+     Output("u20_nb_comp", "children"),
+     Output('cateage_card4', 'style'),
+     Output("sen_nb_athl", "children"),
+     Output("sen_nb_comp", "children")],
     [Input('year-slider', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value')
@@ -505,17 +520,17 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
         WHEN cat."CateAge" IN ('U10','U13') THEN 'U10/U13'
         WHEN cat."CateAge" IN ('U15','U17') THEN 'U15/U17'
         WHEN cat."CateAge" = 'U20' THEN 'U20'
-        ELSE 'SE'
+        ELSE 'SEN'
     END                          as "CateAge",
     rclb.row_num_nb_part         as "RangPartClubCateAge",
     rclb.row_num_nb_athl         as "RangAthlClubCateAge",
     COUNT(1)                     as "NbPart",
     COUNT(DISTINCT ath.Nom)      as "NbAthl"
-FROM ATHLETE as ath 
-LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-LEFT JOIN 
+    FROM ATHLETE as ath 
+    LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
+    LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+    LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
+    LEFT JOIN 
     (SELECT
         cmp.SaisonAnnee             as "Saison",
         clb.club,
@@ -525,7 +540,7 @@ LEFT JOIN
             WHEN 'U15' THEN 'U15/U17'
             WHEN 'U17' THEN 'U15/U17'
             WHEN 'U20' THEN 'U20'
-            ELSE 'SE'
+            ELSE 'SEN'
         END                           as "CateAge",
         COUNT(1)     as "Nb_Part",
         COUNT(DISTINCT ath.Nom)      as "Nb_Athl",
@@ -536,7 +551,7 @@ LEFT JOIN
                 WHEN 'U15' THEN 'U15/U17'
                 WHEN 'U17' THEN 'U15/U17'
                 WHEN 'U20' THEN 'U20'
-                ELSE 'SE'
+                ELSE 'SEN'
             END
             ORDER BY COUNT(1) DESC) as row_num_nb_part,
         ROW_NUMBER() OVER (PARTITION BY cmp.SaisonAnnee,
@@ -546,59 +561,140 @@ LEFT JOIN
                 WHEN 'U15' THEN 'U15/U17'
                 WHEN 'U17' THEN 'U15/U17'
                 WHEN 'U20' THEN 'U20'
-                ELSE 'SE'
+                ELSE 'SEN'
             END
             ORDER BY COUNT(DISTINCT ath.Nom) DESC) as row_num_nb_athl
-    FROM ATHLETE as ath 
-    LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-    LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-    LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-    GROUP BY cmp.SaisonAnnee, clb.club, 
-        CASE cat."CateAge" 
-            WHEN 'U10' THEN 'U10/U13'
-            WHEN 'U13' THEN 'U10/U13'
-            WHEN 'U15' THEN 'U15/U17'
-            WHEN 'U17' THEN 'U15/U17'
-            WHEN 'U20' THEN 'U20'
-            ELSE 'SE'
-        END) as rclb
-ON rclb.Saison = cmp.SaisonAnnee
-AND rclb.CateAge = CASE cat."CateAge" 
-    WHEN 'U10' THEN 'U10/U13'
-    WHEN 'U13' THEN 'U10/U13'
-    WHEN 'U15' THEN 'U15/U17'
-    WHEN 'U17' THEN 'U15/U17'
-    WHEN 'U20' THEN 'U20'
-    ELSE 'SE'
-END
-AND rclb.Club = clb.Club
-GROUP BY cmp.SaisonAnnee, clb.club, 
-    CASE
-        WHEN cat."CateAge" IN ('U10','U13') THEN 'U10/U13'
-        WHEN cat."CateAge" IN ('U15','U17') THEN 'U15/U17'
-        WHEN cat."CateAge" = 'U20' THEN 'U20'
-        ELSE 'SE'
+        FROM ATHLETE as ath 
+        LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
+        LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+        LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
+        GROUP BY cmp.SaisonAnnee, clb.club, 
+            CASE cat."CateAge" 
+                WHEN 'U10' THEN 'U10/U13'
+                WHEN 'U13' THEN 'U10/U13'
+                WHEN 'U15' THEN 'U15/U17'
+                WHEN 'U17' THEN 'U15/U17'
+                WHEN 'U20' THEN 'U20'
+                ELSE 'SEN'
+            END) as rclb
+    ON rclb.Saison = cmp.SaisonAnnee
+    AND rclb.CateAge = CASE cat."CateAge" 
+        WHEN 'U10' THEN 'U10/U13'
+        WHEN 'U13' THEN 'U10/U13'
+        WHEN 'U15' THEN 'U15/U17'
+        WHEN 'U17' THEN 'U15/U17'
+        WHEN 'U20' THEN 'U20'
+        ELSE 'SEN'
     END
+    AND rclb.Club = clb.Club
+    GROUP BY cmp.SaisonAnnee, clb.club, 
+        CASE
+            WHEN cat."CateAge" IN ('U10','U13') THEN 'U10/U13'
+            WHEN cat."CateAge" IN ('U15','U17') THEN 'U15/U17'
+            WHEN cat."CateAge" = 'U20' THEN 'U20'
+            ELSE 'SEN'
+        END
           """
     df_ac = pd.read_sql_query(qry_age, conn)
     df_ac.head()
     print(df_ac)
     print(txt_club)
     print(selected_year)
-    df_f = df_ac[(df_ac['Club'].isin(txt_club)) & (df_ac['CateAge'] == "U10/U13") & (df_ac['Saison'] == selected_year)]
-    updated_show = {'display': 'block'}
-    nb_part_u10_u13 = df_f['NbPart'].values[0]
-    rang_part_u10_u13 = df_f['RangPartClubCateAge'].values[0]
-    rang_athl_u10_u13 = df_f['RangAthlClubCateAge'].values[0]
-    nb_athl_u10_u13 = df_f['NbAthl'].values[0]
 
+    list_cateage=['U10/U13', 'U15/U17', 'U20', 'SEN']
 
-    return updated_show, f"{nb_part_u10_u13} Participations" + f" ({rang_part_u10_u13}ème)", f"{nb_athl_u10_u13} athlètes" + f" ({rang_athl_u10_u13}ème)"
+    updated_show = [''] * 4
+    nb_part = [0] * 4
+    rang_part = [''] * 4
+    rang_athl = [0] * 4
+    nb_athl = [''] * 4
+
+    n = 0
+    for i in list_cateage:
+        df_cate = df_ac[(df_ac['Club'].isin(txt_club)) & (df_ac['CateAge'] == i) & (df_ac['Saison'] == selected_year)]
+
+        updated_show[n] = {'display': 'none'}
+        if not df_cate.empty:
+            updated_show[n] = {'display': 'block'}
+            nb_part[n] = str(df_cate['NbPart'].values[0]) + ' Participations'
+            if df_cate['RangPartClubCateAge'].values[0] == 1:
+                end_txt = 'er)'
+            else:
+                end_txt = 'ème)'
+            rang_part[n] = ' (' + str(df_cate['RangPartClubCateAge'].values[0]) + end_txt
+
+            nb_athl[n] = str(df_cate['NbAthl'].values[0]) + ' Athlètes'
+            if df_cate['RangAthlClubCateAge'].values[0] == 1:
+                end_txt = 'er)'
+            else:
+                end_txt = 'ème)'
+            rang_athl[n] = ' (' + str(df_cate['RangAthlClubCateAge'].values[0]) + end_txt
+            n = n+1
+
+    return  updated_show[0], f"{nb_part[0]}" + f"{rang_part[0]}", f"{nb_athl[0]}" + f"{rang_athl[0]}", \
+            updated_show[1], f"{nb_part[1]}" + f"{rang_part[1]}", f"{nb_athl[1]}" + f"{rang_athl[1]}", \
+            updated_show[2], f"{nb_part[2]}" + f"{rang_part[2]}", f"{nb_athl[2]}" + f"{rang_athl[2]}",\
+            updated_show[3], f"{nb_part[3]}" + f"{rang_part[3]}", f"{nb_athl[3]}" + f"{rang_athl[3]}"
 
 
 
 
 # Partie + Info
+
+
+def qry_box(list_club, selected_year):
+    qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, ath.Nom, count(clb.club) as "Nb Compet" 
+                     , max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
+                     , max(round(cat.IWF_Calcul,3)) as "IWF"
+                     , CASE 
+                            WHEN cat."CateAge" = 'U10' THEN 'U10'
+                            WHEN cat."CateAge" = 'U13' THEN 'U13'
+                            WHEN cat."CateAge" = 'U15' THEN 'U15'
+                            WHEN cat."CateAge" = 'U17' THEN 'U17'
+                            WHEN cat."CateAge" = 'U20' THEN 'U20'
+                            ELSE 'SEN'
+                        END as "CateAge"
+                    , atr.AthlRang as "Classement Fr"
+                      FROM ATHLETE as ath
+                      LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID
+                      LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+                      LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
+
+                      LEFT JOIN (
+                        select
+                            cmp.SaisonAnnee
+                          , ath.Nom
+                          , cat.Sexe
+                          , CASE 
+                                WHEN cat."CateAge" = 'U10' THEN 'U10'
+                                WHEN cat."CateAge" = 'U13' THEN 'U13'
+                                WHEN cat."CateAge" = 'U15' THEN 'U15'
+                                WHEN cat."CateAge" = 'U17' THEN 'U17'
+                                WHEN cat."CateAge" = 'U20' THEN 'U20'
+                                ELSE 'SEN'
+                            END as "CateAge"
+                          , max(round(cat.IWF_Calcul,3)) as "IWF"
+                          , row_number() over(partition by cmp."SaisonAnnee", cat.Sexe,
+                          CASE WHEN cat."CateAge" = 'U10' THEN 'U10' WHEN cat."CateAge" = 'U13' THEN 'U13' WHEN cat."CateAge" = 'U15' THEN 'U15' WHEN cat."CateAge" = 'U17' THEN 'U17'
+                          WHEN cat."CateAge" = 'U20' THEN 'U20' ELSE 'SEN' END
+                          order by max(round(cat.IWF_Calcul,3)) desc) as "AthlRang"
+
+                          FROM ATHLETE as ath
+                          LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID
+                          LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+                          group by cmp.SaisonAnnee, ath.Nom) as atr
+                                on atr.Nom = ath.Nom
+                                and atr.SaisonAnnee = cmp.SaisonAnnee
+
+                      where clb.Club in ('""" + list_club + """)
+                          and cmp.SaisonAnnee = """ + str(selected_year) + """
+                      group by cmp.SaisonAnnee, clb.club, ath.Nom, atr.AthlRang,
+                        CASE WHEN cat."CateAge" = 'U10' THEN 'U10' WHEN cat."CateAge" = 'U13' THEN 'U13' WHEN cat."CateAge" = 'U15' THEN 'U15' WHEN cat."CateAge" = 'U17' THEN 'U17'
+                            WHEN cat."CateAge" = 'U20' THEN 'U20' ELSE 'SEN' END
+                      order by atr.AthlRang"""
+    return qry
+
+
 @callback(
     Output("u10_u13-modal", "is_open"),
     [Input("open_u10_u13", "n_clicks"),
@@ -611,67 +707,208 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_u10_u13):
         return not is_open_u10_u13
     return is_open_u10_u13
 
-
 # +Info Carte 1
-# @callback(
-#     [Output("u10_u13-graph", "figure"),
-#      Output("u10_u13-graph", "style"),
-#      Output("u10_u13-table", "children")],
-#     [Input(component_id='txt-ligue', component_property='value'),
-#      Input(component_id='txt-club', component_property='value'),
-#      Input("u10_u13-modal", "is_open")],
-#     prevent_initial_call=True
-# )
-# def update_table_athl1(txt_ligue, txt_club, is_open_u10_u13):
-#     if not is_open_u10_u13 or (not txt_ligue and not txt_club):
-#         raise PreventUpdate
-#     if is_open_u10_u13:
-#         dirname = os.path.dirname(__file__)
-#         path_db = os.path.join(dirname, 'dataltero.db')
-#         conn = sql.connect(database=path_db)
-#
-#         athl1 = txt_ligue[0]
-#         qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-#                  max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-#                 , max(round(cat.IWF_Calcul,3)) as "IWF"
-#               FROM ATHLETE as ath
-#               LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID
-#               LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition
-#               LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-#
-#               where ath.Nom='""" + athl1 + """'
-#               group by cmp.SaisonAnnee, clb.club
-#               order by cmp.SaisonAnnee asc"""
-#         df_athl1 = pd.read_sql_query(qry, conn)
-#         df_athl1.head()
-#
-#         df2_athl1 = df2[(df2['Nom'] == txt_ligue[0])]
-#         df2_athl1['Série'] = pd.Categorical(df2_athl1['Série'],
-#                                             ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-#                                             ordered=True)
-#         df2_athl1 = df2_athl1.sort_values(by=['Série'])
-#         print(df2_athl1)
-#
-#         fig_athl1 = px.histogram(df2_athl1, x="Série", color="Catégorie",
-#                                  color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB",
-#                                                           "purple", "#54B4D3", "#9FA6B2"],
-#                                  category_orders={
-#                                      "Série": ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A",
-#                                                "OLY"]})
-#
-#         fig_athl1.update_layout(font_size=12,
-#                                 legend=dict(
-#                                     orientation="h",
-#                                     yanchor="bottom",
-#                                     y=1.05,
-#                                     xanchor="left",
-#                                     x=-0.05
-#                                 ))
-#         display_graph_athl1 = {'display': 'block'}
-#
-#         return fig_athl1, display_graph_athl1, [
-#             dbc.Table.from_dataframe(df_athl1, responsive=True, striped=True, bordered=True, hover=True)]
+@callback(
+    [
+    #Output("u10_u13-graph", "figure"),
+    #Output("u10_u13-graph", "style"),
+     Output("u10_u13-table", "children")],
+    [Input('year-slider', 'value'),
+     Input(component_id='txt-ligue', component_property='value'),
+     Input(component_id='txt-club', component_property='value'),
+     Input("u10_u13-modal", "is_open")],
+    prevent_initial_call=True
+)
 
+def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u10_u13):
+    if not is_open_u10_u13 or (not txt_ligue and not txt_club):
+        raise PreventUpdate
+    if is_open_u10_u13:
+        dirname = os.path.dirname(__file__)
+        path_db = os.path.join(dirname, 'dataltero.db')
+        conn = sql.connect(database=path_db)
+
+        list_club = ''
+        for i in txt_club:
+            list_club = list_club + i + "',"
+            print(list_club)
+        list_club = list_club[0:-1]
+        qry = qry_box(list_club, selected_year)
+
+        df_u10_u13 = pd.read_sql_query(qry, conn)
+        df_u10_u13 = df_u10_u13[df_u10_u13['CateAge'].isin(['U10','U13'])]
+        print(df_u10_u13)
+        df_u10_u13.head()
+
+        #df_u10_u13['Série'] = pd.Categorical(df_u10_u13['Série'],
+        #                                     ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
+        #                                     ordered=True)
+        # df2_athl1 = df2_athl1.sort_values(by=['Série'], ascending=False)
+        # print(df2_athl1)
+
+        #fig_athl1 = px.histogram(df_u10_u13, x="Série", color="Catégorie",
+        #                         color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB",
+        #                                                  "purple", "#54B4D3", "#9FA6B2"],
+        #                         category_orders={
+        #                             "Série": ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A",
+        #                                       "OLY"]})
+
+        #fig_athl1.update_layout(font_size=12,
+        #                            legend=dict(
+        #                            orientation="h",
+        #                            yanchor="bottom",
+        #                            y=1.05,
+        #                            xanchor="left",
+        #                            x=-0.05
+        #                        ))
+        #display_graph_athl1 = {'display': 'block'}
+
+        return [dbc.Table.from_dataframe(df_u10_u13, responsive=True, striped=True, bordered=True, hover=True)]
+        #fig_athl1, display_graph_athl1,
+
+@callback(
+    Output("u15_u17-modal", "is_open"),
+    [Input("open_u15_u17", "n_clicks"),
+     Input("close-u15_u17", "n_clicks")],
+    State("u15_u17-modal", "is_open"),
+    prevent_initial_call=True
+)
+def toggle_modal_athl(open_clicks, close_clicks, is_open_u15_u17):
+    if open_clicks or close_clicks:
+        return not is_open_u15_u17
+    return is_open_u15_u17
+
+
+# +Info Carte 2
+@callback(
+    [
+    #Output("u15_u17-graph", "figure"),
+    #Output("u15_u17-graph", "style"),
+     Output("u15_u17-table", "children")],
+    [Input('year-slider', 'value'),
+     Input(component_id='txt-ligue', component_property='value'),
+     Input(component_id='txt-club', component_property='value'),
+     Input("u15_u17-modal", "is_open")],
+    prevent_initial_call=True
+)
+
+def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u15_u17):
+    if not is_open_u15_u17 or (not txt_ligue and not txt_club):
+        raise PreventUpdate
+    if is_open_u15_u17:
+        dirname = os.path.dirname(__file__)
+        path_db = os.path.join(dirname, 'dataltero.db')
+        conn = sql.connect(database=path_db)
+
+        list_club = ''
+        for i in txt_club:
+            list_club = list_club + i + "',"
+            print(list_club)
+        list_club = list_club[0:-1]
+        qry = qry_box(list_club, selected_year)
+
+        df_u15_u17 = pd.read_sql_query(qry, conn)
+        df_u15_u17 = df_u15_u17[df_u15_u17['CateAge'].isin(['U15', 'U17'])]
+        print(df_u15_u17)
+        df_u15_u17.head()
+
+        return [dbc.Table.from_dataframe(df_u15_u17, responsive=True, striped=True, bordered=True, hover=True)]
+        #fig_athl1, display_graph_athl1,
+    
+@callback(
+    Output("u20-modal", "is_open"),
+    [Input("open_u20", "n_clicks"),
+     Input("close-u20", "n_clicks")],
+    State("u20-modal", "is_open"),
+    prevent_initial_call=True
+)
+def toggle_modal_athl(open_clicks, close_clicks, is_open_u20):
+    if open_clicks or close_clicks:
+        return not is_open_u20
+    return is_open_u20
+# +Info Carte 3
+@callback(
+    [
+    #Output("u20-graph", "figure"),
+    #Output("u20-graph", "style"),
+     Output("u20-table", "children")],
+    [Input('year-slider', 'value'),
+     Input(component_id='txt-ligue', component_property='value'),
+     Input(component_id='txt-club', component_property='value'),
+     Input("u20-modal", "is_open")],
+    prevent_initial_call=True
+)
+
+def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u20):
+    if not is_open_u20 or (not txt_ligue and not txt_club):
+        raise PreventUpdate
+    if is_open_u20:
+        dirname = os.path.dirname(__file__)
+        path_db = os.path.join(dirname, 'dataltero.db')
+        conn = sql.connect(database=path_db)
+
+        list_club = ''
+        for i in txt_club:
+            list_club = list_club + i + "',"
+            print(list_club)
+        list_club = list_club[0:-1]
+        qry = qry_box(list_club, selected_year)
+
+        df_u20 = pd.read_sql_query(qry, conn)
+        df_u20 = df_u20[df_u20['CateAge'].isin(['U20'])]
+        print(df_u20)
+        df_u20.head()
+
+        return [dbc.Table.from_dataframe(df_u20, responsive=True, striped=True, bordered=True, hover=True)]
+        #fig_athl1, display_graph_athl1,
+
+
+@callback(
+    Output("sen-modal", "is_open"),
+    [Input("open_sen", "n_clicks"),
+     Input("close-sen", "n_clicks")],
+    State("sen-modal", "is_open"),
+    prevent_initial_call=True
+)
+def toggle_modal_athl(open_clicks, close_clicks, is_open_sen):
+    if open_clicks or close_clicks:
+        return not is_open_sen
+    return is_open_sen
+# +Info Carte 4
+@callback(
+    [
+    #Output("sen-graph", "figure"),
+    #Output("sen-graph", "style"),
+     Output("sen-table", "children")],
+    [Input('year-slider', 'value'),
+     Input(component_id='txt-ligue', component_property='value'),
+     Input(component_id='txt-club', component_property='value'),
+     Input("sen-modal", "is_open")],
+    prevent_initial_call=True
+)
+
+def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
+    if not is_open_sen or (not txt_ligue and not txt_club):
+        raise PreventUpdate
+    if is_open_sen:
+        dirname = os.path.dirname(__file__)
+        path_db = os.path.join(dirname, 'dataltero.db')
+        conn = sql.connect(database=path_db)
+
+        list_club = ''
+        for i in txt_club:
+            list_club = list_club + i + "',"
+            print(list_club)
+        list_club = list_club[0:-1]
+        qry = qry_box(list_club, selected_year)
+
+        df_sen = pd.read_sql_query(qry, conn)
+        df_sen = df_sen[df_sen['CateAge'].isin(['SEN'])]
+        print(df_sen)
+        df_sen.head()
+
+        return [dbc.Table.from_dataframe(df_sen, responsive=True, striped=True, bordered=True, hover=True)]
+        #fig_athl1, display_graph_athl1,
 
 
 if __name__ == '__main__':
