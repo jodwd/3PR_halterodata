@@ -4,6 +4,7 @@ import dash_bootstrap_components as dbc
 import sqlite3 as sql
 import pandas as pd
 import os
+from datetime import date
 from dash_bootstrap_components._components.Container import Container
 
 
@@ -51,7 +52,8 @@ df_anniv = pd.read_sql_query(qry_anniv, conn)
 df_anniv.head()
 print(df_anniv)
 
-txt_anniv = '🎂 Joyeux anniversaire à '
+today = date.today()
+txt_anniv = '🎂 ' + today.strftime("%d/%m") + ' - Joyeux anniversaire à '
 for i in df_anniv['AthlAnniv'].tolist():
     txt_anniv = txt_anniv + i + ', '
 txt_anniv = txt_anniv[0:-2]
