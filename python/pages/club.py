@@ -51,7 +51,7 @@ dff['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'
 updated_title='Dashboard Club'
 
 #app = dash.Dash(__name__)
-dash.register_page(__name__, name='Clubs', title='Dashboard Clubs', image='/assets/3PR.png', description='Tableau de bord des performances des clubs d''haltérophilie français')
+dash.register_page(__name__, name='3PR - Clubs', title='3PR - Dashboard Clubs', image='/assets/3PR.png', description='Tableau de bord des performances des clubs d''haltérophilie français')
 #server = server
 
 
@@ -129,7 +129,7 @@ layout = html.Div([
                             ),
                             dbc.Button("+ Info", id="open_u10_u13", color="danger", className="mt-auto", size="sm"),
                             dbc.Modal([
-                                dbc.ModalHeader("Information", id="u10_u13_info"),
+                                dbc.ModalHeader("Classement des Athlètes U10 & U13", id="u10_u13_info"),
                                 dbc.ModalBody([
                                     dcc.Graph(id='u10_u13-graph', style={'display': 'none'}),
                                     html.Div(id="u10_u13-table", className="athl_data_tab"),
@@ -157,7 +157,7 @@ layout = html.Div([
                             ),
                             dbc.Button("+ Info", id="open_u15_u17", color="primary", className="mt-auto", size="sm"),
                             dbc.Modal([
-                                dbc.ModalHeader("Information", id="u15_u17_info"),
+                                dbc.ModalHeader("Classement des Athlètes U15 & U17", id="u15_u17_info"),
                                 dbc.ModalBody([
                                     dcc.Graph(id='u15_u17-graph', style={'display': 'none'}),
                                     html.Div(id="u15_u17-table", className="athl_data_tab"),
@@ -185,7 +185,7 @@ layout = html.Div([
                             ),
                             dbc.Button("+ Info", id="open_u20", color="warning", className="mt-auto", size="sm"),
                             dbc.Modal([
-                                dbc.ModalHeader("Information", id="u20_info"),
+                                dbc.ModalHeader("Classement des Athlètes U20", id="u20_info"),
                                 dbc.ModalBody([
                                     dcc.Graph(id='u20-graph', style={'display': 'none'}),
                                     html.Div(id="u20-table", className="athl_data_tab"),
@@ -213,7 +213,7 @@ layout = html.Div([
                             ),
                             dbc.Button("+ Info", id="open_sen", color="success", className="mt-auto", size="sm"),
                             dbc.Modal([
-                                dbc.ModalHeader("Information", id="sen_info"),
+                                dbc.ModalHeader("Classement des Athlètes Seniors", id="sen_info"),
                                 dbc.ModalBody([
                                     dcc.Graph(id='sen-graph', style={'display': 'none'}),
                                     html.Div(id="sen-table", className="athl_data_tab"),
@@ -505,17 +505,25 @@ def update_title(selected_year, txt_ligue, txt_club):
      ])
 
 def updated_athletes(selected_year, txt_ligue, txt_club):
-    # Perform any manipulation on input_value and return the updated title
-    if txt_ligue is None and txt_club is None or len(txt_club) > 1:
-        raise PreventUpdate
-
 
     print(txt_club)
 
+    # card display management (by 'ligue' or by 'club' and only if one ligue or club chosen)
+    txt_qry = 'clb.club'
+    mode_ligue = False
+    disp_cards = False
+    if txt_ligue and not txt_club:
+        mode_ligue = True
+        txt_qry='clb.ligue'
+        if len(txt_ligue) == 1:
+            disp_cards = True
+    if txt_club:
+        if len(txt_club) == 1:
+            disp_cards = True
+
     conn = sql.connect(database=path_db)
     qry_age = """SELECT
-    cmp.SaisonAnnee             as "Saison",
-    clb.club                    as "Club",
+    cmp.SaisonAnnee             as "Saison",""" + txt_qry + """,
     CASE
         WHEN cat."CateAge" IN ('U10','U13') THEN 'U10/U13'
         WHEN cat."CateAge" IN ('U15','U17') THEN 'U15/U17'
@@ -533,7 +541,7 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
     LEFT JOIN 
     (SELECT
         cmp.SaisonAnnee             as "Saison",
-        clb.club,
+        """ + txt_qry + """,
         CASE cat."CateAge" 
             WHEN 'U10' THEN 'U10/U13'
             WHEN 'U13' THEN 'U10/U13'
@@ -568,7 +576,7 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
         LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
         LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
         LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-        GROUP BY cmp.SaisonAnnee, clb.club, 
+        GROUP BY cmp.SaisonAnnee, """ + txt_qry + """, 
             CASE cat."CateAge" 
                 WHEN 'U10' THEN 'U10/U13'
                 WHEN 'U13' THEN 'U10/U13'
@@ -586,8 +594,8 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
         WHEN 'U20' THEN 'U20'
         ELSE 'SEN'
     END
-    AND rclb.Club = clb.Club
-    GROUP BY cmp.SaisonAnnee, clb.club, 
+    AND r""" + txt_qry + """ = """ + txt_qry + """
+    GROUP BY cmp.SaisonAnnee, """ + txt_qry + """, 
         CASE
             WHEN cat."CateAge" IN ('U10','U13') THEN 'U10/U13'
             WHEN cat."CateAge" IN ('U15','U17') THEN 'U15/U17'
@@ -603,32 +611,35 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
 
     list_cateage=['U10/U13', 'U15/U17', 'U20', 'SEN']
 
-    updated_show = [''] * 4
-    nb_part = [0] * 4
+    updated_show = [{'display': 'none'}] * 4
+    nb_part = ['0 Participations'] * 4
     rang_part = [''] * 4
-    rang_athl = [0] * 4
+    rang_athl = ['0 Athlètes'] * 4
     nb_athl = [''] * 4
 
     n = 0
     for i in list_cateage:
-        df_cate = df_ac[(df_ac['Club'].isin(txt_club)) & (df_ac['CateAge'] == i) & (df_ac['Saison'] == selected_year)]
-
-        updated_show[n] = {'display': 'none'}
-        if not df_cate.empty:
+        if disp_cards:
+            if mode_ligue == True:
+                df_cate = df_ac[(df_ac['Ligue'].isin(txt_ligue)) & (df_ac['CateAge'] == i) & (df_ac['Saison'] == selected_year)]
+            else:
+                df_cate = df_ac[(df_ac['Club'].isin(txt_club)) & (df_ac['CateAge'] == i) & (df_ac['Saison'] == selected_year)]
             updated_show[n] = {'display': 'block'}
-            nb_part[n] = str(df_cate['NbPart'].values[0]) + ' Participations'
-            if df_cate['RangPartClubCateAge'].values[0] == 1:
-                end_txt = 'er)'
-            else:
-                end_txt = 'ème)'
-            rang_part[n] = ' (' + str(df_cate['RangPartClubCateAge'].values[0]) + end_txt
+            if not df_cate.empty:
 
-            nb_athl[n] = str(df_cate['NbAthl'].values[0]) + ' Athlètes'
-            if df_cate['RangAthlClubCateAge'].values[0] == 1:
-                end_txt = 'er)'
-            else:
-                end_txt = 'ème)'
-            rang_athl[n] = ' (' + str(df_cate['RangAthlClubCateAge'].values[0]) + end_txt
+                nb_part[n] = str(df_cate['NbPart'].values[0]) + ' Participations'
+                if df_cate['RangPartClubCateAge'].values[0] == 1:
+                    end_txt = 'er)'
+                else:
+                    end_txt = 'ème)'
+                rang_part[n] = ' (' + str(df_cate['RangPartClubCateAge'].values[0]) + end_txt
+
+                nb_athl[n] = str(df_cate['NbAthl'].values[0]) + ' Athlètes'
+                if df_cate['RangAthlClubCateAge'].values[0] == 1:
+                    end_txt = 'er)'
+                else:
+                    end_txt = 'ème)'
+                rang_athl[n] = ' (' + str(df_cate['RangAthlClubCateAge'].values[0]) + end_txt
             n = n+1
 
     return  updated_show[0], f"{nb_part[0]}" + f"{rang_part[0]}", f"{nb_athl[0]}" + f"{rang_athl[0]}", \
@@ -642,10 +653,10 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
 # Partie + Info
 
 
-def qry_box(list_club, selected_year):
+def qry_box(txt_club_ligue, selected_year):
     qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, ath.Nom, count(clb.club) as "Nb Compet" 
-                     , max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                     , max(round(cat.IWF_Calcul,3)) as "IWF"
+                     , max(cat.Arrache) as "Max Arr", max(cat.EpJete) as "Max EpJ", max(cat.PoidsTotal) as "Max Tot"
+                     , max(round(cat.IWF_Calcul,3)) as "Max IWF"
                      , CASE 
                             WHEN cat."CateAge" = 'U10' THEN 'U10'
                             WHEN cat."CateAge" = 'U13' THEN 'U13'
@@ -686,7 +697,7 @@ def qry_box(list_club, selected_year):
                                 on atr.Nom = ath.Nom
                                 and atr.SaisonAnnee = cmp.SaisonAnnee
 
-                      where clb.Club in ('""" + list_club + """)
+                      where """ + txt_club_ligue + """
                           and cmp.SaisonAnnee = """ + str(selected_year) + """
                       group by cmp.SaisonAnnee, clb.club, ath.Nom, atr.AthlRang,
                         CASE WHEN cat."CateAge" = 'U10' THEN 'U10' WHEN cat."CateAge" = 'U13' THEN 'U13' WHEN cat."CateAge" = 'U15' THEN 'U15' WHEN cat."CateAge" = 'U17' THEN 'U17'
@@ -728,40 +739,17 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u10_u13):
         path_db = os.path.join(dirname, 'dataltero.db')
         conn = sql.connect(database=path_db)
 
-        list_club = ''
-        for i in txt_club:
-            list_club = list_club + i + "',"
-            print(list_club)
-        list_club = list_club[0:-1]
-        qry = qry_box(list_club, selected_year)
+        if txt_club:
+            txt_club_ligue = "clb.club in ('" + txt_club[0] + "')"
+        else:
+            txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
+
+        qry = qry_box(txt_club_ligue, selected_year)
 
         df_u10_u13 = pd.read_sql_query(qry, conn)
         df_u10_u13 = df_u10_u13[df_u10_u13['CateAge'].isin(['U10','U13'])]
         print(df_u10_u13)
         df_u10_u13.head()
-
-        #df_u10_u13['Série'] = pd.Categorical(df_u10_u13['Série'],
-        #                                     ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-        #                                     ordered=True)
-        # df2_athl1 = df2_athl1.sort_values(by=['Série'], ascending=False)
-        # print(df2_athl1)
-
-        #fig_athl1 = px.histogram(df_u10_u13, x="Série", color="Catégorie",
-        #                         color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB",
-        #                                                  "purple", "#54B4D3", "#9FA6B2"],
-        #                         category_orders={
-        #                             "Série": ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A",
-        #                                       "OLY"]})
-
-        #fig_athl1.update_layout(font_size=12,
-        #                            legend=dict(
-        #                            orientation="h",
-        #                            yanchor="bottom",
-        #                            y=1.05,
-        #                            xanchor="left",
-        #                            x=-0.05
-        #                        ))
-        #display_graph_athl1 = {'display': 'block'}
 
         return [dbc.Table.from_dataframe(df_u10_u13, responsive=True, striped=True, bordered=True, hover=True)]
         #fig_athl1, display_graph_athl1,
@@ -800,12 +788,12 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u15_u17):
         path_db = os.path.join(dirname, 'dataltero.db')
         conn = sql.connect(database=path_db)
 
-        list_club = ''
-        for i in txt_club:
-            list_club = list_club + i + "',"
-            print(list_club)
-        list_club = list_club[0:-1]
-        qry = qry_box(list_club, selected_year)
+        if txt_club:
+            txt_club_ligue = "clb.club in ('" + txt_club[0] + "')"
+        else:
+            txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
+
+        qry = qry_box(txt_club_ligue, selected_year)
 
         df_u15_u17 = pd.read_sql_query(qry, conn)
         df_u15_u17 = df_u15_u17[df_u15_u17['CateAge'].isin(['U15', 'U17'])]
@@ -847,12 +835,12 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u20):
         path_db = os.path.join(dirname, 'dataltero.db')
         conn = sql.connect(database=path_db)
 
-        list_club = ''
-        for i in txt_club:
-            list_club = list_club + i + "',"
-            print(list_club)
-        list_club = list_club[0:-1]
-        qry = qry_box(list_club, selected_year)
+        if txt_club:
+            txt_club_ligue = "clb.club in ('" + txt_club[0] + "')"
+        else:
+            txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
+
+        qry = qry_box(txt_club_ligue, selected_year)
 
         df_u20 = pd.read_sql_query(qry, conn)
         df_u20 = df_u20[df_u20['CateAge'].isin(['U20'])]
@@ -895,12 +883,12 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
         path_db = os.path.join(dirname, 'dataltero.db')
         conn = sql.connect(database=path_db)
 
-        list_club = ''
-        for i in txt_club:
-            list_club = list_club + i + "',"
-            print(list_club)
-        list_club = list_club[0:-1]
-        qry = qry_box(list_club, selected_year)
+        if txt_club:
+            txt_club_ligue = "clb.club in ('" + txt_club[0] + "')"
+        else:
+            txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
+
+        qry = qry_box(txt_club_ligue, selected_year)
 
         df_sen = pd.read_sql_query(qry, conn)
         df_sen = df_sen[df_sen['CateAge'].isin(['SEN'])]

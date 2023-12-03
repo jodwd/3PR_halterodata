@@ -12,7 +12,7 @@ app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'}],
                 use_pages=True)
-
+app.title = "3PR - Dashboard Haltero"
 server = app.server
 
 
@@ -48,7 +48,7 @@ qry_anniv = """SELECT DISTINCT
 
 #
 df_anniv = pd.read_sql_query(qry_anniv, conn)
-df_anniv.head()q
+df_anniv.head()
 print(df_anniv)
 
 txt_anniv = '🎂 Joyeux anniversaire à '
