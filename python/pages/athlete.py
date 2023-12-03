@@ -260,6 +260,10 @@ layout = html.Div([
                     # Mise en forme conditionelle pour les bulles
                     style_data_conditional=[
                         {
+                            'if': {'row_index': 'odd'},
+                            'backgroundColor': 'gray',
+                        },
+                        {
                             'if': {
                                 'filter_query': '{Arr1} <= 0',
                                 'column_id': 'Arr1'

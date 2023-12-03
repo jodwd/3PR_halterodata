@@ -198,6 +198,12 @@ layout = html.Div([
                     'minWidth': '40px',
                     'maxWidth': '200px'
                 },
+                style_data_conditional=[
+                        {
+                            'if': {'row_index': 'odd'},
+                            'backgroundColor': 'dimgray',
+                        }
+                ],
                 row_selectable=False,
                 row_deletable=False,
                 selected_columns=[],
