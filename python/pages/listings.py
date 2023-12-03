@@ -60,7 +60,7 @@ df['IWF'] = round(df['IWF'], 3)
 updated_title = 'Listings'
 
 # app = dash.Dash(__name__)
-dash.register_page(__name__, name='Listings', title='Listings', image='/assets/3PR.png', description='Listings et classements des haltérophiles français')
+dash.register_page(__name__, name='3PR - Listings', title='3PR - Listings', image='/assets/3PR.png', description='Listings et classements des haltérophiles français')
 # server = server
 
 

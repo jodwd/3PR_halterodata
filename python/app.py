@@ -12,7 +12,7 @@ app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'}],
                 use_pages=True)
-
+app.title = "3PR - Dashboard Haltero"
 server = app.server
 
 
@@ -27,6 +27,34 @@ qry = """SELECT max(cmp.DateCompet) as "Date"
       FROM COMPET as cmp """
 df = pd.read_sql_query(qry, conn)
 df.head()
+
+qry_anniv = """SELECT DISTINCT
+                ath.Nom || ' (' || Cast((JulianDay(DATE('now')) - JulianDay(DATE(substr(ath."DateNaissance",7,4)
+                || '-' || substr(ath."DateNaissance",4,2) || '-' || substr(ath."DateNaissance",1,2)))) / 365 AS Integer) || ' ans)' AS "AthlAnniv"
+            FROM
+                ATHLETE as ath
+                LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID = ath.AthleteID
+                LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition
+                LEFT JOIN ATHLETE_PR apr on apr."AthleteID" = (ath.Nom || ath."DateNaissance")
+                                          and apr.SaisonAnnee = cmp.SaisonAnnee
+            WHERE substr(DateNaissance, 1, 5) = substr(DATE('now'), 9,2) || '/' || substr(DATE('now'), 6 ,2)
+                AND (cmp.SaisonAnnee = cast(substr(DATE('now', '-8 months'),1,4) as Integer)
+                OR  cmp.SaisonAnnee = cast(substr(DATE('now', '+4 months'),1,4) as Integer))
+             
+            ORDER BY
+                (case when cat.Sexe='F' then 1.5 else 1 end)* apr."MaxIWFSaison" DESC"""
+
+#
+
+#
+df_anniv = pd.read_sql_query(qry_anniv, conn)
+df_anniv.head()
+print(df_anniv)
+
+txt_anniv = '🎂 Joyeux anniversaire à '
+for i in df_anniv['AthlAnniv'].tolist():
+    txt_anniv = txt_anniv + i + ', '
+txt_anniv = txt_anniv[0:-2]
 
 nav_button = dbc.Row(
     [
@@ -52,6 +80,7 @@ nav_button = dbc.Row(
                     html.P("🏋️ Données à jour au " + df.iloc[0,0]),
                     html.P("👨‍💻 https://github.com/jodwd/3PR_halterodata"),
                     html.P("📧 trois3pr@gmail.com"),
+                    html.P(txt_anniv)
                 ]),
                 dbc.ModalFooter(
                     dbc.Button("Close", id="close-button", color="secondary", className="ml-auto")

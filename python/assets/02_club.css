@@ -16,6 +16,18 @@
   margin-top: 1%;
 }
 
+.card-title {
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 13px;
+  text-align: justify;
+}
+.card-text{
+  font-size: 14px;
+  line-height: 16px;
+  text-align: justify;
+}
+
  .slider_zone {
   font-family: 'Helvetica Neue', sans-serif;
   font-size: 16px;

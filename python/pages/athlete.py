@@ -46,7 +46,7 @@ df2['Série'] = pd.Categorical(df2['Série'],
                                   ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"], ordered=True)
 
 
-dash.register_page(__name__, path='/', name='Athletes', title='Dashboard Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
+dash.register_page(__name__, path='/', name='3PR - Athletes', title='3PR - Dashboard Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
 
 # Liste d'athlètes = ceux qui ont tiré sur la plage par défaut càd l'année dernière + l'année en cours
 selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
@@ -108,7 +108,7 @@ layout = html.Div([
                                         html.Div(id="athl1-table", className="athl_data_tab"),
                                     ]),
                                     dbc.ModalFooter(
-                                        dbc.Button("Close", id="close-athl1", color="secondary", className="ml-auto")
+                                        dbc.Button("Fermer", id="close-athl1", color="secondary", className="ml-auto")
                                     ),
                                     ], id="athl1-modal", size="lg", centered=True, is_open=False),
                             ]
@@ -134,7 +134,7 @@ layout = html.Div([
                                         html.Div(id="athl2-table", className="athl_data_tab"),
                                     ]),
                                     dbc.ModalFooter(
-                                        dbc.Button("Close", id="close-athl2", color="secondary", className="ml-auto")
+                                        dbc.Button("Fermer", id="close-athl2", color="secondary", className="ml-auto")
                                     ),
                                     ], id="athl2-modal", size="lg", centered=True, is_open=False),
                             ]
@@ -160,7 +160,7 @@ layout = html.Div([
                                         html.Div(id="athl3-table", className="athl_data_tab"),
                                     ]),
                                     dbc.ModalFooter(
-                                        dbc.Button("Close", id="close-athl3", color="secondary", className="ml-auto")
+                                        dbc.Button("Fermer", id="close-athl3", color="secondary", className="ml-auto")
                                     ),
                                     ], id="athl3-modal", size="lg", centered=True, is_open=False),
                             ]
@@ -186,7 +186,7 @@ layout = html.Div([
                                         html.Div(id="athl4-table", className="athl_data_tab"),
                                     ]),
                                     dbc.ModalFooter(
-                                        dbc.Button("Close", id="close-athl4", color="secondary", className="ml-auto")
+                                        dbc.Button("Fermer", id="close-athl4", color="secondary", className="ml-auto")
                                     ),
                                     ], id="athl4-modal", size="lg", centered=True, is_open=False),
                             ]
