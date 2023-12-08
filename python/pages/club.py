@@ -272,7 +272,7 @@ layout = html.Div([
                 style_data_conditional=[
                         {
                             'if': {'row_index': 'odd'},
-                            'backgroundColor': 'gray',
+                            'backgroundColor': 'dimgray',
                         }
                 ],
                 row_selectable=False,
@@ -326,7 +326,7 @@ layout = html.Div([
                 style_data_conditional=[
                         {
                             'if': {'row_index': 'odd'},
-                            'backgroundColor': 'gray',
+                            'backgroundColor': 'dimgray',
                         }
                 ],
                 row_selectable=False,

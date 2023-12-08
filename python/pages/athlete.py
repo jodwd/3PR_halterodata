@@ -247,7 +247,7 @@ layout = html.Div([
                         'text-indent': '0.2em'
                     },
                     style_data={
-                        'backgroundColor': 'dimgray',
+                        'backgroundColor': 'rgb(80, 80, 90)',
                         'color': 'white',
                         'border': '1px solid white'
                     },
@@ -261,7 +261,7 @@ layout = html.Div([
                     style_data_conditional=[
                         {
                             'if': {'row_index': 'odd'},
-                            'backgroundColor': 'gray',
+                            'backgroundColor': 'dimgray',
                         },
                         {
                             'if': {
@@ -389,6 +389,22 @@ layout = html.Div([
                                 'column_id': 'EpJ'
                             },
                             'backgroundColor': 'rgb(59, 113, 202)',
+                            'color': 'white'
+                        },
+                        {
+                            'if': {
+                                'filter_query': '{Total} <= 0',
+                                'column_id': 'Total'
+                            },
+                            'backgroundColor': 'rgb(79,0,0)',
+                            'color': 'white'
+                        },
+                        {
+                            'if': {
+                                'filter_query': '{Total} > 0',
+                                'column_id': 'Total'
+                            },
+                            'backgroundColor': 'darkblue',
                             'color': 'white'
                         },
                     ],
@@ -557,7 +573,7 @@ def updated_athletes(selected_year, txt_inserted):
     return updated_show[0], f"{updated_name[0]}", f"{updated_name[0]}" + ' ' + f"{updated_date_naiss[0]}", f"{updated_club[0]}", f"{updated_anniv[0]}" + ' | PR ' + f"{updated_max[0]}",\
         updated_show[1], f"{updated_name[1]}", f"{updated_name[1]}" + ' ' + f"{updated_date_naiss[1]}",f"{updated_club[1]}", f"{updated_anniv[1]}"+ ' | PR ' + f"{updated_max[1]}",  \
         updated_show[2], f"{updated_name[2]}", f"{updated_name[2]}" + ' ' + f"{updated_date_naiss[2]}",f"{updated_club[2]}", f"{updated_anniv[2]}"+ ' | PR ' + f"{updated_max[2]}", \
-        updated_show[3], f"{updated_name[3]}", f"{updated_name[3]}" + ' ' + f"{updated_date_naiss[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}"+ ' | PR ' + f"{updated_max[3]}" #f"{updated_arr[3]}{updated_epj[3]}{updated_total[3]}", f"{updated_pdc[3]}",
+        updated_show[3], f"{updated_name[3]}", f"{updated_name[3]}" + ' ' + f"{updated_date_naiss[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}"+ ' | PR ' + f"{updated_max[3]}"
 
 # Gestion ouverture +Info Carte 1
 @callback(
@@ -677,13 +693,17 @@ def update_table_athl2(txt_inserted, is_open_athl2):
         df_athl2.head()
 
         df2_athl2 = df2[(df2['Nom'] == txt_inserted[1])]
+        df2_athl2['Série'] = pd.Categorical(df2_athl2['Série'],
+                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
+                                      ordered=True)
         df2_athl2 = df2_athl2.sort_values(by=['Série'])
         print(df2_athl2)
 
-        fig_athl2 = px.histogram(df2_athl2, x="Série", color="Catégorie", color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"])
+        fig_athl2 = px.histogram(df2_athl2, x="Série", color="Catégorie",
+                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
+                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
         #fig_athl2.update_xaxes(categoryorder="category ascending")
 
-        fig_athl2.update_xaxes(categoryorder="category ascending")
         fig_athl2.update_layout(font_size=12,
                           legend=dict(
                               orientation="h",
@@ -744,11 +764,16 @@ def update_table_athl3(txt_inserted, is_open_athl3):
         df_athl3.head()
 
         df2_athl3 = df2[(df2['Nom'] == txt_inserted[2])]
+        df2_athl3['Série'] = pd.Categorical(df2_athl3['Série'],
+                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
+                                      ordered=True)
         df2_athl3 = df2_athl3.sort_values(by=['Série'])
         print(df2_athl3)
 
-        fig_athl3 = px.histogram(df2_athl3, x="Série", color="Catégorie", color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"])
-        #fig_athl3.update_xaxes(categoryorder="category ascending")
+        fig_athl3 = px.histogram(df2_athl3, x="Série", color="Catégorie",
+                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
+                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
+
         fig_athl3.update_layout(font_size=12,
                           legend=dict(
                               orientation="h",
@@ -809,11 +834,15 @@ def update_table_athl4(txt_inserted, is_open_athl4):
         df_athl4.head()
 
         df2_athl4 = df2[(df2['Nom'] == txt_inserted[3])]
+        df2_athl4['Série'] = pd.Categorical(df2_athl4['Série'],
+                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
+                                      ordered=True)
         df2_athl4 = df2_athl4.sort_values(by=['Série'])
         print(df2_athl4)
 
-        fig_athl4 = px.histogram(df2_athl4, x="Série", color="Catégorie", color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"])
-        #fig_athl4.update_xaxes(categoryorder="category ascending")
+        fig_athl4 = px.histogram(df2_athl4, x="Série", color="Catégorie",
+                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
+                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
 
         fig_athl4.update_layout(font_size=12,
                           legend=dict(

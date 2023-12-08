@@ -1,10 +1,11 @@
 import dash
 from dash import html, dcc, Input, Output, State, html
 import dash_bootstrap_components as dbc
+from dash.exceptions import PreventUpdate
 import sqlite3 as sql
 import pandas as pd
 import os
-from datetime import date
+from datetime import datetime, timedelta
 from dash_bootstrap_components._components.Container import Container
 
 
@@ -20,7 +21,6 @@ server = app.server
 # Connection à la base SQLite
 dirname = os.path.dirname(os.path.abspath(__file__))
 path_db = os.path.join(dirname, 'pages/dataltero.db')
-print(path_db)
 conn = sql.connect(database=path_db)
 
 # Requête
@@ -28,35 +28,6 @@ qry = """SELECT max(cmp.DateCompet) as "Date"
       FROM COMPET as cmp """
 df = pd.read_sql_query(qry, conn)
 df.head()
-
-qry_anniv = """SELECT DISTINCT
-                ath.Nom || ' (' || Cast((JulianDay(DATE('now')) - JulianDay(DATE(substr(ath."DateNaissance",7,4)
-                || '-' || substr(ath."DateNaissance",4,2) || '-' || substr(ath."DateNaissance",1,2)))) / 365 AS Integer) || ' ans)' AS "AthlAnniv"
-            FROM
-                ATHLETE as ath
-                LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID = ath.AthleteID
-                LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition
-                LEFT JOIN ATHLETE_PR apr on apr."AthleteID" = (ath.Nom || ath."DateNaissance")
-                                          and apr.SaisonAnnee = cmp.SaisonAnnee
-            WHERE substr(DateNaissance, 1, 5) = substr(DATE('now'), 9,2) || '/' || substr(DATE('now'), 6 ,2)
-                AND (cmp.SaisonAnnee = cast(substr(DATE('now', '-8 months'),1,4) as Integer)
-                OR  cmp.SaisonAnnee = cast(substr(DATE('now', '+4 months'),1,4) as Integer))
-             
-            ORDER BY
-                (case when cat.Sexe='F' then 1.5 else 1 end)* apr."MaxIWFSaison" DESC"""
-
-#
-
-#
-df_anniv = pd.read_sql_query(qry_anniv, conn)
-df_anniv.head()
-print(df_anniv)
-
-today = date.today()
-txt_anniv = '🎂 ' + today.strftime("%d/%m") + ' - Joyeux anniversaire à '
-for i in df_anniv['AthlAnniv'].tolist():
-    txt_anniv = txt_anniv + i + ', '
-txt_anniv = txt_anniv[0:-2]
 
 nav_button = dbc.Row(
     [
@@ -82,7 +53,7 @@ nav_button = dbc.Row(
                     html.P("🏋️ Données à jour au " + df.iloc[0,0]),
                     html.P("👨‍💻 https://github.com/jodwd/3PR_halterodata"),
                     html.P("📧 trois3pr@gmail.com"),
-                    html.P(txt_anniv)
+                    html.Div([html.P("")], id="txt_anniv")
                 ]),
                 dbc.ModalFooter(
                     dbc.Button("Close", id="close-button", color="secondary", className="ml-auto")
@@ -131,7 +102,8 @@ dbc.Container(
     html.Div(className='hr3'),
     html.Div(className='hr4'),
     dash.page_container],
-    fluid=True
+    fluid=True,
+    id="page-content"
 )
 
 #Boutons de Navigation
@@ -157,6 +129,52 @@ def toggle_modal(open_clicks, close_clicks, is_open):
     if open_clicks or close_clicks:
         return not is_open
     return is_open
+
+@app.callback(
+    [Output("txt_anniv", "children")],
+    [Input("info-modal", "is_open")],
+    prevent_initial_call=True
+)
+
+def update_table_athl2(is_open):
+    if not is_open:
+        raise PreventUpdate
+    if is_open:
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        path_db = os.path.join(dirname, 'pages/dataltero.db')
+        conn = sql.connect(database=path_db)
+
+        qry_anniv = """SELECT DISTINCT
+                        ath.Nom || ' (' || Cast((JulianDay(DATETIME('now')) - JulianDay(DATETIME(substr(ath."DateNaissance",7,4)
+                        || '-' || substr(ath."DateNaissance",4,2) || '-' || substr(ath."DateNaissance",1,2)))) / 365 AS Integer) || ' ans)' AS "AthlAnniv"
+                    FROM
+                        ATHLETE as ath
+                        LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID = ath.AthleteID
+                        LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition
+                        LEFT JOIN ATHLETE_PR apr on apr."AthleteID" = (ath.Nom || ath."DateNaissance")
+                                                  and apr.SaisonAnnee = cmp.SaisonAnnee
+                    WHERE substr(DateNaissance, 1, 5) = substr(DATETIME('now'), 9,2) || '/' || substr(DATETIME('now'), 6 ,2)
+                        AND (cmp.SaisonAnnee = cast(substr(DATE('now', '-8 months'),1,4) as Integer)
+                        OR  cmp.SaisonAnnee = cast(substr(DATE('now', '+4 months'),1,4) as Integer))
+
+                    ORDER BY
+                        (case when cat.Sexe='F' then 1.5 else 1 end)* apr."MaxIWFSaison" DESC"""
+
+        df_anniv = pd.read_sql_query(qry_anniv, conn)
+        df_anniv.head()
+        print(df_anniv)
+
+        today = datetime.now()
+        print(today)
+        txt_anniv = '🎂 ' + today.strftime("%d/%m") + ' - Joyeux anniversaire à '
+        for i in df_anniv['AthlAnniv'].tolist():
+            txt_anniv = txt_anniv + i + ', '
+        txt_anniv = txt_anniv[0:-2]
+
+        return [txt_anniv]
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
