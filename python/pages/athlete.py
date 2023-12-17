@@ -59,14 +59,18 @@ layout = html.Div([
             dbc.Col([
                 html.Div(
                     children=[
-                        dbc.Button(
-                            "  Dashboard Athlètes  ", outline=False, color="danger", className="me-1", href="/club", size="lg"),
-                        #dbc.Collapse(
-                        #    info_button,
-                        #    id="navbar-collapse",
-                        #    is_open=False
-                        #)
+                        dbc.Button(" Dashboard Athlètes ", id="title-box", color="danger", className="mt-auto", size="lg"),
+                            dbc.Modal([
+                                dbc.ModalHeader(" Dashboard Athlètes ", id="athlete_info"),
+                                dbc.ModalBody([
+                                    html.Div([html.P("Cette page...")]),
+                                ]),
+                                dbc.ModalFooter(
+                                    dbc.Button("Fermer", id="close-athlete_info", color="secondary", className="ml-auto")
+                                ),
+                            ], id="athlete-info-modal", size="lg", centered=True, is_open=False),
                         ],
+
                     id='filter_info',
                     className="title-box",
                 )], xs=6, sm=6, md=6, lg=2, xl=2),
@@ -110,7 +114,7 @@ layout = html.Div([
                                     dbc.ModalFooter(
                                         dbc.Button("Fermer", id="close-athl1", color="secondary", className="ml-auto")
                                     ),
-                                    ], id="athl1-modal", size="lg", centered=True, is_open=False),
+                                ], id="athl1-modal", size="lg", centered=True, is_open=False),
                             ]
                         ),
                     ),
@@ -856,6 +860,19 @@ def update_table_athl4(txt_inserted, is_open_athl4):
 
         return fig_athl4, display_graph_athl4, [dbc.Table.from_dataframe(df_athl4, responsive = True, striped=True, bordered=True, hover=True)]
 
+# Info d'aide à l'accueil
+@callback(
+    Output("athlete-info-modal", "is_open"),
+    [Input("title-box", "n_clicks"),
+    Input("close-athlete_info", "n_clicks")],
+    State("athlete-info-modal", "is_open"),
+    prevent_initial_call=True
+)
+
+def toggle_modal_athl(open_clicks, close_clicks, is_open):
+    if open_clicks or close_clicks:
+        return not is_open
+    return is_open
 
 
 if __name__ == '__main__':

@@ -53,12 +53,23 @@ nav_button = dbc.Row(
                     html.P("🏋️ Données à jour au " + df.iloc[0,0]),
                     html.P("👨‍💻 https://github.com/jodwd/3PR_halterodata"),
                     html.P("📧 trois3pr@gmail.com"),
-                    html.Div([html.P("")], id="txt_anniv")
                 ]),
                 dbc.ModalFooter(
                     dbc.Button("Close", id="close-button", color="secondary", className="ml-auto")
                 ),
                 ], id="info-modal", size="lg", centered=True, is_open=False),
+            ],  width="auto"),
+        dbc.Col([
+            dbc.Button("🎂", id="anniv", color="light", outline=True, className="me-1"),
+            dbc.Modal([
+                dbc.ModalHeader("🎂"),
+                dbc.ModalBody([
+                    html.Div([html.P("")], id="txt_anniv")
+                ]),
+                dbc.ModalFooter(
+                    dbc.Button("Close", id="close-button", color="secondary", className="ml-auto")
+                ),
+                ], id="anniv-modal", size="lg", centered=True, is_open=False),
             ],  width="auto"),
     ],
     className="g-0 ms-auto flex-nowrap mt-3 mt-md-0",
@@ -131,12 +142,24 @@ def toggle_modal(open_clicks, close_clicks, is_open):
     return is_open
 
 @app.callback(
+    Output("anniv-modal", "is_open"),
+    [Input("anniv", "n_clicks"),
+    Input("close-button", "n_clicks")],
+    State("anniv-modal", "is_open"),
+)
+
+def toggle_modal(open_clicks, close_clicks, is_open):
+    if open_clicks or close_clicks:
+        return not is_open
+    return is_open
+
+@app.callback(
     [Output("txt_anniv", "children")],
-    [Input("info-modal", "is_open")],
+    [Input("anniv-modal", "is_open")],
     prevent_initial_call=True
 )
 
-def update_table_athl2(is_open):
+def anniv(is_open):
     if not is_open:
         raise PreventUpdate
     if is_open:
@@ -166,7 +189,7 @@ def update_table_athl2(is_open):
 
         today = datetime.now()
         print(today)
-        txt_anniv = '🎂 ' + today.strftime("%d/%m") + ' - Joyeux anniversaire à '
+        txt_anniv = today.strftime("%d/%m") + ' - Joyeux anniversaire à '
         for i in df_anniv['AthlAnniv'].tolist():
             txt_anniv = txt_anniv + i + ', '
         txt_anniv = txt_anniv[0:-2]
