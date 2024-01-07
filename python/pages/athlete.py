@@ -40,6 +40,7 @@ df2.head()
 
 # Reformatage des donnée de la requête
 df['IWF'] = round(df['IWF'], 3)
+
 df['MoisCompet'] = pd.Categorical(df['MoisCompet'],
                                   ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
 df2['Série'] = pd.Categorical(df2['Série'],
@@ -57,23 +58,20 @@ layout = html.Div([
     # Header & filtres
         dbc.Row([            # Titre
             dbc.Col([
-                html.Div(
-                    children=[
+
                         dbc.Button(" Dashboard Athlètes ", id="title-box", color="danger", className="mt-auto", size="lg"),
                             dbc.Modal([
-                                dbc.ModalHeader(" Dashboard Athlètes ", id="athlete_info"),
+                                dbc.ModalHeader(" Dashboard Athlètes ", id="athlete_info_"),
                                 dbc.ModalBody([
                                     html.Div([html.P("Cette page...")]),
                                 ]),
                                 dbc.ModalFooter(
-                                    dbc.Button("Fermer", id="close-athlete_info", color="secondary", className="ml-auto")
+                                    dbc.Button("Fermer", id="close-athlete_info-", color="secondary", className="ml-auto")
                                 ),
-                            ], id="athlete-info-modal", size="lg", centered=True, is_open=False),
-                        ],
+                            ], id="athlete-info-modal_", size="lg", centered=True, is_open=False),
 
-                    id='filter_info',
-                    className="title-box",
-                )], xs=6, sm=6, md=6, lg=2, xl=2),
+
+                ], xs=6, sm=6, md=6, lg=2, xl=2),
 
             # Zone filtres athlètes
             dbc.Col(
@@ -232,7 +230,7 @@ layout = html.Div([
                     id='datatable-interactivity',
                     # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
                     columns=[
-                        {"name": i, "id": i, "selectable": True} for i in
+                        {"name": i, "id": i,  "selectable": True} for i in
                             ['Nom',  'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'IWF', 'Série', 'Catégorie', 'Competition']
                     ],
                     data=df.to_dict('records'),
@@ -253,7 +251,8 @@ layout = html.Div([
                     style_data={
                         'backgroundColor': 'rgb(80, 80, 90)',
                         'color': 'white',
-                        'border': '1px solid white'
+                        'border': '1px solid white',
+                        'font-family': 'sans-serif'
                     },
                     style_cell={
                         'overflow': 'hidden',
@@ -859,20 +858,6 @@ def update_table_athl4(txt_inserted, is_open_athl4):
         display_graph_athl4 = {'display': 'block'}
 
         return fig_athl4, display_graph_athl4, [dbc.Table.from_dataframe(df_athl4, responsive = True, striped=True, bordered=True, hover=True)]
-
-# Info d'aide à l'accueil
-@callback(
-    Output("athlete-info-modal", "is_open"),
-    [Input("title-box", "n_clicks"),
-    Input("close-athlete_info", "n_clicks")],
-    State("athlete-info-modal", "is_open"),
-    prevent_initial_call=True
-)
-
-def toggle_modal_athl(open_clicks, close_clicks, is_open):
-    if open_clicks or close_clicks:
-        return not is_open
-    return is_open
 
 
 if __name__ == '__main__':

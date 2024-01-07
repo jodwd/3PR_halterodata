@@ -18,30 +18,34 @@ conn = sql.connect(database=path_db)
 # Requête TODO : associer les max IWF à une compétition précise (lieu, date...) dans la BDD
 qry = """SELECT * FROM
             (SELECT distinct
-                ath.Nom                     as "Nom"
-            ,   ath.DateNaissance           as "Né le"
-            ,   ath."Nationalite"           as "Pays"
-            ,   clb.Club                    as "Club"
-            ,   clb.Ligue                   as "Ligue"
-            ,   cat."Sexe"                  as "Sexe"
-            ,   cat."Serie"                 as "Serie"
-            ,   cat."CatePoids"             as "CatePoids"
-            ,   cat."CateAge"               as "CateAge"
-            ,   cat."Serie"                 as "Série"
-            ,   cat.Arrache                 as "Arr"
-            ,   cat.EpJete                  as "EpJ"
-            ,   cat.PoidsTotal              as "Total"
-            ,   cat.PoidsDeCorps            as "PdC"
-            ,   cat.IWF_Calcul              as "IWF"
-            ,   cmp.NomCompetitionCourt     as "Compet"
-            ,   cmp.DateCompet              as "Date"
-            ,   apr.SaisonAnnee             as "SaisonAnnee"
-            ,   apr.MaxIWFSaison            as "Max IWF Saison"
-            ,   apr.MaxIWF                  as "Max IWF"
+                ath.Nom                         as "Nom"
+            ,   substr(ath.DateNaissance, 7, 4) as "Né en"
+            ,   ath."Nationalite"               as "Pays"
+            ,   clb.Club                        as "Club"
+            ,   clb.Ligue                       as "Ligue"
+            ,   cat."Sexe"                      as "Sexe"
+            ,   cat."Serie"                     as "Serie"
+            ,   cat.RangSerie                   as "RangSerie"
+            ,   cat."CatePoids"                 as "CatePoids"
+            ,   cat."CateAge"                   as "CateAge"
+            ,   cat.Arrache                     as "Arr"
+            ,   cat.EpJete                      as "EpJ"
+            ,   cat.PoidsTotal                  as "Total"
+            ,   cat.TotalU13                    as "Tot U13"
+            ,   cat.PoidsDeCorps                as "PdC"
+            ,   cat.IWF_Calcul                  as "IWF"
+            ,   cat.IWF_CalculU13               as "IWF U13"
+            ,   ' ' || cmp.NomCompetitionCourt  as "Compet"
+            ,   cmp.DateCompet                  as "Date"
+            ,   apr.SaisonAnnee                 as "SaisonAnnee"
+            ,   apr.MaxIWFSaison                as "Max IWF Saison"
+            ,   apr.MaxIWF                      as "Max IWF"
             ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee", cat.CatePoids
-                                  order by cat.PoidsTotal desc) as "RowNumMaxCateTotal"
+                                  order by cat.PoidsTotal desc)
+                                                as "RowNumMaxCateTotal"
             ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee"
-                                  order by cat.IWF_Calcul desc) as "RowNumMaxSaison"
+                                  order by cat.IWF_Calcul desc)
+                                                as "RowNumMaxSaison"
           FROM ATHLETE as ath 
           LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
           LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
@@ -50,11 +54,11 @@ qry = """SELECT * FROM
       """
 
 df = pd.read_sql_query(qry, conn)
-df.head()
 
-# Arrondi à 3 virgule pour l'IWF pour le display
-df['Max IWF Saison'] = round(df['Max IWF Saison'], 3)
+df = df.sort_values(by=['RangSerie'])
+df['Max IWF Saison'] = round(df['Max IWF Saison'], 3) # Arrondi à 3 virgule pour l'IWF pour le display
 df['Max IWF'] = round(df['Max IWF'], 3)
+df['IWF U13'] = round(df['IWF U13'], 3)
 df['IWF'] = round(df['IWF'], 3)
 
 updated_title = 'Listings'
@@ -70,7 +74,7 @@ nom_age = list(set(df['CateAge'].tolist()))
 nom_poids = list(set(df['CatePoids'].tolist()))
 nom_sexe = list(set(df['Sexe'].tolist()))
 nom_nat = list(set(df['Pays'].tolist()))
-nom_serie = list(set(df['Série'].tolist()))
+nom_serie = df['Serie'].unique().tolist()
 
 # body
 layout = html.Div([
@@ -133,10 +137,10 @@ layout = html.Div([
                 className="input-box",
                 ),
             dcc.Dropdown(
-                options=[x for x in sorted(nom_serie)],
+                options=[x for x in nom_serie],
                 multi=True,
                 id='my_txt_input6',
-                placeholder="Serie",
+                placeholder="Série",
                 className="input-box"
             )
         ], xs=6, sm=6, md=3, lg=3, xl=3),
@@ -166,10 +170,10 @@ layout = html.Div([
         html.Div([
             dash_table.DataTable(
                 id='datatable-l',
-                # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
+                # tab_selected_columns=['Nom', 'Né en','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
                 columns=[
                     {"name": i, "id": i, "selectable": True} for i in
-                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né le', 'Série', 'Club', 'Date', 'Compet']
+                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Serie', 'Né en',  'Club', 'Date', 'Compet']
                 ],
                 data=df[(df['Sexe'] == 'M') & (df['RowNumMaxSaison'] == 1)].to_dict('records'),
                 editable=True,
@@ -190,6 +194,7 @@ layout = html.Div([
                     'color': 'white',
                     'fontWeight': 'light',
                     'font-size': '14px',
+                    'font-family': 'sans-serif',
                     'border': '1px solid white'
                 },
                 style_cell={
@@ -249,7 +254,7 @@ def update_datalist(selected_year, txt_inserted2, txt_inserted3, txt_inserted4, 
     if txt_inserted5:
         filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
     if txt_inserted6:
-        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
+        filtered_df = filtered_df[(filtered_df['Serie'].isin(txt_inserted6))]
 
     nom_sexe = list(set(filtered_df['Sexe'].tolist()))
     opt = [x for x in sorted(nom_sexe)]
@@ -278,7 +283,7 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted3, txt_inserted4, 
     if txt_inserted5:
         filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
     if txt_inserted6:
-        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
+        filtered_df = filtered_df[(filtered_df['Serie'].isin(txt_inserted6))]
 
     nom_poids = list(set(filtered_df['CatePoids'].tolist()))
     opt = [x for x in sorted(nom_poids)]
@@ -306,7 +311,7 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4, 
     if txt_inserted5:
         filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
     if txt_inserted6:
-        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
+        filtered_df = filtered_df[(filtered_df['Serie'].isin(txt_inserted6))]
 
     nom_age = list(set(filtered_df['CateAge'].tolist()))
     opt = [x for x in sorted(nom_age)]
@@ -319,7 +324,8 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4, 
      Input('my_txt_input2', 'value'),
      Input('my_txt_input3', 'value'),
      Input('my_txt_input5', 'value'),
-     Input('my_txt_input6', 'value')]
+     Input('my_txt_input6', 'value')],
+    prevent_initial_call=True
 )
 def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted5, txt_inserted6):
     if selected_year == '':
@@ -334,7 +340,7 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
     if txt_inserted5:
         filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
     if txt_inserted6:
-        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
+        filtered_df = filtered_df[(filtered_df['Serie'].isin(txt_inserted6))]
 
     nom_ligue = list(set(filtered_df['Ligue'].tolist()))
     opt = [x for x in sorted(nom_ligue)]
@@ -362,7 +368,7 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
     if txt_inserted6:
-        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
+        filtered_df = filtered_df[(filtered_df['Serie'].isin(txt_inserted6))]
 
     nom_nat = list(set(filtered_df['Pays'].tolist()))
     opt = [x for x in sorted(nom_nat)]
@@ -391,8 +397,9 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
     if txt_inserted5:
         filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
 
-    nom_serie = list(set(filtered_df['Série'].tolist()))
-    opt = [x for x in sorted(nom_serie)]
+    filtered_df = filtered_df.sort_values(by=['RangSerie'])
+    nom_serie = filtered_df['Serie'].unique().tolist()
+    opt = [x for x in nom_serie]
     return opt
 
 @callback(
@@ -413,7 +420,7 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
     if txt_inserted1:
         filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
         print(txt_inserted1)
-    if not txt_inserted2:
+    if not (txt_inserted2 or txt_inserted6):
         filtered_df = filtered_df[(filtered_df['RowNumMaxSaison'] == 1)]
     if txt_inserted3:
         filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
@@ -425,20 +432,38 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
         filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
         print(txt_inserted5)
     if txt_inserted6:
-        filtered_df = filtered_df[(filtered_df['Série'].isin(txt_inserted6))]
+        filtered_df = filtered_df[(filtered_df['RowNumMaxCateTotal'] == 1)]
+        filtered_df = filtered_df.sort_values(by=['IWF', 'Total'], ascending=[False, False])
+        filtered_df = filtered_df[(filtered_df['Serie'].isin(txt_inserted6))]
         print(txt_inserted6)
     if txt_inserted2:
         filtered_df = filtered_df[(filtered_df['RowNumMaxCateTotal'] == 1)]
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
         filtered_df = filtered_df.sort_values(by=['Total', 'IWF'], ascending=[False, False])
         print(txt_inserted2)
-    if not txt_inserted2:
+    if not (txt_inserted2 or txt_inserted6):
         filtered_df = filtered_df.sort_values(by=['Max IWF Saison', 'Total'], ascending=[False, False])
     filtered_df['Rang'] = filtered_df.groupby(['SaisonAnnee']).cumcount()+1
+
     columns = [
         {"name": i, "id": i, "selectable": True} for i in
-        ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né le', 'Série', 'Club', 'Date', 'Compet']
+        ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né en', 'Serie', 'Club', 'Date', 'Compet']
     ]
+
+    # Classement spécifique U10 / U13
+    l1 = ['U10']
+    l2 = ['U10', 'U13']
+    l3 = ['U13']
+    if txt_inserted3:
+        if txt_inserted3 == l1 or txt_inserted3 == l2 or txt_inserted3 == l3:
+            if txt_inserted2:
+                filtered_df = filtered_df.sort_values(by=['Tot U13', 'IWF U13'], ascending=[False, False])
+            else:
+                filtered_df = filtered_df.sort_values(by=['IWF U13', 'Total'], ascending=[False, False])
+            columns = [
+                {"name": i, "id": i, "selectable": True} for i in
+                ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot U13', 'PdC', 'IWF U13', 'Pays', 'Né en', 'Serie', 'Club', 'Date', 'Compet']
+            ]
 
     dat = filtered_df.to_dict('records')
 
