@@ -23,25 +23,31 @@ qry = """SELECT * FROM
             ,   clb.Ligue           as "Ligue"
             ,   cat."Sexe"          as "Sexe"
             ,   cat.Arrache         as "Arr"
+            ,   cat.ArracheU13      as "ArrU13"
             ,   cat.EpJete          as "EpJ"
+            ,   cat.EpJeteU13       as "EpJU13"
             ,   cat.PoidsTotal      as "Tot"
             ,   cat.PoidsDeCorps    as "PdC"
             ,   cat.IWF_Calcul      as "IWF"   
             ,   apr.SaisonAnnee     as "SaisonAnnee"
             ,   apr.MaxIWFSaison    as "Max IWF"
+            ,   cat.Serie           as "Serie"
+            ,   cat.RangSerie       as "RangSerie"
             ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee" order by cat.IWF_Calcul desc) as "RowNum"
+            ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee", cat.CatePoids
+                                  order by cat.PoidsTotal desc) as "RowNumMaxCateTotal"
           FROM ATHLETE as ath 
           LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
           LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
           LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
           LEFT JOIN ATHLETE_PR as apr on apr.AthleteID = ath.AthleteID and apr.SaisonAnnee = cmp.SaisonAnnee)
-      WHERE RowNum=1"""
+      """
 
 df = pd.read_sql_query(qry, conn)
 df.head()
 
-df['Max IWF']=round(df['Max IWF'], 3)
-df['Max IWF']=round(df['Max IWF'], 3)
+df['IWF'] = round(df['IWF'], 3)
+df['Max IWF'] = round(df['Max IWF'], 3)
 
 dfh = df
 dff = df
@@ -56,8 +62,10 @@ dash.register_page(__name__, name='3PR - Clubs', title='3PR - Dashboard Clubs', 
 
 
 #df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
+df = df.sort_values(by=['RangSerie'])
 nom_ligue = list(set(df['Ligue'].tolist()))
 nom_club = list(set(df['Club'].tolist()))
+nom_serie = df['Serie'].unique().tolist()
 
 #body
 layout = html.Div([
@@ -87,7 +95,7 @@ layout = html.Div([
                     placeholder="Ligue",
                     className="input-box",
                 )
-            ],  xs=6, sm=6, md=6, lg=5, xl=5),
+            ],  xs=6, sm=6, md=6, lg=3, xl=3),
             dbc.Col([
                 dcc.Dropdown(
                     options=[x for x in sorted(nom_club)],
@@ -96,7 +104,16 @@ layout = html.Div([
                     placeholder="Club",
                     className="input-box",
                 )
-            ], xs=12, sm=12, md=12, lg=5, xl=5),
+            ], xs=6, sm=6, md=6, lg=3, xl=3),
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in nom_serie],
+                    multi=True,
+                    id='txt-serie',
+                    placeholder="Série",
+                    className="input-box",
+                )
+            ], xs=6, sm=6, md=6, lg=3, xl=3),
         ]),
 
     html.Div([
@@ -261,6 +278,7 @@ layout = html.Div([
                     'backgroundColor': 'rgb(80, 80, 90)',
                     'color': 'white',
                     'font-size': '14px',
+                    'font-family': 'sans-serif',
                     'border': '1px solid white'
                 },
                 style_cell={
@@ -295,7 +313,7 @@ layout = html.Div([
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
                 columns=[
                     {"name": i, "id": i, "selectable": True} for i in
-                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF']
+                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'Serie', 'PdC', 'Max IWF']
                 ],
                 data=dff.to_dict('records'),
                 editable=True,
@@ -314,6 +332,7 @@ layout = html.Div([
                 style_data={
                     'backgroundColor': 'rgb(80, 80, 90)',
                     'color': 'white',
+                    'font-family': 'sans-serif',
                     'font-size': '14px',
                     'border': '1px solid white'
                 },
@@ -375,17 +394,24 @@ def update_datalist(selected_year, txt_ligue1):
     return opt
 
 @callback(
-    [Output('datatable-h', "data"),
+    [Output("top_5_h", "children"),
+     Output('datatable-h', "data"),
      Output('datatable-h', "columns")],
     [Input('year-slider', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
-     Input(component_id='txt-club', component_property='value')
+     Input(component_id='txt-club', component_property='value'),
+     Input(component_id='txt-serie', component_property='value')
      ])
 
-def update_data(selected_year=None, txt_ligue=None, txt_club=None):
+def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=None):
+    global updated_title_h
     fdfh = df[(df['Sexe'] == 'M')]
     if selected_year == '':
         selected_year = fdfh['SaisonAnnee'].max()
+    if not txt_serie:
+        fdfh = fdfh[(fdfh['RowNum'] == 1)]
+    else:
+        fdfh = fdfh[(fdfh['RowNumMaxCateTotal'] == 1) & (fdfh['Serie'].isin(txt_serie))]
     if txt_ligue or txt_club:
         if txt_ligue:
             fdfh = fdfh[(fdfh['Ligue'].isin(txt_ligue)) & (fdfh['SaisonAnnee'] == selected_year)]
@@ -398,25 +424,37 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None):
     fdfh['Rang'] = fdfh.groupby(['SaisonAnnee']).cumcount()+1
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'PdC', 'Max IWF']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'Serie', 'PdC', 'IWF']
     ]
 
     dat = fdfh.to_dict('records')
 
-    return dat, columns
+    #Top 5
+    filtered_df=round(fdfh.head(5),0)
+    res = filtered_df['Max IWF'].sum()
+    updated_title_h = "Top 5 Hommes : " + str(int(res))
+
+    return updated_title_h, dat, columns
 
 @callback(
-    [Output('datatable-f', "data"),
+    [Output("top_5_f", "children"),
+     Output('datatable-f', "data"),
      Output('datatable-f', "columns")],
     [Input('year-slider', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
-     Input(component_id='txt-club', component_property='value')
+     Input(component_id='txt-club', component_property='value'),
+     Input(component_id='txt-serie', component_property='value')
      ])
 
-def update_data(selected_year, txt_ligue, txt_club):
+def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=None):
+    global updated_title_f
     fdff = df[(df['Sexe'] == 'F')]
     if selected_year == '':
         selected_year = fdff['SaisonAnnee'].max()
+    if not txt_serie:
+        fdff = fdff[(fdff['RowNum'] == 1)]
+    else:
+        fdff = fdff[(fdff['RowNumMaxCateTotal'] == 1) & (fdff['Serie'].isin(txt_serie))]
     if txt_ligue or txt_club:
         if txt_ligue:
             fdff = fdff[(fdff['Ligue'].isin(txt_ligue)) & (fdff['SaisonAnnee'] == selected_year)]
@@ -430,70 +468,45 @@ def update_data(selected_year, txt_ligue, txt_club):
 
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'PdC', 'Max IWF']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'Serie', 'PdC', 'IWF']
     ]
 
     dat = fdff.to_dict('records')
 
-    return dat, columns
-
-@callback(
-    Output("top_5_h", "children"),
-    [Input('year-slider', 'value'),
-     Input(component_id='txt-ligue', component_property='value'),
-     Input(component_id='txt-club', component_property='value')
-     ])
-
-def update_title(selected_year, txt_ligue, txt_club):
-    # Perform any manipulation on input_value and return the updated title
-    global updated_title_h
-    fdfh = df[(df['Sexe'] == 'M')]
-    if selected_year=='':
-        selected_year=fdfh['SaisonAnnee'].max()
-    if txt_ligue or txt_club:
-        if txt_ligue:
-            fdfh = fdfh[(fdfh['Ligue'].isin(txt_ligue)) & (fdfh['SaisonAnnee'] == selected_year)]
-        if txt_club:
-            fdfh = fdfh[(fdfh['Club'].isin(txt_club)) & (fdfh['SaisonAnnee'] == selected_year)]
-    else:
-        fdfh = fdfh[(fdfh['SaisonAnnee'] == selected_year)]
-
-    fdfh=fdfh.sort_values(by=['Max IWF'], ascending=False)
-    filtered_df=round(fdfh.head(5),0)
-    res = filtered_df['Max IWF'].sum()
-    updated_title_h = "Top 5 Hommes : " + str(int(res))
-
-    return updated_title_h
-
-@callback(
-    Output("top_5_f", "children"),
-    [Input('year-slider', 'value'),
-     Input(component_id='txt-ligue', component_property='value'),
-     Input(component_id='txt-club', component_property='value')
-     ])
-
-def update_title(selected_year, txt_ligue, txt_club):
-    # Perform any manipulation on input_value and return the updated title
-    global updated_title_f
-    fdff = df[(df['Sexe'] == 'F')]
-    if selected_year == '':
-        selected_year = fdff['SaisonAnnee'].max()
-    if txt_ligue or txt_club:
-        if txt_ligue:
-            fdff = fdff[
-                (fdff['Ligue'].isin(txt_ligue)) & (fdff['SaisonAnnee'] == selected_year)]
-        if txt_club:
-            fdff = fdff[
-                (fdff['Club'].isin(txt_club)) & (fdff['SaisonAnnee'] == selected_year)]
-    else:
-        fdff = fdff[(fdff['SaisonAnnee'] == selected_year)]
-
-    fdff = fdff.sort_values(by=['Max IWF'], ascending=False)
     filtered_df=round(fdff.head(4),0)
     res = filtered_df['Max IWF'].sum()
     updated_title_f = "Top 4 Femmes : " + str(int(res))
 
-    return updated_title_f
+    return updated_title_f, dat, columns
+
+
+
+# @callback(
+#     [Input('year-slider', 'value'),
+#      Input(component_id='txt-ligue', component_property='value'),
+#      Input(component_id='txt-club', component_property='value')
+#      ])
+#
+# def update_title(selected_year, txt_ligue, txt_club):
+#     # Perform any manipulation on input_value and return the updated title
+#     global updated_title_f
+#     fdff = df[(df['Sexe'] == 'F')]
+#     if selected_year == '':
+#         selected_year = fdff['SaisonAnnee'].max()
+#     if txt_serie:
+#     if txt_ligue or txt_club:
+#         if txt_ligue:
+#             fdff = fdff[
+#                 (fdff['Ligue'].isin(txt_ligue)) & (fdff['SaisonAnnee'] == selected_year)]
+#         if txt_club:
+#             fdff = fdff[
+#                 (fdff['Club'].isin(txt_club)) & (fdff['SaisonAnnee'] == selected_year)]
+#     else:
+#         fdff = fdff[(fdff['SaisonAnnee'] == selected_year)]
+#
+#     fdff = fdff.sort_values(by=['Max IWF'], ascending=False)
+#
+#     return updated_title_f
 
 # Mise à jour des cartes par catégorie d'age
 # Nb athletes (classement) / nb participations (Classement part)
@@ -663,10 +676,12 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
 
 
 # Partie + Info
-
-
-def qry_box(txt_club_ligue, selected_year):
-    qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, ath.Nom, count(clb.club) as "Nb Compet" 
+def qry_box(txt_club_ligue, txt_ligue, selected_year):
+    if not txt_ligue:
+        txt_club = ''
+    else:
+        txt_club = ', clb.Club'
+    qry = """SELECT cmp.SaisonAnnee as "Saison", """ + txt_club + """ ath.Nom, count(clb.club) as "Nb Compet" 
                      , max(cat.Arrache) as "Max Arr", max(cat.EpJete) as "Max EpJ", max(cat.PoidsTotal) as "Max Tot"
                      , max(round(cat.IWF_Calcul,3)) as "Max IWF"
                      , CASE 
@@ -756,7 +771,7 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u10_u13):
         else:
             txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
 
-        qry = qry_box(txt_club_ligue, selected_year)
+        qry = qry_box(txt_club_ligue, txt_ligue, selected_year)
 
         df_u10_u13 = pd.read_sql_query(qry, conn)
         df_u10_u13 = df_u10_u13[df_u10_u13['CateAge'].isin(['U10','U13'])]
@@ -805,7 +820,7 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u15_u17):
         else:
             txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
 
-        qry = qry_box(txt_club_ligue, selected_year)
+        qry = qry_box(txt_club_ligue, txt_ligue, selected_year)
 
         df_u15_u17 = pd.read_sql_query(qry, conn)
         df_u15_u17 = df_u15_u17[df_u15_u17['CateAge'].isin(['U15', 'U17'])]
@@ -852,7 +867,7 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u20):
         else:
             txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
 
-        qry = qry_box(txt_club_ligue, selected_year)
+        qry = qry_box(txt_club_ligue, txt_ligue, selected_year)
 
         df_u20 = pd.read_sql_query(qry, conn)
         df_u20 = df_u20[df_u20['CateAge'].isin(['U20'])]
@@ -900,7 +915,7 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
         else:
             txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
 
-        qry = qry_box(txt_club_ligue, selected_year)
+        qry = qry_box(txt_club_ligue, txt_ligue, selected_year)
 
         df_sen = pd.read_sql_query(qry, conn)
         df_sen = df_sen[df_sen['CateAge'].isin(['SEN'])]
