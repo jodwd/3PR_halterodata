@@ -75,7 +75,7 @@ layout = html.Div([
             html.Div(
                 children=[
                     dbc.Button(
-                        "  Dashboard Clubs  ", outline=False, color="primary", className="me-1", href="/club", size="lg"),
+                        "  Dashboard Clubs  ", outline=False, color="primary", className="titlebox", href="/club", size="lg"),
                     # dbc.Collapse(
                     #    info_button,
                     #    id="navbar-collapse",
@@ -84,7 +84,7 @@ layout = html.Div([
                 ],
                 id='filter_info',
                 className="title-box",
-            )], xs=6, sm=6, md=6, lg=2, xl=2),
+            )], xs=6, sm=6, md=6, lg=3, xl=3),
 
             # Zone filtres Ligue / Club
             dbc.Col([
@@ -252,7 +252,7 @@ layout = html.Div([
     dbc.Row([
         dbc.Col([
             dbc.Button(
-                title="  Top 5 Hommes  ", id="top_5_h", outline=True, color="primary", className="me-1", href="/club", size="md"),
+                title="  Top 5 Hommes  ", id="top_5_h", outline=True, color="primary", className="top_5_h", href="/club", size="lg"),
             dash_table.DataTable(
                 id='datatable-h',
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
@@ -306,7 +306,7 @@ layout = html.Div([
 
         dbc.Col([
             dbc.Button(
-                title="  Top 5 Femmes  ", id="top_5_f", outline=True, color="primary", className="me-1", href="/club", size="md"),
+                title="  Top 5 Femmes  ", id="top_5_f", outline=True, color="primary", className="top_5_f", href="/club", size="lg"),
 
             dash_table.DataTable(
                 id='datatable-f',
@@ -355,9 +355,9 @@ layout = html.Div([
                 style_as_list_view=True,
                 page_action="native",
                 page_current=0,
-                page_size=25,
+                page_size=25
             ),
-        ] , xs=12, sm=12, md=6, lg=6, xl=6),
+        ], xs=12, sm=12, md=6, lg=6, xl=6),
     ]),
 
 

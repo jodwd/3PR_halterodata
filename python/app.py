@@ -107,14 +107,15 @@ navbar = dbc.Navbar(
 )
 
 app.layout = \
-dbc.Container(
+html.Div(children=
+#dbc.Container(
     [navbar,
     html.Div(className='hr1'),
     html.Div(className='hr2'),
     html.Div(className='hr3'),
     html.Div(className='hr4'),
     dash.page_container],
-    fluid=True,
+    #fluid=True,
     id="page-content"
 )
 

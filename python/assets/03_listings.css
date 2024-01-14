@@ -49,8 +49,9 @@
 
 .data_tab_l {
   display: inline-block;
-  width: 100%;
-  margin-left: 2%;
+  width: 98%;
+  margin-left: 1vw;
+  margin-right: 1vw;
   font-family: "Helvetica Neue", sans-serif;
   backgroundColor: rgb(80, 80, 90);
   color: white;
