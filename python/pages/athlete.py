@@ -58,19 +58,16 @@ layout = html.Div([
     # Header & filtres
         dbc.Row([            # Titre
             dbc.Col([
-
-                        dbc.Button(" Dashboard Athlètes ", id="title-box", color="danger", className="mt-auto", size="lg"),
-                            dbc.Modal([
-                                dbc.ModalHeader(" Dashboard Athlètes ", id="athlete_info_"),
-                                dbc.ModalBody([
-                                    html.Div([html.P("Cette page...")]),
-                                ]),
-                                dbc.ModalFooter(
-                                    dbc.Button("Fermer", id="close-athlete_info-", color="secondary", className="ml-auto")
-                                ),
-                            ], id="athlete-info-modal_", size="lg", centered=True, is_open=False),
-
-
+                dbc.Button(" Dashboard Athlètes ", id="title-box", color="danger", className="titlebox", size="lg"),
+                    dbc.Modal([
+                        dbc.ModalHeader(" Dashboard Athlètes ", id="athlete_info_"),
+                        dbc.ModalBody([
+                            html.Div([html.P("Cette page...")]),
+                        ]),
+                        dbc.ModalFooter(
+                            dbc.Button("Fermer", id="close-athlete_info-", color="secondary", className="ml-auto")
+                        ),
+                    ], id="athlete-info-modal_", size="lg", centered=True, is_open=False),
                 ], xs=6, sm=6, md=6, lg=2, xl=2),
 
             # Zone filtres athlètes
@@ -212,7 +209,7 @@ layout = html.Div([
                     df['SaisonAnnee'].max(),
                     step=None,
                     value=selected_year,
-                    marks={str(year): str(year) for year in df['SaisonAnnee'].unique()},
+                    marks={str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()},
                     id='year-slider',
                     className='slider_zone')],
                 id='div_output',

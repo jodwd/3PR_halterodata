@@ -75,6 +75,8 @@ nom_poids = list(set(df['CatePoids'].tolist()))
 nom_sexe = list(set(df['Sexe'].tolist()))
 nom_nat = list(set(df['Pays'].tolist()))
 nom_serie = df['Serie'].unique().tolist()
+nom_competition = ['Critérium National', 'Challenge Avenir', 'Chpt Départemental', 'Chpt Ligue', 'Cpe de France', 'France Elite', 'Grand Prix Fédéral', 'TOP 9', 'NAT 1', 'NAT 2', 'REG 1'
+                   'Monde', 'Trophée Nat']
 
 # body
 layout = html.Div([
@@ -102,8 +104,19 @@ layout = html.Div([
                 multi=False,
                 id='my_txt_input1',
                 placeholder="Sexe",
+                className="input-box"
+            )
+        ], xs=3, sm=3, md=1, lg=1, xl=1),
+        dbc.Col([
+            dcc.Dropdown(
+                options=[x for x in sorted(nom_nat)],
+                multi=True,
+                id='my_txt_input5',
+                placeholder="Nationalité",
                 className="input-box",
-            ),
+                )
+        ], xs=3, sm=3, md=2, lg=2, xl=2),
+        dbc.Col([
             dcc.Dropdown(
                 options=[x for x in sorted(nom_poids)],
                 multi=True,
@@ -120,6 +133,12 @@ layout = html.Div([
                 placeholder="Catégorie Age",
                 className="input-box",
                 ),
+        ], xs=6, sm=6, md=3, lg=3, xl=3),
+        dbc.Col([
+        ], xs=0, sm=0, md=0, lg=2, xl=2),
+        #]),
+        #dbc.Row([
+        dbc.Col([
             dcc.Dropdown(
                 options=[x for x in sorted(nom_ligue)],
                 multi=True,
@@ -130,13 +149,6 @@ layout = html.Div([
         ], xs=6, sm=6, md=3, lg=3, xl=3),
         dbc.Col([
             dcc.Dropdown(
-                options=[x for x in sorted(nom_nat)],
-                multi=True,
-                id='my_txt_input5',
-                placeholder="Nationalité",
-                className="input-box",
-                ),
-            dcc.Dropdown(
                 options=[x for x in nom_serie],
                 multi=True,
                 id='my_txt_input6',
@@ -144,6 +156,15 @@ layout = html.Div([
                 className="input-box"
             )
         ], xs=6, sm=6, md=3, lg=3, xl=3),
+        dbc.Col([
+            dcc.Dropdown(
+                options=[x for x in nom_competition],
+                multi=True,
+                id='my_txt_input7',
+                placeholder="Compétition",
+                className="input-box"
+            )
+        ], xs=12, sm=12, md=6, lg=3, xl=3),
     ]),
     html.Div([
         dcc.Slider(
@@ -167,59 +188,57 @@ layout = html.Div([
     ),
 
     html.Div([
-        html.Div([
-            dash_table.DataTable(
-                id='datatable-l',
-                # tab_selected_columns=['Nom', 'Né en','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
-                columns=[
-                    {"name": i, "id": i, "selectable": True} for i in
-                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Serie', 'Né en',  'Club', 'Date', 'Compet']
-                ],
-                data=df[(df['Sexe'] == 'M') & (df['RowNumMaxSaison'] == 1)].to_dict('records'),
-                editable=True,
-                sort_action="native",
-                sort_mode="single",
-                style_table={
-                    'overflowX': 'scroll'
-                },
-                style_header={
-                    'backgroundColor': 'white',
-                    'fontWeight': 'bold',
-                    'text-align': 'left',
-                    'text-indent': '0.2em',
-                    'color': 'rgb(80, 80, 90)'
-                },
-                style_data={
-                    'backgroundColor': 'rgb(80, 80, 90)',
-                    'color': 'white',
-                    'fontWeight': 'light',
-                    'font-size': '14px',
-                    'font-family': 'sans-serif',
-                    'border': '1px solid white'
-                },
-                style_cell={
-                    'overflow': 'hidden',
-                    'textOverflow': 'ellipsis',
-                    'minWidth': '40px',
-                    'maxWidth': '200px'
-                },
-                style_data_conditional=[
-                        {
-                            'if': {'row_index': 'odd'},
-                            'backgroundColor': 'dimgray',
-                        }
-                ],
-                row_selectable=False,
-                row_deletable=False,
-                selected_columns=[],
-                selected_rows=[],
-                style_as_list_view=True,
-                page_action="native",
-                page_current=0,
-                page_size=25,
-            ),
-        ], className='data_tab_l'),
-    ], className='data_tabs'),
+        dash_table.DataTable(
+            id='datatable-l',
+            # tab_selected_columns=['Nom', 'Né en','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
+            columns=[
+                {"name": i, "id": i, "selectable": True} for i in
+                ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Serie', 'Né en',  'Club', 'Date', 'Compet']
+            ],
+            data=df[(df['Sexe'] == 'M') & (df['RowNumMaxSaison'] == 1)].to_dict('records'),
+            editable=True,
+            sort_action="native",
+            sort_mode="single",
+            style_table={
+                'overflowX': 'scroll'
+            },
+            style_header={
+                'backgroundColor': 'white',
+                'fontWeight': 'bold',
+                'text-align': 'left',
+                'text-indent': '0.2em',
+                'color': 'rgb(80, 80, 90)'
+            },
+            style_data={
+                'backgroundColor': 'rgb(80, 80, 90)',
+                'color': 'white',
+                'fontWeight': 'light',
+                'font-size': '14px',
+                'font-family': 'sans-serif',
+                'border': '1px solid white'
+            },
+            style_cell={
+                'overflow': 'hidden',
+                'textOverflow': 'ellipsis',
+                'minWidth': '40px',
+                'maxWidth': '220px'
+            },
+            style_data_conditional=[
+                    {
+                        'if': {'row_index': 'odd'},
+                        'backgroundColor': 'dimgray',
+                    }
+            ],
+            row_selectable=False,
+            row_deletable=False,
+            selected_columns=[],
+            selected_rows=[],
+            style_as_list_view=True,
+            page_action="native",
+            page_current=0,
+            page_size=25,
+        ),
+    ], className='data_tab_l'),
     html.Div(id='datatable-container'),
     html.Link(
         rel='stylesheet',
@@ -411,17 +430,24 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
      Input(component_id='my_txt_input3', component_property='value'),  # age
      Input(component_id='my_txt_input4', component_property='value'),  # ligue
      Input(component_id='my_txt_input5', component_property='value'),  # nationalité
-     Input(component_id='my_txt_input6', component_property='value')  # série
+     Input(component_id='my_txt_input6', component_property='value'),  # série
+     Input(component_id='my_txt_input7', component_property='value')   # compétition
      ])
-def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
+def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
     if txt_inserted1:
         filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
         print(txt_inserted1)
-    if not (txt_inserted2 or txt_inserted6):
+    if not (txt_inserted2 or txt_inserted6 or txt_inserted7):
         filtered_df = filtered_df[(filtered_df['RowNumMaxSaison'] == 1)]
+    if txt_inserted2 and not(txt_inserted7):
+        filtered_df = filtered_df[(filtered_df['RowNumMaxCateTotal'] == 1)]
+    if txt_inserted2:
+        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
+        filtered_df = filtered_df.sort_values(by=['Total', 'IWF'], ascending=[False, False])
+        print(txt_inserted2)
     if txt_inserted3:
         filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
         print(txt_inserted3)
@@ -431,18 +457,17 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
     if txt_inserted5:
         filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
         print(txt_inserted5)
-    if txt_inserted6:
+    if txt_inserted6 and not(txt_inserted7):
         filtered_df = filtered_df[(filtered_df['RowNumMaxCateTotal'] == 1)]
+    if txt_inserted6:
         filtered_df = filtered_df.sort_values(by=['IWF', 'Total'], ascending=[False, False])
         filtered_df = filtered_df[(filtered_df['Serie'].isin(txt_inserted6))]
         print(txt_inserted6)
-    if txt_inserted2:
-        filtered_df = filtered_df[(filtered_df['RowNumMaxCateTotal'] == 1)]
-        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
-        filtered_df = filtered_df.sort_values(by=['Total', 'IWF'], ascending=[False, False])
-        print(txt_inserted2)
+    if txt_inserted7:
+        filtered_df = filtered_df[(filtered_df['Compet'].str.contains('|'.join(txt_inserted7)))]
+        print(txt_inserted7)
     if not (txt_inserted2 or txt_inserted6):
-        filtered_df = filtered_df.sort_values(by=['Max IWF Saison', 'Total'], ascending=[False, False])
+        filtered_df = filtered_df.sort_values(by=['IWF', 'Total'], ascending=[False, False])
     filtered_df['Rang'] = filtered_df.groupby(['SaisonAnnee']).cumcount()+1
 
     columns = [

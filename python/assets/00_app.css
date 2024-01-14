@@ -30,6 +30,11 @@
     margin-right: 10px;
 }
 
+.body {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
 .hr1 {
   background-color: rgb(161, 28, 15);
   width: 100%;

@@ -13,7 +13,15 @@
   font-size: 12px;
   color: black;
   width: 100%;
-  margin-top: 1%;
+  margin-top: 2%;
+}
+
+.title-box {
+    font-family: 'Helvetica Neue', sans-serif;
+    width: 90%;
+    margin-top: 1%;
+    margin-left: 1%;
+    text-align: center;
 }
 
 .card-title {
@@ -22,6 +30,7 @@
   line-height: 13px;
   text-align: justify;
 }
+
 .card-text{
   font-size: 14px;
   line-height: 16px;
@@ -64,7 +73,7 @@
   display: inline-block;
   width: 90%;
   height: 30px;
-  margin-left: 20px;
+  margin-left: 1vw;
   font-family: "Helvetica Neue", sans-serif;
   color: white;
   border-width: 10px;
@@ -74,25 +83,15 @@
 .top_5_h {
   position: relative;
   display: inline-block;
-  width: 40%;
-  height: 30px;
-  margin-left: 30px;
-  padding: 0px;
   font-family: "Helvetica Neue", sans-serif;
   backgroundColor: rgb(80, 80, 90);
-  color: white;
 }
 
 .top_5_f {
   position: relative;
   display: inline-block;
-  width: 40%;
-  height: 30px;
-  margin-left: auto;
-  margin-right: 0px;
   font-family: "Helvetica Neue", sans-serif;
   backgroundColor: rgb(80, 80, 90);
-  color: white;
 }
 
 .data_tabs {
@@ -103,8 +102,8 @@
 
 .data_tab_h {
   display: inline-block;
-  width: 40%;
-  margin-left: 20px;
+  margin-left: 2vw;
+  width: 48%;
   font-family: "Helvetica Neue", sans-serif;
   backgroundColor: rgb(80, 80, 90);
   color: white;
@@ -112,10 +111,8 @@
 
 .data_tab_f {
   display: inline-block;
-  width: 40%;
-  margin-left: 20px;
-  border: 10px solid #000;
-  border-color: rgb(40,40,45);
+  margin-right: 2vw;
+  width: 48%;
   font-family: 'Helvetica Neue', sans-serif;
   backgroundColor: rgb(80, 80, 90);
   color: white;
