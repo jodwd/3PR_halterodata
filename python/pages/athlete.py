@@ -79,10 +79,11 @@ layout = html.Div([
                                 options=[x for x in sorted(list_names)],
                                 multi=True,
                                 id='my_txt_input',
-                                placeholder="Choisir des athlètes..."
+                                placeholder="Choisir des athlètes...",
+                                className="input_box1",
                                 )
                             ],
-                            className="input_box1",),
+                            ),
                         #html.Datalist(id='Nom_athl')
                         ])
                 ), xs=6, sm=6, md=6, lg=2, xl=2),
