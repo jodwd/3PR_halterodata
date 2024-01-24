@@ -7,6 +7,7 @@ import sqlite3 as sql
 #import numpy as np
 import os
 from dash.dependencies import Input, Output
+import dash_daq as daq
 #from flask import Flask, render_template
 import dash_bootstrap_components as dbc
 

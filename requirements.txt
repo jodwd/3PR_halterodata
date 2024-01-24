@@ -8,3 +8,4 @@ pandas==1.5.3
 plotly==5.13.1
 Werkzeug==2.2.2
 gunicorn
+dash_daq==0.5.0
