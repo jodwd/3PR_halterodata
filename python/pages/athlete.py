@@ -244,13 +244,17 @@ layout = html.Div([
                         'backgroundColor': 'white',
                         'fontWeight': 'bold',
                         'text-align': 'left',
-                        'text-indent': '0.2em'
+                        'font-size': '0.8rem',
+                        'color': 'black',
+                        'text-indent': '0.2em',
+                        'font-family': 'sans-serif'
                     },
                     style_data={
-                        'backgroundColor': 'rgb(80, 80, 90)',
+                        'backgroundColor': 'rgb(54,69,79)',
                         'color': 'white',
                         'border': '1px solid white',
-                        'font-family': 'sans-serif'
+                        'font-family': 'sans-serif',
+                        'font-size': '0.8rem'
                     },
                     style_cell={
                         'overflow': 'hidden',
@@ -262,7 +266,7 @@ layout = html.Div([
                     style_data_conditional=[
                         {
                             'if': {'row_index': 'odd'},
-                            'backgroundColor': 'dimgray',
+                            'backgroundColor': 'rgb(47,79,79)',
                         },
                         {
                             'if': {

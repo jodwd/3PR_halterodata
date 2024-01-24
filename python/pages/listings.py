@@ -166,13 +166,16 @@ layout = html.Div([
             )
         ], xs=12, sm=12, md=6, lg=3, xl=3),
     ]),
+
+    html.Br(),
+
     html.Div([
         dcc.Slider(
             df['SaisonAnnee'].min(),
             df['SaisonAnnee'].max(),
             step=1,
             value=df['SaisonAnnee'].max(),
-            marks=None,
+            marks={str(year): {'label': str(year), 'style': {'color': 'white'}} for year in df['SaisonAnnee'].unique()},
             tooltip={"placement": "bottom", "always_visible": True},
             id='year-slider',
             className='slider_zone')],
@@ -193,7 +196,7 @@ layout = html.Div([
             # tab_selected_columns=['Nom', 'Né en','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
             columns=[
                 {"name": i, "id": i, "selectable": True} for i in
-                ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Serie', 'Né en',  'Club', 'Date', 'Compet']
+                ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Serie', 'Né en', 'Date', 'Club',  'Compet']
             ],
             data=df[(df['Sexe'] == 'M') & (df['RowNumMaxSaison'] == 1)].to_dict('records'),
             editable=True,
@@ -206,14 +209,15 @@ layout = html.Div([
                 'backgroundColor': 'white',
                 'fontWeight': 'bold',
                 'text-align': 'left',
+                'font-size': '0.8rem',
+                'color': 'black',
                 'text-indent': '0.2em',
-                'color': 'rgb(80, 80, 90)'
+                'font-family': 'sans-serif'
             },
             style_data={
-                'backgroundColor': 'rgb(80, 80, 90)',
+                'backgroundColor': 'rgb(54,69,79)',
                 'color': 'white',
-                'fontWeight': 'light',
-                'font-size': '14px',
+                'font-size': '0.8rem',
                 'font-family': 'sans-serif',
                 'border': '1px solid white'
             },
@@ -221,13 +225,13 @@ layout = html.Div([
                 'overflow': 'hidden',
                 'textOverflow': 'ellipsis',
                 'minWidth': '40px',
-                'maxWidth': '220px'
+                'maxWidth': '250px'
             },
             style_data_conditional=[
-                    {
-                        'if': {'row_index': 'odd'},
-                        'backgroundColor': 'dimgray',
-                    }
+                {
+                    'if': {'row_index': 'odd'},
+                    'backgroundColor': 'rgb(47,79,79)',
+                }
             ],
             row_selectable=False,
             row_deletable=False,
@@ -244,6 +248,7 @@ layout = html.Div([
         rel='stylesheet',
         href='/assets/03_listings.css'
     ),
+    html.Br(),
     html.Div(id='none', children=[], style={'display': 'none'})
 ],
     id='app_code',
@@ -472,7 +477,7 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
 
     columns = [
         {"name": i, "id": i, "selectable": True} for i in
-        ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né en', 'Serie', 'Club', 'Date', 'Compet']
+        ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né en', 'Serie', 'Date', 'Club', 'Compet']
     ]
 
     # Classement spécifique U10 / U13
@@ -487,7 +492,7 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
                 filtered_df = filtered_df.sort_values(by=['IWF U13', 'Total'], ascending=[False, False])
             columns = [
                 {"name": i, "id": i, "selectable": True} for i in
-                ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot U13', 'PdC', 'IWF U13', 'Pays', 'Né en', 'Serie', 'Club', 'Date', 'Compet']
+                ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot U13', 'PdC', 'IWF U13', 'Pays', 'Né en', 'Serie', 'Date', 'Club', 'Compet']
             ]
 
     dat = filtered_df.to_dict('records')

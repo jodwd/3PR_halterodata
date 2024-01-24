@@ -8,6 +8,7 @@ import numpy as np
 import os
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
+import dash_daq as daq
 from flask import Flask, render_template
 
 # Connection à la base SQLite
@@ -116,20 +117,7 @@ layout = html.Div([
             ], xs=6, sm=6, md=6, lg=3, xl=3),
         ]),
 
-    html.Div([
-         dcc.Slider(
-             df['SaisonAnnee'].min(),
-             df['SaisonAnnee'].max(),
-             step=1,
-             value=df['SaisonAnnee'].max(),
-             marks=None,
-             tooltip={"placement": "bottom", "always_visible": True},
-             id='year-slider',
-             className='slider_zone')],
-         id='div_output_slider',
-         className='slider_box'
-     ),
-
+    html.Br(),
 
     # Nombre athlètes par catégorie
     dbc.Row([
@@ -141,7 +129,8 @@ layout = html.Div([
                             html.Div([html.P("U10/U13")], id="u10_u13_card", className="card-title"),
                             html.Div([
                                 html.Div([html.P("Nb Athl")], id="u10_u13_nb_athl"),
-                                html.Div([html.P("Nb Comp")], id="u10_u13_nb_comp")
+                                html.Div([html.P("Nb Comp")], id="u10_u13_nb_comp"),
+                                html.Div([html.P("")], id="empty_txt_u10_u13")
                             ], className="card-text",
                             ),
                             dbc.Button("+ Info", id="open_u10_u13", color="danger", className="mt-auto", size="sm"),
@@ -169,7 +158,8 @@ layout = html.Div([
                             html.Div([html.P("U15/U17")], id="u15_u17_card", className="card-title"),
                             html.Div([
                                 html.Div([html.P("Nb Athl")], id="u15_u17_nb_athl"),
-                                html.Div([html.P("Nb Comp")], id="u15_u17_nb_comp")
+                                html.Div([html.P("Nb Comp")], id="u15_u17_nb_comp"),
+                                html.Div([html.P("")], id="empty_txt_u15_u17")
                             ], className="card-text",
                             ),
                             dbc.Button("+ Info", id="open_u15_u17", color="primary", className="mt-auto", size="sm"),
@@ -197,7 +187,8 @@ layout = html.Div([
                             html.Div([html.P("U20")], id="u20_card", className="card-title"),
                             html.Div([
                                 html.Div([html.P("Nb Athl")], id="u20_nb_athl"),
-                                html.Div([html.P("Nb Comp")], id="u20_nb_comp")
+                                html.Div([html.P("Nb Comp")], id="u20_nb_comp"),
+                                html.Div([html.P("")], id="empty_txt_u20")
                             ], className="card-text",
                             ),
                             dbc.Button("+ Info", id="open_u20", color="warning", className="mt-auto", size="sm"),
@@ -225,7 +216,8 @@ layout = html.Div([
                             html.Div([html.P("SEN")], id="sen_card", className="card-title"),
                             html.Div([
                                 html.Div([html.P("Nb Athl")], id="sen_nb_athl"),
-                                html.Div([html.P("Nb Comp")], id="sen_nb_comp")
+                                html.Div([html.P("Nb Comp")], id="sen_nb_comp"),
+                                html.Div([html.P("")], id="empty_txt_sen")
                             ], className="card-text",
                             ),
                             dbc.Button("+ Info", id="open_sen", color="success", className="mt-auto", size="sm"),
@@ -244,15 +236,30 @@ layout = html.Div([
                 ),
             ], id="cateage_card4", style={'display': 'none'}),
         ], xs=6, sm=3, md=3, lg=2, xl=2),
-    ],  className="top_zone",),
+    ],  className="top-zone",),
 
     html.Br(),
+
+    html.Div([
+        dcc.Slider(
+            min=df['SaisonAnnee'].min(),
+            max=df['SaisonAnnee'].max(),
+            step=1,
+            value=df['SaisonAnnee'].max(),
+            marks={str(year): {'label': str(year), 'style': {'color': 'white'}} for year in df['SaisonAnnee'].unique()},
+            tooltip={"placement": "bottom", "always_visible": True},
+            id='year-slider',
+            className='slider_zone')],
+        id='div_output_slider',
+        className='slider_box'
+    ),
 
     #top 5 H & F
     dbc.Row([
         dbc.Col([
             dbc.Button(
-                title="  Top 5 Hommes  ", id="top_5_h", outline=True, color="primary", className="top_5_h", href="/club", size="lg"),
+                title="  Top 5 Hommes  ", id="top_5_h", outline=False, color="primary", className="top_5", href="/club", size="lg"),
+            html.Br(),
             dash_table.DataTable(
                 id='datatable-h',
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
@@ -271,13 +278,15 @@ layout = html.Div([
                     'backgroundColor': 'white',
                     'fontWeight': 'bold',
                     'text-align': 'left',
-                    'font-size': '14px',
-                    'text-indent': '0.2em'
+                    'font-size': '0.8rem',
+                    'color': 'black',
+                    'text-indent': '0.2em',
+                    'font-family': 'sans-serif'
                 },
                 style_data={
-                    'backgroundColor': 'rgb(80, 80, 90)',
+                    'backgroundColor': 'rgb(54,69,79)',
                     'color': 'white',
-                    'font-size': '14px',
+                    'font-size': '0.8rem',
                     'font-family': 'sans-serif',
                     'border': '1px solid white'
                 },
@@ -290,7 +299,7 @@ layout = html.Div([
                 style_data_conditional=[
                         {
                             'if': {'row_index': 'odd'},
-                            'backgroundColor': 'dimgray',
+                            'backgroundColor': 'rgb(47,79,79)',
                         }
                 ],
                 row_selectable=False,
@@ -306,8 +315,8 @@ layout = html.Div([
 
         dbc.Col([
             dbc.Button(
-                title="  Top 5 Femmes  ", id="top_5_f", outline=True, color="primary", className="top_5_f", href="/club", size="lg"),
-
+                title="  Top 5 Femmes  ", id="top_5_f", outline=False, color="primary", className="top_5", href="/club", size="lg"),
+            html.Br(),
             dash_table.DataTable(
                 id='datatable-f',
                 # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
@@ -326,14 +335,16 @@ layout = html.Div([
                     'backgroundColor': 'white',
                     'fontWeight': 'bold',
                     'text-align': 'left',
-                    'font-size': '14px',
-                    'text-indent': '0.2em'
+                    'font-size': '0.8rem',
+                    'color': 'black',
+                    'text-indent': '0.2em',
+                    'font-family': 'sans-serif'
                 },
                 style_data={
-                    'backgroundColor': 'rgb(80, 80, 90)',
+                    'backgroundColor': 'rgb(54,69,79)',
                     'color': 'white',
+                    'font-size': '0.8rem',
                     'font-family': 'sans-serif',
-                    'font-size': '14px',
                     'border': '1px solid white'
                 },
                 style_cell={
@@ -345,7 +356,7 @@ layout = html.Div([
                 style_data_conditional=[
                         {
                             'if': {'row_index': 'odd'},
-                            'backgroundColor': 'dimgray',
+                            'backgroundColor': 'rgb(47,79,79)',
                         }
                 ],
                 row_selectable=False,
@@ -358,7 +369,7 @@ layout = html.Div([
                 page_size=25
             ),
         ], xs=12, sm=12, md=6, lg=6, xl=6),
-    ]),
+    ], className='data_tabs'),
 
 
 
@@ -369,6 +380,7 @@ layout = html.Div([
         rel='stylesheet',
         href='/assets/02_club.css'
         ),
+    html.Br(),
     html.Div(id='none', children=[], style={'display': 'none'})
     ],
     id='app_code',
@@ -432,7 +444,7 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     #Top 5
     filtered_df=round(fdfh.head(5),0)
     res = filtered_df['Max IWF'].sum()
-    updated_title_h = "Top 5 Hommes : " + str(int(res))
+    updated_title_h = "Top 5 Hommes : " + str(int(res)) + " IWF"
 
     return updated_title_h, dat, columns
 
@@ -475,41 +487,10 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
 
     filtered_df=round(fdff.head(4),0)
     res = filtered_df['Max IWF'].sum()
-    updated_title_f = "Top 4 Femmes : " + str(int(res))
+    updated_title_f = "Top 4 Femmes : " + str(int(res)) + " IWF"
 
     return updated_title_f, dat, columns
 
-
-
-# @callback(
-#     [Input('year-slider', 'value'),
-#      Input(component_id='txt-ligue', component_property='value'),
-#      Input(component_id='txt-club', component_property='value')
-#      ])
-#
-# def update_title(selected_year, txt_ligue, txt_club):
-#     # Perform any manipulation on input_value and return the updated title
-#     global updated_title_f
-#     fdff = df[(df['Sexe'] == 'F')]
-#     if selected_year == '':
-#         selected_year = fdff['SaisonAnnee'].max()
-#     if txt_serie:
-#     if txt_ligue or txt_club:
-#         if txt_ligue:
-#             fdff = fdff[
-#                 (fdff['Ligue'].isin(txt_ligue)) & (fdff['SaisonAnnee'] == selected_year)]
-#         if txt_club:
-#             fdff = fdff[
-#                 (fdff['Club'].isin(txt_club)) & (fdff['SaisonAnnee'] == selected_year)]
-#     else:
-#         fdff = fdff[(fdff['SaisonAnnee'] == selected_year)]
-#
-#     fdff = fdff.sort_values(by=['Max IWF'], ascending=False)
-#
-#     return updated_title_f
-
-# Mise à jour des cartes par catégorie d'age
-# Nb athletes (classement) / nb participations (Classement part)
 
 @callback(
     [Output('cateage_card1', 'style'),
@@ -653,18 +634,9 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
             if not df_cate.empty:
 
                 nb_part[n] = str(df_cate['NbPart'].values[0]) + ' Participations'
-                if df_cate['RangPartClubCateAge'].values[0] == 1:
-                    end_txt = 'er)'
-                else:
-                    end_txt = 'ème)'
-                rang_part[n] = ' (' + str(df_cate['RangPartClubCateAge'].values[0]) + end_txt
-
+                rang_part[n] = ' (#' + str(df_cate['RangPartClubCateAge'].values[0]) + ')'
                 nb_athl[n] = str(df_cate['NbAthl'].values[0]) + ' Athlètes'
-                if df_cate['RangAthlClubCateAge'].values[0] == 1:
-                    end_txt = 'er)'
-                else:
-                    end_txt = 'ème)'
-                rang_athl[n] = ' (' + str(df_cate['RangAthlClubCateAge'].values[0]) + end_txt
+                rang_athl[n] = ' (#' + str(df_cate['RangAthlClubCateAge'].values[0]) + ')'
             n = n+1
 
     return  updated_show[0], f"{nb_part[0]}" + f"{rang_part[0]}", f"{nb_athl[0]}" + f"{rang_athl[0]}", \

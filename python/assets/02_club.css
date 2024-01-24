@@ -24,16 +24,20 @@
     text-align: center;
 }
 
+.top-zone {
+  margin-left: 2%;
+}
+
 .card-title {
-  font-size: 14px;
+  font-size: 0.8rem;
   font-weight: bold;
-  line-height: 13px;
+  line-height: 0rem;
   text-align: justify;
 }
 
 .card-text{
-  font-size: 14px;
-  line-height: 16px;
+  font-size: 0.8rem;
+  line-height: 1rem;
   text-align: justify;
 }
 
@@ -70,52 +74,18 @@
 
 
 .top_5 {
-  display: inline-block;
-  width: 90%;
-  height: 30px;
-  margin-left: 1vw;
-  font-family: "Helvetica Neue", sans-serif;
-  color: white;
-  border-width: 10px;
-  border-color: red;
-}
-
-.top_5_h {
   position: relative;
   display: inline-block;
   font-family: "Helvetica Neue", sans-serif;
   backgroundColor: rgb(80, 80, 90);
-}
-
-.top_5_f {
-  position: relative;
-  display: inline-block;
-  font-family: "Helvetica Neue", sans-serif;
-  backgroundColor: rgb(80, 80, 90);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .data_tabs {
-  width: 90%;
-  height: 1500px;
-  margin-left: 20px;
-}
-
-.data_tab_h {
-  display: inline-block;
-  margin-left: 2vw;
-  width: 48%;
-  font-family: "Helvetica Neue", sans-serif;
-  backgroundColor: rgb(80, 80, 90);
-  color: white;
-}
-
-.data_tab_f {
-  display: inline-block;
-  margin-right: 2vw;
-  width: 48%;
-  font-family: 'Helvetica Neue', sans-serif;
-  backgroundColor: rgb(80, 80, 90);
-  color: white;
+  width: 96%;
+  margin-left: 2%;
+  margin-bottom: 5%;
 }
 
 /* Charts */
