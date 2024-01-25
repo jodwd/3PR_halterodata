@@ -466,7 +466,7 @@ def update_figure(selected_year, txt_inserted):
         display_graph = {'display': 'block'}
 
         #Paramètres de graph
-        fig = px.scatter(fdf, x="Mois", y="IWF", hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
+        fig = px.scatter(fdf, x="Date", y="IWF", hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
                                       color="Nom", log_x=False, size_max=55,color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"], )
         fig.update_traces(marker=dict(size=10, symbol='circle') )
         fig.update_xaxes(categoryorder="category ascending")
