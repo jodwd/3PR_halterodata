@@ -5,6 +5,7 @@ from dash.exceptions import PreventUpdate
 import sqlite3 as sql
 import pandas as pd
 import os
+import dash_daq as daq
 from datetime import datetime, timedelta
 from dash_bootstrap_components._components.Container import Container
 
@@ -71,6 +72,16 @@ nav_button = \
                 ),
                 ], id="anniv-modal", size="lg", centered=True, is_open=False),
             ],  width="auto"),
+
+     #   dbc.Col([
+     #      html.Div([
+     #          daq.BooleanSwitch(
+     #              id='our-boolean-switch',
+     #              label="Mode Nuit",
+     #              on=False),
+     #          html.Div(id='boolean-switch-result')
+     #      ])
+     #      ],  width="auto"),
     ],
     className="g-0 ms-auto flex-nowrap mt-3 mt-md-0",
     align="center",
