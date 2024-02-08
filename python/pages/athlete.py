@@ -1,9 +1,11 @@
 import dash
 import plotly.express as px
+import statsmodels.api as sm
 from dash import dash_table, dcc, callback, State, html
 from dash.exceptions import PreventUpdate
 import pandas as pd
 import sqlite3 as sql
+import dash_ag_grid as dag
 #import numpy as np
 import os
 from dash.dependencies import Input, Output
@@ -41,7 +43,6 @@ df2.head()
 
 # Reformatage des donnée de la requête
 df['IWF'] = round(df['IWF'], 3)
-
 df['MoisCompet'] = pd.Categorical(df['MoisCompet'],
                                   ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
 df2['Série'] = pd.Categorical(df2['Série'],
@@ -220,211 +221,106 @@ layout = html.Div([
         ], width=12),
     ]),
 
-    # Zone data table
+    # Zone data table AG Grid
     html.Br(),
     html.Div([
-        dbc.Row([
-            dbc.Col([
-                dash_table.DataTable(
-                    id='datatable-interactivity',
-                    # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
-                    columns=[
-                        {"name": i, "id": i,  "selectable": True} for i in
-                            ['Nom',  'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'IWF', 'Série', 'Catégorie', 'Competition']
+        dag.AgGrid(
+            id = "ag-datatable-interactivity",
+            rowData = df.to_dict("records"),  # **need it
+            columnDefs = [
+                        {
+                           "headerName": "Athlete",
+                           "children": [
+                                {"field": "Nom", "width": 200, "pinned": "left"},
+                                {"field": "PdC", "width": 80},
+                                {"field": "Catégorie", "width": 100},
+                            ],
+                        },
+                        {
+                           "headerName": "Arraché",
+                           "children": [
+                                {"field": "Arr1", "headerName": "1", "width": 60,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "Arr2", "headerName": "2", "width": 60,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "Arr3", "headerName": "3", "width": 60,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "Arr", "width": 75,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {'backgroundColor': 'darkred'} : {'backgroundColor': 'rgb(59, 113, 202)'}",
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            "headerName": "Epaulé Jeté",
+                                "children": [
+                                    {"field": "EpJ1", "headerName": "1", "width": 60,
+                                        'cellStyle': {
+                                            "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                        },
+                                    },
+                                    {"field": "EpJ2", "headerName": "2", "width": 60,
+                                        'cellStyle': {
+                                            "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                        },
+                                    },
+                                    {"field": "EpJ3", "headerName": "3", "width": 60,
+                                        'cellStyle': {
+                                            "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                        },
+                                    },
+                                    {"field": "EpJ", "width": 75,
+                                        'cellStyle': {
+                                            "function": "params.value <=0 ? {'backgroundColor': 'darkred'} : {'backgroundColor': 'rgb(59, 113, 202)'}",
+                                        },
+                                    },
+                                ],
+                        },
+
+                        {
+                            "headerName": "Performance",
+                                "children": [
+                                    {"field": "Total", "width": 80,
+                                     'cellStyle': {
+                                         "function": "params.value <=0 ? {'backgroundColor': 'darkred'} : {'backgroundColor': 'darkblue'}",
+                                        },
+                                     },
+                                    {"field": "IWF", "width": 80},
+                                    {"field": "Série", "width": 80},
+                                ],
+                        },
+                        {
+                            "headerName": "Compétition",
+                            "children": [
+                                {"field": "Date", "width": 150},
+                                {"field": "Competition"}
+                                ],
+                        }
+
+                          #  ['Nom',  'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'IWF', 'Série', 'Catégorie', 'Competition']
                     ],
-                    data=df.to_dict('records'),
-                    editable=False,
-                    fixed_rows={'headers': True},
-                    sort_action="native",
-                    sort_mode="single",
-                    virtualization=True,
-                    style_table={
-                        'overflowX': 'scroll'
-                    },
-                    style_header={
-                        'backgroundColor': 'white',
-                        'fontWeight': 'bold',
-                        'text-align': 'left',
-                        'font-size': '0.8rem',
-                        'color': 'black',
-                        'text-indent': '0.2em',
-                        'font-family': 'sans-serif'
-                    },
-                    style_data={
-                        'backgroundColor': 'rgb(54,69,79)',
-                        'color': 'white',
-                        'border': '1px solid white',
-                        'font-family': 'sans-serif',
-                        'font-size': '0.8rem'
-                    },
-                    style_cell={
-                        'overflow': 'hidden',
-                        'textOverflow': 'ellipsis',
-                        'minWidth': '40px',
-                        'maxWidth': '200px'
-                    },
-                    # Mise en forme conditionelle pour les bulles
-                    style_data_conditional=[
-                        {
-                            'if': {'row_index': 'odd'},
-                            'backgroundColor': 'rgb(47,79,79)',
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Arr1} <= 0',
-                                'column_id': 'Arr1'
-                            },
-                            'backgroundColor': 'rgb(220, 76, 100)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Arr1} > 0',
-                                'column_id': 'Arr1'
-                            },
-                            'backgroundColor': 'rgb(20, 164, 77)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Arr2} <= 0',
-                                'column_id': 'Arr2'
-                            },
-                            'backgroundColor': 'rgb(220, 76, 100)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Arr2} > 0',
-                                'column_id': 'Arr2'
-                            },
-                            'backgroundColor': 'rgb(20, 164, 77)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Arr3} <= 0',
-                                'column_id': 'Arr3'
-                            },
-                            'backgroundColor': 'rgb(220, 76, 100)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Arr3} > 0',
-                                'column_id': 'Arr3'
-                            },
-                            'backgroundColor': 'rgb(20, 164, 77)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Arr} <= 0',
-                                'column_id': 'Arr'
-                            },
-                            'backgroundColor': 'darkred',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Arr} > 0',
-                                'column_id': 'Arr'
-                            },
-                            'backgroundColor': 'rgb(59, 113, 202)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{EpJ1} <=0',
-                                'column_id': 'EpJ1'
-                            },
-                            'backgroundColor': 'rgb(220, 76, 100)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{EpJ1} >0',
-                                'column_id': 'EpJ1'
-                            },
-                            'backgroundColor': 'rgb(20, 164, 77)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{EpJ2} <=0',
-                                'column_id': 'EpJ2'
-                            },
-                            'backgroundColor': 'rgb(220, 76, 100)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{EpJ2} >0',
-                                'column_id': 'EpJ2'
-                            },
-                            'backgroundColor': 'rgb(20, 164, 77)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{EpJ3} <=0',
-                                'column_id': 'EpJ3'
-                            },
-                            'backgroundColor': 'rgb(220, 76, 100)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{EpJ3} >0',
-                                'column_id': 'EpJ3'
-                            },
-                            'backgroundColor': 'rgb(20, 164, 77)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{EpJ} <= 0',
-                                'column_id': 'EpJ'
-                            },
-                            'backgroundColor': 'darkred',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{EpJ} > 0',
-                                'column_id': 'EpJ'
-                            },
-                            'backgroundColor': 'rgb(59, 113, 202)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Total} <= 0',
-                                'column_id': 'Total'
-                            },
-                            'backgroundColor': 'rgb(79,0,0)',
-                            'color': 'white'
-                        },
-                        {
-                            'if': {
-                                'filter_query': '{Total} > 0',
-                                'column_id': 'Total'
-                            },
-                            'backgroundColor': 'darkblue',
-                            'color': 'white'
-                        },
-                    ],
-                    row_selectable=False,
-                    row_deletable=False,
-                    selected_columns=[],
-                    selected_rows=[],
-                    style_as_list_view=True,
-                    page_action="native",
-                    page_current=0,
-                    page_size=25)
-            ], width=12),
-        ]),
-    ], className='data_tab'),
+            defaultColDef = {"resizable": True, "sortable": True, "filter": True},
+            suppressDragLeaveHidesColumns=False,
+            dashGridOptions = {"pagination": False},
+            className = "ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
+
+        )
+
+    ]),
+
+    html.Br(),
+    html.Br(),
+
     html.Link(
         rel='stylesheet',
         href='/assets/01_dash_board.css'
@@ -466,7 +362,7 @@ def update_figure(selected_year, txt_inserted):
         display_graph = {'display': 'block'}
 
         #Paramètres de graph
-        fig = px.scatter(fdf, x="Date", y="IWF", hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
+        fig = px.scatter(fdf, x="Date", y="IWF",  hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
                                       color="Nom", log_x=False, size_max=55,color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"], )
         fig.update_traces(marker=dict(size=10, symbol='circle') )
         fig.update_xaxes(categoryorder="category ascending")
@@ -490,13 +386,11 @@ def update_figure(selected_year, txt_inserted):
 
 # Mise à jour data table
 @callback(
-    [Output('datatable-interactivity', "data"),
-     Output('datatable-interactivity', "columns")],
+    [Output('ag-datatable-interactivity', 'rowData')],
     [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value')
+     Input('my_txt_input', 'value')
      ])
-
-def update_data(selected_year, txt_inserted):
+def update_data_ag(selected_year, txt_inserted):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     if txt_inserted:
@@ -504,15 +398,11 @@ def update_data(selected_year, txt_inserted):
     else:
         fdf = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
 
-    columns = [
-             {"name": i, "id": i, "selectable": True} for i in
-             ['Nom',  'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'IWF', 'Série', 'Catégorie', 'Competition']
-     ]
-
     fdf = fdf.sort_values(by=['IWF'], ascending=False)
-    dat = fdf.to_dict('records')
+    dat_ag = fdf.to_dict('records')
 
-    return dat, columns
+    return [dat_ag]
+
 
 # Génération des cartes des 4 premiers athlètes
 @callback(

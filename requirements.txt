@@ -5,7 +5,7 @@ dash_bootstrap_components==1.4.2
 Flask==2.2.3
 numpy==1.24.2
 pandas==1.5.3
-plotly==5.13.1
+plotly==5.18
 Werkzeug==2.2.2
 gunicorn
 dash_daq==0.5.0

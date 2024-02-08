@@ -4,6 +4,7 @@ from dash import dash_table, dcc, callback, State, html
 from dash.exceptions import PreventUpdate
 import pandas as pd
 import sqlite3 as sql
+import dash_ag_grid as dag
 import numpy as np
 import os
 from dash.dependencies import Input, Output
@@ -260,128 +261,70 @@ layout = html.Div([
             dbc.Button(
                 title="  Top 5 Hommes  ", id="top_5_h", outline=False, color="primary", className="top_5", href="/club", size="lg"),
             html.Br(),
-            dash_table.DataTable(
-                id='datatable-h',
-                # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
-                columns=[
-                    {"name": i, "id": i, "selectable": True} for i in
-                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'Max IWF']
-                ],
-                data=dfh.to_dict('records'),
-                editable=True,
-                sort_action="native",
-                sort_mode="single",
-                style_table={
-                    'overflowX': 'scroll'
-                },
-                style_header={
-                    'backgroundColor': 'white',
-                    'fontWeight': 'bold',
-                    'text-align': 'left',
-                    'font-size': '0.8rem',
-                    'color': 'black',
-                    'text-indent': '0.2em',
-                    'font-family': 'sans-serif'
-                },
-                style_data={
-                    'backgroundColor': 'rgb(54,69,79)',
-                    'color': 'white',
-                    'font-size': '0.8rem',
-                    'font-family': 'sans-serif',
-                    'border': '1px solid white'
-                },
-                style_cell={
-                    'overflow': 'hidden',
-                    'textOverflow': 'ellipsis',
-                    'minWidth': '40px',
-                    'maxWidth': '200px'
-                },
-                style_data_conditional=[
-                        {
-                            'if': {'row_index': 'odd'},
-                            'backgroundColor': 'rgb(47,79,79)',
-                        }
-                ],
-                row_selectable=False,
-                row_deletable=False,
-                selected_columns=[],
-                selected_rows=[],
-                style_as_list_view=True,
-                page_action="native",
-                page_current=0,
-                page_size=25),
-            ], xs=12, sm=12, md=6, lg=6, xl=6),
+
+            html.Div([
+                dag.AgGrid(
+                    id="ag-datatable-h",
+                    rowData=dfh.to_dict("records"),  # **need it
+                    columnDefs=[
+                        {"field": "Rang", "width": 30, "pinned": "left"},
+                        {"field": "Nom", "width": 100, "pinned": "left"},
+                        {"field": "Arr", "width": 30},
+                        {"field": "EpJ", "width": 30},
+                        {"field": "Tot", "width": 50}, 
+                        {"field": "PdC", "width": 50},
+                        {"field": "Max IWF", "width": 50},
+                    ],
+                    defaultColDef={"resizable": True, "sortable": True, "filter": False},
+                    columnSize="autoSize",
+                    suppressDragLeaveHidesColumns=False,
+                    style={"height": 540},
+                    dashGridOptions={"pagination": False},
+                    className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
+                )
+            ]),
+        ], xs=12, sm=12, md=6, lg=6, xl=6),
 
 
         dbc.Col([
             dbc.Button(
                 title="  Top 5 Femmes  ", id="top_5_f", outline=False, color="primary", className="top_5", href="/club", size="lg"),
             html.Br(),
-            dash_table.DataTable(
-                id='datatable-f',
-                # tab_selected_columns=['Nom', 'Né le','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
-                columns=[
-                    {"name": i, "id": i, "selectable": True} for i in
-                    ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'Serie', 'PdC', 'Max IWF']
-                ],
-                data=dff.to_dict('records'),
-                editable=True,
-                sort_action="native",
-                sort_mode="single",
-                style_table={
-                    'overflowX': 'scroll'
-                },
-                style_header={
-                    'backgroundColor': 'white',
-                    'fontWeight': 'bold',
-                    'text-align': 'left',
-                    'font-size': '0.8rem',
-                    'color': 'black',
-                    'text-indent': '0.2em',
-                    'font-family': 'sans-serif'
-                },
-                style_data={
-                    'backgroundColor': 'rgb(54,69,79)',
-                    'color': 'white',
-                    'font-size': '0.8rem',
-                    'font-family': 'sans-serif',
-                    'border': '1px solid white'
-                },
-                style_cell={
-                    'overflow': 'hidden',
-                    'textOverflow': 'ellipsis',
-                    'minWidth': '40px',
-                    'maxWidth': '200px'
-                },
-                style_data_conditional=[
-                        {
-                            'if': {'row_index': 'odd'},
-                            'backgroundColor': 'rgb(47,79,79)',
-                        }
-                ],
-                row_selectable=False,
-                row_deletable=False,
-                selected_columns=[],
-                selected_rows=[],
-                style_as_list_view=True,
-                page_action="native",
-                page_current=0,
-                page_size=25
-            ),
+
+            html.Div([
+                dag.AgGrid(
+                    id="ag-datatable-f",
+                    rowData=dff.to_dict("records"),  # **need it
+                    columnDefs=[
+                        {"field": "Rang", "width": 30, "pinned": "left"},
+                        {"field": "Nom", "width": 100, "pinned": "left"},
+                        {"field": "Arr", "width": 30},
+                        {"field": "EpJ", "width": 30},
+                        {"field": "Tot", "width": 50},
+                        {"field": "PdC", "width": 50},
+                        {"field": "Max IWF", "width": 50},
+                    ],
+                    defaultColDef={"resizable": True, "sortable": True, "filter": False},
+                    columnSize="autoSize",
+                    suppressDragLeaveHidesColumns=False,
+                    style={"height": 540},
+                    dashGridOptions={"pagination": False},
+                    className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
+                )
+            ]),
         ], xs=12, sm=12, md=6, lg=6, xl=6),
     ], className='data_tabs'),
 
-
-
-    html.Div([
-    ], className='data_tabs'),
     html.Div(id='datatable-container'),
     html.Link(
         rel='stylesheet',
         href='/assets/02_club.css'
         ),
     html.Br(),
-    html.Div(id='none', children=[], style={'display': 'none'})
+    html.Br(),
+    html.Br(),
+    html.Br(),
+    html.Br(),
     ],
     id='app_code',
     className='body'
@@ -401,14 +344,14 @@ def update_datalist(selected_year, txt_ligue1):
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_ligue1))]
 
     nom_club = list(set(filtered_df['Club'].tolist()))
-    print(nom_club)
+    if len(txt_ligue1) == 1:
+        print(txt_ligue1)
     opt = [x for x in sorted(nom_club)]
     return opt
 
 @callback(
     [Output("top_5_h", "children"),
-     Output('datatable-h', "data"),
-     Output('datatable-h', "columns")],
+     Output('ag-datatable-h', 'rowData')],
     [Input('year-slider', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value'),
@@ -434,10 +377,6 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
 
     fdfh=fdfh.sort_values(by=['Max IWF'], ascending=False)
     fdfh['Rang'] = fdfh.groupby(['SaisonAnnee']).cumcount()+1
-    columns = [
-            {"name": i, "id": i,  "selectable": True} for i in
-            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'Serie', 'PdC', 'IWF']
-    ]
 
     dat = fdfh.to_dict('records')
 
@@ -446,12 +385,11 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     res = filtered_df['Max IWF'].sum()
     updated_title_h = "Top 5 Hommes : " + str(int(res)) + " IWF"
 
-    return updated_title_h, dat, columns
+    return updated_title_h, dat
 
 @callback(
     [Output("top_5_f", "children"),
-     Output('datatable-f', "data"),
-     Output('datatable-f', "columns")],
+     Output('ag-datatable-f', "rowData")],
     [Input('year-slider', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value'),
@@ -489,7 +427,7 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     res = filtered_df['Max IWF'].sum()
     updated_title_f = "Top 4 Femmes : " + str(int(res)) + " IWF"
 
-    return updated_title_f, dat, columns
+    return updated_title_f, dat
 
 
 @callback(
@@ -512,8 +450,6 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
 
 def updated_athletes(selected_year, txt_ligue, txt_club):
 
-    print(txt_club)
-
     # card display management (by 'ligue' or by 'club' and only if one ligue or club chosen)
     txt_qry = 'clb.club'
     mode_ligue = False
@@ -523,9 +459,11 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
         txt_qry='clb.ligue'
         if len(txt_ligue) == 1:
             disp_cards = True
+            print(txt_ligue)
     if txt_club:
         if len(txt_club) == 1:
             disp_cards = True
+            print(txt_club)
 
     conn = sql.connect(database=path_db)
     qry_age = """SELECT

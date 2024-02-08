@@ -4,6 +4,7 @@ from dash import dash_table, dcc, html, callback
 from dash.exceptions import PreventUpdate
 import pandas as pd
 import sqlite3 as sql
+import dash_ag_grid as dag
 import numpy as np
 import os
 from dash.dependencies import Input, Output
@@ -87,16 +88,9 @@ layout = html.Div([
             html.Div(
                 children=[
                     dbc.Button(
-                        "  Listings  ", outline=False, color="warning", className="me-1", href="/listings",
-                        size="lg"),
-                    # dbc.Collapse(
-                    #    info_button,
-                    #    id="navbar-collapse",
-                    #    is_open=False
-                    # )
+                        "  Listings  ", outline=False, color="warning", className="title-box",  href="/listings", size="lg"),
                 ],
                 id='filter_info',
-                className="title-box",
             )], xs=6, sm=6, md=3, lg=2, xl=2),
         # Zone filtres Sexe / Catégorie de Poids / Catégorie d'Age / Ligue
         dbc.Col([
@@ -192,58 +186,17 @@ layout = html.Div([
     ),
 
     html.Div([
-        dash_table.DataTable(
-            id='datatable-l',
-            # tab_selected_columns=['Nom', 'Né en','Competition','PdC', 'Arrache','EpJete','Total','IWF'],
-            columns=[
-                {"name": i, "id": i, "selectable": True} for i in
-                ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Serie', 'Né en', 'Date', 'Club',  'Compet']
-            ],
-            data=df[(df['Sexe'] == 'M') & (df['RowNumMaxSaison'] == 1)].to_dict('records'),
-            editable=True,
-            sort_action="native",
-            sort_mode="single",
-            style_table={
-                'overflowX': 'scroll'
-            },
-            style_header={
-                'backgroundColor': 'white',
-                'fontWeight': 'bold',
-                'text-align': 'left',
-                'font-size': '0.8rem',
-                'color': 'black',
-                'text-indent': '0.2em',
-                'font-family': 'sans-serif'
-            },
-            style_data={
-                'backgroundColor': 'rgb(54,69,79)',
-                'color': 'white',
-                'font-size': '0.8rem',
-                'font-family': 'sans-serif',
-                'border': '1px solid white'
-            },
-            style_cell={
-                'overflow': 'hidden',
-                'textOverflow': 'ellipsis',
-                'minWidth': '40px',
-                'maxWidth': '250px'
-            },
-            style_data_conditional=[
-                {
-                    'if': {'row_index': 'odd'},
-                    'backgroundColor': 'rgb(47,79,79)',
-                }
-            ],
-            row_selectable=False,
-            row_deletable=False,
-            selected_columns=[],
-            selected_rows=[],
-            style_as_list_view=True,
-            page_action="native",
-            page_current=0,
-            page_size=25,
-        ),
-    ], className='data_tab_l'),
+        dag.AgGrid(
+            id="ag-datatable-l",
+            rowData=df.to_dict("records"),  # **need it
+            columnDefs=[],
+            defaultColDef={"resizable": True, "sortable": True, "filter": False},
+            suppressDragLeaveHidesColumns=False,
+            style={"height": 540},
+            dashGridOptions={"pagination": False},
+            className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
+        )
+    ]),
     html.Div(id='datatable-container'),
     html.Link(
         rel='stylesheet',
@@ -428,8 +381,8 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
     return opt
 
 @callback(
-    [Output('datatable-l', "data"),
-     Output('datatable-l', "columns")],
+    [Output('ag-datatable-l', "rowData"),
+     Output('ag-datatable-l', "columnDefs")],
     [Input('year-slider', 'value'),
      Input(component_id='my_txt_input1', component_property='value'),  # sexe
      Input(component_id='my_txt_input2', component_property='value'),  # poids
@@ -477,8 +430,34 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
     filtered_df['Rang'] = filtered_df.groupby(['SaisonAnnee']).cumcount()+1
 
     columns = [
-        {"name": i, "id": i, "selectable": True} for i in
-        ['Rang', 'Nom', 'Arr', 'EpJ', 'Total', 'PdC', 'IWF', 'Pays', 'Né en', 'Serie', 'Date', 'Club', 'Compet']
+        {
+            "headerName": "Athlete",
+            "children": [
+                {"field": "Rang", "width": 30, "pinned": "left"},
+                {"field": "Nom", "width": 160, "pinned": "left"},
+                {"field": "Né en", "width": 70},
+                {"field": "Pays", "width": 60},
+                {"field": "Club", "width": 160},
+            ],
+        },
+        {
+            "headerName": "Performance",
+            "children": [
+                {"field": "Arr", "width": 60},
+                {"field": "EpJ", "width": 60},
+                {"field": "Total", "width": 60},
+                {"field": "PdC", "width": 80},
+                {"field": "IWF", "width": 80},
+                {"field": "Serie", "width": 80},
+            ],
+        },
+        {
+            "headerName": "Compétition",
+            "children": [
+                {"field": "Date", "width": 100},
+                {"field": "Compet", "width": 250},
+            ],
+        },
     ]
 
     # Classement spécifique U10 / U13
@@ -491,10 +470,37 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
                 filtered_df = filtered_df.sort_values(by=['Tot U13', 'IWF U13'], ascending=[False, False])
             else:
                 filtered_df = filtered_df.sort_values(by=['IWF U13', 'Total'], ascending=[False, False])
-            columns = [
-                {"name": i, "id": i, "selectable": True} for i in
-                ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot U13', 'PdC', 'IWF U13', 'Pays', 'Né en', 'Serie', 'Date', 'Club', 'Compet']
-            ]
+                columns = [
+                    {
+                        "headerName": "Athlete",
+                        "children": [
+                            {"field": "Rang", "width": 30, "pinned": "left"},
+                            {"field": "Nom", "width": 160, "pinned": "left"},
+                            {"field": "Né en", "width": 70},
+                            {"field": "Pays", "width": 60},
+                            {"field": "Club", "width": 160},
+                        ],
+                    },
+                    {
+                        "headerName": "Performance",
+                        "children": [
+                            {"field": "Arr", "width": 60},
+                            {"field": "EpJ", "width": 60},
+                            {"field": "Tot U13 ", "width": 60},
+                            {"field": "PdC", "width": 80},
+                            {"field": "IWF U13", "width": 80},
+                            {"field": "Serie", "width": 80},
+                        ],
+                    },
+                    {
+                        "headerName": "Compétition",
+                        "children": [
+                            {"field": "Date", "width": 100},
+                            {"field": "Compet", "width": 250},
+                        ],
+                    },
+                ]
+
 
     dat = filtered_df.to_dict('records')
 
