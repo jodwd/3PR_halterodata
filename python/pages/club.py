@@ -344,8 +344,6 @@ def update_datalist(selected_year, txt_ligue1):
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_ligue1))]
 
     nom_club = list(set(filtered_df['Club'].tolist()))
-    if len(txt_ligue1) == 1:
-        print(txt_ligue1)
     opt = [x for x in sorted(nom_club)]
     return opt
 
@@ -590,7 +588,7 @@ def qry_box(txt_club_ligue, txt_ligue, selected_year):
     if not txt_ligue:
         txt_club = ''
     else:
-        txt_club = ', clb.Club'
+        txt_club = 'clb.Club,'
     qry = """SELECT cmp.SaisonAnnee as "Saison", """ + txt_club + """ ath.Nom, count(clb.club) as "Nb Compet" 
                      , max(cat.Arrache) as "Max Arr", max(cat.EpJete) as "Max EpJ", max(cat.PoidsTotal) as "Max Tot"
                      , max(round(cat.IWF_Calcul,3)) as "Max IWF"
@@ -609,28 +607,28 @@ def qry_box(txt_club_ligue, txt_ligue, selected_year):
                       LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
 
                       LEFT JOIN (
-                        select
-                            cmp.SaisonAnnee
-                          , ath.Nom
-                          , cat.Sexe
-                          , CASE 
-                                WHEN cat."CateAge" = 'U10' THEN 'U10'
-                                WHEN cat."CateAge" = 'U13' THEN 'U13'
-                                WHEN cat."CateAge" = 'U15' THEN 'U15'
-                                WHEN cat."CateAge" = 'U17' THEN 'U17'
-                                WHEN cat."CateAge" = 'U20' THEN 'U20'
-                                ELSE 'SEN'
-                            END as "CateAge"
-                          , max(round(cat.IWF_Calcul,3)) as "IWF"
-                          , row_number() over(partition by cmp."SaisonAnnee", cat.Sexe,
-                          CASE WHEN cat."CateAge" = 'U10' THEN 'U10' WHEN cat."CateAge" = 'U13' THEN 'U13' WHEN cat."CateAge" = 'U15' THEN 'U15' WHEN cat."CateAge" = 'U17' THEN 'U17'
-                          WHEN cat."CateAge" = 'U20' THEN 'U20' ELSE 'SEN' END
-                          order by max(round(cat.IWF_Calcul,3)) desc) as "AthlRang"
-
-                          FROM ATHLETE as ath
-                          LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID
-                          LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-                          group by cmp.SaisonAnnee, ath.Nom) as atr
+                            select
+                                cmp.SaisonAnnee
+                              , ath.Nom
+                              , cat.Sexe
+                              , CASE 
+                                    WHEN cat."CateAge" = 'U10' THEN 'U10'
+                                    WHEN cat."CateAge" = 'U13' THEN 'U13'
+                                    WHEN cat."CateAge" = 'U15' THEN 'U15'
+                                    WHEN cat."CateAge" = 'U17' THEN 'U17'
+                                    WHEN cat."CateAge" = 'U20' THEN 'U20'
+                                    ELSE 'SEN'
+                                END as "CateAge"
+                              , max(round(cat.IWF_Calcul,3)) as "IWF"
+                              , row_number() over(partition by cmp."SaisonAnnee", cat.Sexe,
+                                      CASE WHEN cat."CateAge" = 'U10' THEN 'U10' WHEN cat."CateAge" = 'U13' THEN 'U13' WHEN cat."CateAge" = 'U15' THEN 'U15' WHEN cat."CateAge" = 'U17' THEN 'U17'
+                                      WHEN cat."CateAge" = 'U20' THEN 'U20' ELSE 'SEN' END
+                              order by max(round(cat.IWF_Calcul,3)) desc) as "AthlRang"
+    
+                              FROM ATHLETE as ath
+                              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID
+                              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+                              group by cmp.SaisonAnnee, ath.Nom) as atr
                                 on atr.Nom = ath.Nom
                                 and atr.SaisonAnnee = cmp.SaisonAnnee
 
