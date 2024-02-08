@@ -200,23 +200,28 @@ layout = html.Div([
     # Zone graph
     html.Br(),
     dbc.Row([
+
         dbc.Col([
-            html.Div([
-                dcc.Graph(
-                    id='graph-with-slider',
-                    style= {'display': 'none'}
+            dbc.Button("↪️ Reset", id="reset_col", color="light", outline=True, className="mt-auto", size="sm"),
+        ], width=2),
+        dbc.Col([
+            dcc.RangeSlider(
+                df['SaisonAnnee'].min(),
+                df['SaisonAnnee'].max(),
+                step=None,
+                value=selected_year,
+                marks={str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()},
+                id='year-slider',
+                className='slider_zone'
                 ),
-                dcc.RangeSlider(
-                    df['SaisonAnnee'].min(),
-                    df['SaisonAnnee'].max(),
-                    step=None,
-                    value=selected_year,
-                    marks={str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()},
-                    id='year-slider',
-                    className='slider_zone')],
-                id='div_output',
-                className='graph_box'
-            ),
+            ], width=10),
+
+
+        dbc.Col([
+            dcc.Graph(
+                id='graph-with-slider',
+                style= {'display': 'none'}
+                ) ,
         ], width=12),
     ]),
 

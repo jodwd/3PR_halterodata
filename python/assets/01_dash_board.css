@@ -51,27 +51,19 @@
     --ag-font-family: 'Helvetica Neue',sans-serif;
 }
 
-.data_tab {
-    margin-top: -20px;
-    /*margin-left: -30px;      */ 
-    /*background-color: rgb(40,40,45);*/
-    font-family: 'Helvetica Neue', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 12px;
-    color: black;
-    width=100%;
- }
+.ag-theme-quartz {
+    --ag-odd-row-background-color: rgb(0, 0, 0, 0.03);
+    --ag-header-column-resize-handle-color: rgb(161, 28, 15);
 
-.athl_data_tab {
-    font-family: 'Helvetica Neue', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 12px;
-    color: black;
-    width=100%;
- }
+    --ag-font-size: 12px;
+    --ag-font-family: 'Helvetica Neue',sans-serif;
+}
 
 .slider_zone {
     font-family: 'Helvetica Neue', sans-serif;
     font-size: 14px;
     color: white;
+
 }
 
 .graph-with-slider {
