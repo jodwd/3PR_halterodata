@@ -1,6 +1,5 @@
 import dash
 import plotly.express as px
-import statsmodels.api as sm
 from dash import dash_table, dcc, callback, State, html
 from dash.exceptions import PreventUpdate
 import pandas as pd
