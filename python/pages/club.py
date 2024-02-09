@@ -241,19 +241,23 @@ layout = html.Div([
 
     html.Br(),
 
-    html.Div([
-        dcc.Slider(
-            min=df['SaisonAnnee'].min(),
-            max=df['SaisonAnnee'].max(),
-            step=1,
-            value=df['SaisonAnnee'].max(),
-            marks={str(year): {'label': str(year), 'style': {'color': 'white'}} for year in df['SaisonAnnee'].unique()},
-            tooltip={"placement": "bottom", "always_visible": True},
-            id='year-slider',
-            className='slider_zone')],
-        id='div_output_slider',
-        className='slider_box'
-    ),
+    dbc.Row([
+        dbc.Col([
+            dbc.Button("↪️ Reset", id="reset_col_club", color="light", outline=True, className="mt-auto", size="sm"),
+        ], width=2),
+        dbc.Col([
+            dcc.Slider(
+                min=df['SaisonAnnee'].min(),
+                max=df['SaisonAnnee'].max(),
+                step=1,
+                value=df['SaisonAnnee'].max(),
+                #marks={str(year): {'label': str(year),  'style': {'color': 'white'}} for year in df['SaisonAnnee'].unique()},
+                marks=None,
+                tooltip={"placement": "bottom", "always_visible": True},
+                id='year-slider-club',
+                className='slider_zone')
+        ], width=10),
+    ]),
 
     #top 5 H & F
     dbc.Row([
@@ -268,15 +272,14 @@ layout = html.Div([
                     rowData=dfh.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 100, "pinned": "left"},
-                        {"field": "Arr", "width": 30},
-                        {"field": "EpJ", "width": 30},
-                        {"field": "Tot", "width": 50}, 
-                        {"field": "PdC", "width": 50},
-                        {"field": "Max IWF", "width": 50},
+                        {"field": "Nom", "width": 200, "pinned": "left"},
+                        {"field": "Arr", "width": 60},
+                        {"field": "EpJ", "width": 60},
+                        {"field": "Tot", "width": 60},
+                        {"field": "PdC", "width": 80},
+                        {"field": "Max IWF", "width": 80},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
-                    columnSize="autoSize",
                     suppressDragLeaveHidesColumns=False,
                     style={"height": 540},
                     dashGridOptions={"pagination": False},
@@ -297,15 +300,14 @@ layout = html.Div([
                     rowData=dff.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 100, "pinned": "left"},
-                        {"field": "Arr", "width": 30},
-                        {"field": "EpJ", "width": 30},
-                        {"field": "Tot", "width": 50},
-                        {"field": "PdC", "width": 50},
-                        {"field": "Max IWF", "width": 50},
+                        {"field": "Nom", "width": 200, "pinned": "left"},
+                        {"field": "Arr", "width": 60},
+                        {"field": "EpJ", "width": 60},
+                        {"field": "Tot", "width": 60},
+                        {"field": "PdC", "width": 80},
+                        {"field": "Max IWF", "width": 80},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
-                    columnSize="autoSize",
                     suppressDragLeaveHidesColumns=False,
                     style={"height": 540},
                     dashGridOptions={"pagination": False},
@@ -332,7 +334,7 @@ layout = html.Div([
 
 @callback(
     Output('txt-club', 'options'),
-    [Input('year-slider', 'value'),
+    [Input('year-slider-club', 'value'),
      Input('txt-ligue', 'value')]
 )
 
@@ -350,7 +352,7 @@ def update_datalist(selected_year, txt_ligue1):
 @callback(
     [Output("top_5_h", "children"),
      Output('ag-datatable-h', 'rowData')],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value'),
      Input(component_id='txt-serie', component_property='value')
@@ -388,7 +390,7 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
 @callback(
     [Output("top_5_f", "children"),
      Output('ag-datatable-f', "rowData")],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value'),
      Input(component_id='txt-serie', component_property='value')
@@ -441,7 +443,7 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
      Output('cateage_card4', 'style'),
      Output("sen_nb_athl", "children"),
      Output("sen_nb_comp", "children")],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value')
      ])
@@ -659,7 +661,7 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_u10_u13):
     #Output("u10_u13-graph", "figure"),
     #Output("u10_u13-graph", "style"),
      Output("u10_u13-table", "children")],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value'),
      Input("u10_u13-modal", "is_open")],
@@ -708,7 +710,7 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_u15_u17):
     #Output("u15_u17-graph", "figure"),
     #Output("u15_u17-graph", "style"),
      Output("u15_u17-table", "children")],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value'),
      Input("u15_u17-modal", "is_open")],
@@ -755,7 +757,7 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_u20):
     #Output("u20-graph", "figure"),
     #Output("u20-graph", "style"),
      Output("u20-table", "children")],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value'),
      Input("u20-modal", "is_open")],
@@ -803,7 +805,7 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_sen):
     #Output("sen-graph", "figure"),
     #Output("sen-graph", "style"),
      Output("sen-table", "children")],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value'),
      Input("sen-modal", "is_open")],
@@ -833,6 +835,26 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
         return [dbc.Table.from_dataframe(df_sen, responsive=True, striped=True, bordered=True, hover=True)]
         #fig_athl1, display_graph_athl1,
 
+@callback(
+     Output("ag-datatable-f", "columnDefs"),
+     Output("ag-datatable-h", "columnDefs"),
+    [Input("reset_col_club", "n_clicks")],
+    prevent_initial_call=True
+)
+
+def toggle_modal_athl(reset_club_clicks):
+    print(reset_club_clicks)
+    if reset_club_clicks:
+        cols = [
+                    {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
+                    {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
+                    {"field": "Arr", "width": 60, "hide": False},
+                    {"field": "EpJ", "width": 60, "hide": False},
+                    {"field": "Tot", "width": 60, "hide": False},
+                    {"field": "PdC", "width": 80, "hide": False},
+                    {"field": "Max IWF", "width": 80, "hide": False},
+                ]
+    return cols, cols
 
 if __name__ == '__main__':
     run_server(debug=True)

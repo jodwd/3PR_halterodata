@@ -164,19 +164,23 @@ layout = html.Div([
 
     html.Br(),
 
-    html.Div([
-        dcc.Slider(
-            df['SaisonAnnee'].min(),
-            df['SaisonAnnee'].max(),
-            step=1,
-            value=df['SaisonAnnee'].max(),
-            marks={str(year): {'label': str(year), 'style': {'color': 'white'}} for year in df['SaisonAnnee'].unique()},
-            tooltip={"placement": "bottom", "always_visible": True},
-            id='year-slider',
-            className='slider_zone')],
-        id='div_output_slider',
-        className='slider_box'
-    ),
+    dbc.Row([
+        dbc.Col([
+            dbc.Button("↪️ Reset", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
+        ], width=2),
+        dbc.Col([
+            dcc.Slider(
+                min=df['SaisonAnnee'].min(),
+                max=df['SaisonAnnee'].max(),
+                step=1,
+                value=df['SaisonAnnee'].max(),
+                #marks={str(year): {'label': str(year),  'style': {'color': 'white'}} for year in df['SaisonAnnee'].unique()},
+                marks=None,
+                tooltip={"placement": "bottom", "always_visible": True},
+                id='year-slider',
+                className='slider_zone')
+        ], width=10),
+    ]),
 
     html.Br(),
     html.Div([
@@ -390,8 +394,9 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
      Input(component_id='my_txt_input4', component_property='value'),  # ligue
      Input(component_id='my_txt_input5', component_property='value'),  # nationalité
      Input(component_id='my_txt_input6', component_property='value'),  # série
-     Input(component_id='my_txt_input7', component_property='value')   # compétition
+     Input(component_id='my_txt_input7', component_property='value'),  # compétition
      ])
+
 def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
@@ -445,9 +450,11 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
             "children": [
                 {"field": "Arr", "width": 60},
                 {"field": "EpJ", "width": 60},
-                {"field": "Total", "width": 60},
+                {"field": "Total", "width": 60, "hide": False},
+                {"field": "Tot U13", "width": 60, "hide": True},
                 {"field": "PdC", "width": 80},
-                {"field": "IWF", "width": 80},
+                {"field": "IWF", "width": 80, "hide": False},
+                {"field": "IWF U13", "width": 80, "hide": True},
                 {"field": "Serie", "width": 80},
             ],
         },
@@ -474,29 +481,31 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
                     {
                         "headerName": "Athlete",
                         "children": [
-                            {"field": "Rang", "width": 30, "pinned": "left"},
-                            {"field": "Nom", "width": 160, "pinned": "left"},
-                            {"field": "Né en", "width": 70},
-                            {"field": "Pays", "width": 60},
-                            {"field": "Club", "width": 160},
+                            {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
+                            {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
+                            {"field": "Né en", "width": 70, "hide": False},
+                            {"field": "Pays", "width": 60, "hide": False},
+                            {"field": "Club", "width": 160, "hide": False},
                         ],
                     },
                     {
                         "headerName": "Performance",
                         "children": [
-                            {"field": "Arr", "width": 60},
-                            {"field": "EpJ", "width": 60},
-                            {"field": "Tot U13 ", "width": 60},
-                            {"field": "PdC", "width": 80},
-                            {"field": "IWF U13", "width": 80},
-                            {"field": "Serie", "width": 80},
+                            {"field": "Arr", "width": 60, "hide": False},
+                            {"field": "EpJ", "width": 60, "hide": False},
+                            {"field": "Total ", "width": 60, "hide": True},
+                            {"field": "Tot U13 ", "width": 60, "hide": False},
+                            {"field": "PdC", "width": 80, "hide": False},
+                            {"field": "IWF", "width": 80, "hide": True},
+                            {"field": "IWF U13", "width": 80, "hide": False},
+                            {"field": "Serie", "width": 80, "hide": False},
                         ],
                     },
                     {
                         "headerName": "Compétition",
                         "children": [
-                            {"field": "Date", "width": 100},
-                            {"field": "Compet", "width": 250},
+                            {"field": "Date", "width": 100, "hide": False},
+                            {"field": "Compet", "width": 250, "hide": False},
                         ],
                     },
                 ]
@@ -506,6 +515,48 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
 
     return dat, columns
 
+@callback(
+    Output("ag-datatable-l", "columnDefs", allow_duplicate=True),
+    [Input("reset_col_list", "n_clicks")],
+    prevent_initial_call=True
+)
+
+def toggle_modal_athl(reset_l_clicks):
+    if reset_l_clicks:
+        cols = [
+                {
+                "headerName": "Athlete",
+                "children": [
+                    {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
+                    {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
+                    {"field": "Né en", "width": 70, "hide": False},
+                    {"field": "Pays", "width": 60, "hide": False},
+                    {"field": "Club", "width": 160, "hide": False},
+                ],
+            },
+            {
+                "headerName": "Performance",
+                "children": [
+                    {"field": "Arr", "width": 60, "hide": False},
+                    {"field": "EpJ", "width": 60, "hide": False},
+                    {"field": "Total", "width": 60},
+                    {"field": "Tot U13", "width": 60},
+                    {"field": "PdC", "width": 80, "hide": False},
+                    {"field": "IWF", "width": 80},
+                    {"field": "IWF U13", "width": 80},
+                    {"field": "Serie", "width": 80, "hide": False},
+                ],
+            },
+            {
+                "headerName": "Compétition",
+                "children": [
+                    {"field": "Date", "width": 100, "hide": False},
+                    {"field": "Compet", "width": 250, "hide": False},
+                ],
+            },
+        ]
+
+    return cols
 
 if __name__ == '__main__':
     run_server(debug=True)

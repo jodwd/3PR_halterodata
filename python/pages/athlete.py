@@ -229,7 +229,7 @@ layout = html.Div([
     html.Br(),
     html.Div([
         dag.AgGrid(
-            id = "ag-datatable-interactivity",
+            id = "ag_datatable_athl",
             rowData = df.to_dict("records"),  # **need it
             columnDefs = [
                         {
@@ -351,9 +351,10 @@ def update_athletes_list(selected_year):
     [Output('graph-with-slider', 'figure'),
      Output('graph-with-slider', 'style')],
     [Input('year-slider', 'value'),
-     Input(component_id='my_txt_input', component_property='value')
+     Input(component_id='my_txt_input', component_property='value'),
+     Input("reset_col", "n_clicks")
      ])
-def update_figure(selected_year, txt_inserted):
+def update_figure(selected_year, txt_inserted, n_clicks):
     if selected_year == '':
         selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
     fdf = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
@@ -390,7 +391,7 @@ def update_figure(selected_year, txt_inserted):
 
 # Mise à jour data table
 @callback(
-    [Output('ag-datatable-interactivity', 'rowData')],
+    [Output('ag_datatable_athl', 'rowData')],
     [Input('year-slider', 'value'),
      Input('my_txt_input', 'value')
      ])
@@ -756,6 +757,97 @@ def update_table_athl4(txt_inserted, is_open_athl4):
 
         return fig_athl4, display_graph_athl4, [dbc.Table.from_dataframe(df_athl4, responsive = True, striped=True, bordered=True, hover=True)]
 
+
+@callback(
+    Output("ag_datatable_athl", "columnDefs"),
+    [Input("reset_col", "n_clicks")],
+    prevent_initial_call=True
+)
+
+def toggle_modal_athl(reset_clicks):
+    if reset_clicks:
+        cols = [
+                        {
+                           "headerName": "Athlete",
+                           "children": [
+                                {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
+                                {"field": "PdC", "width": 80, "hide": False},
+                                {"field": "Catégorie", "width": 100, "hide": False},
+                            ],
+                        },
+                        {
+                           "headerName": "Arraché",
+                           "children": [
+                                {"field": "Arr1", "headerName": "1", "width": 60, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "Arr2", "headerName": "2", "width": 60, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "Arr3", "headerName": "3", "width": 60, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "Arr", "width": 75, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {'backgroundColor': 'darkred'} : {'backgroundColor': 'rgb(59, 113, 202)'}",
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            "headerName": "Epaulé Jeté", "hide": False,
+                                "children": [
+                                    {"field": "EpJ1", "headerName": "1", "width": 60, "hide": False,
+                                        'cellStyle': {
+                                            "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                        },
+                                    },
+                                    {"field": "EpJ2", "headerName": "2", "width": 60, "hide": False,
+                                        'cellStyle': {
+                                            "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                        },
+                                    },
+                                    {"field": "EpJ3", "headerName": "3", "width": 60, "hide": False,
+                                        'cellStyle': {
+                                            "function": "params.value <=0 ? {'backgroundColor': 'rgb(220, 76, 100)'} : {'backgroundColor': 'rgb(20, 164, 77)'}",
+                                        },
+                                    },
+                                    {"field": "EpJ", "width": 75, "hide": False,
+                                        'cellStyle': {
+                                            "function": "params.value <=0 ? {'backgroundColor': 'darkred'} : {'backgroundColor': 'rgb(59, 113, 202)'}",
+                                        },
+                                    },
+                                ],
+                        },
+
+                        {
+                            "headerName": "Performance",
+                                "children": [
+                                    {"field": "Total", "width": 80, "hide": False,
+                                     'cellStyle': {
+                                         "function": "params.value <=0 ? {'backgroundColor': 'darkred'} : {'backgroundColor': 'darkblue'}",
+                                        },
+                                     },
+                                    {"field": "IWF", "width": 80, "hide": False},
+                                    {"field": "Série", "width": 80, "hide": False},
+                                ],
+                        },
+                        {
+                            "headerName": "Compétition",
+                            "children": [
+                                {"field": "Date", "width": 150, "hide": False},
+                                {"field": "Competition", "hide": False}
+                                ],
+                        }
+            ]
+        return cols
+        
 
 if __name__ == '__main__':
     run_server(debug=True)

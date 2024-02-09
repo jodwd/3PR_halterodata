@@ -37,7 +37,7 @@ nav_button = \
             ], width="auto", align="center"),
         dbc.Col([
             dbc.Button(
-                "Club", outline=True, color="primary", className="me-1", href="/club")
+                "Clubs", outline=True, color="primary", className="me-1", href="/club")
             ], width="auto", align="center"),
         dbc.Col([
             dbc.Button(
