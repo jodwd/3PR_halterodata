@@ -5,6 +5,12 @@
     margin-right: 0px;
 }
 
+.body_light {
+    background-color: rgb(40,40,45);
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
 .filter_zone {
     width: 95%;
     height: 20vmin;

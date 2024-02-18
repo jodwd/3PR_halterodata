@@ -73,15 +73,21 @@ nav_button = \
                 ], id="anniv-modal", size="lg", centered=True, is_open=False),
             ],  width="auto"),
 
-     #   dbc.Col([
-     #      html.Div([
-     #          daq.BooleanSwitch(
-     #              id='our-boolean-switch',
-     #              label="Mode Nuit",
-     #              on=False),
-     #          html.Div(id='boolean-switch-result')
-     #      ])
-     #      ],  width="auto"),
+        dbc.Col([
+           html.Div([
+                html.P("     ")
+           ])
+        ], width=1),
+        dbc.Col([
+           html.Div([
+               daq.BooleanSwitch(
+                   id='bool_light',
+                   label={"label": "🌙/🌞", 'style': {"color": "white"}},
+                   labelPosition="bottom",
+                   on=False),
+               html.Div(id='boolean-switch-result')
+           ])
+           ],  width="auto"),
     ],
     className="g-0 ms-auto flex-nowrap mt-3 mt-md-0",
     align="center",
@@ -256,8 +262,20 @@ def anniv(is_open):
 
         return [txt_anniv]
 
+@app.callback(
+    [Output("bool_light", "label")],
+    [Input("bool_light", "on")],
+    prevent_initial_call=True
+)
 
 
+def light_mode(on):
+    if on == True:
+        lbl = {"label": "🌙/🌞", 'style': {"color": "black"}},
+    else:
+        lbl = {"label": "🌙/🌞", 'style': {"color": "white"}},
+
+    return lbl;
 
 if __name__ == "__main__":
     app.run(debug=True)
