@@ -33,19 +33,19 @@ nav_button = \
     dbc.Row([
         dbc.Col([
             dbc.Button(
-                "Athletes", outline=True, color="danger", className="me-1", href="/")
-            ], width="auto", align="center"),
+                "Athletes", outline=True, color="danger", className="me-1", href="/", size="sm")
+            ],  width="auto", align="center"),
         dbc.Col([
             dbc.Button(
-                "Clubs", outline=True, color="primary", className="me-1", href="/club")
-            ], width="auto", align="center"),
+                "Clubs", outline=True, color="primary", className="me-1", href="/club", size="sm")
+            ],  width="auto", align="center"),
         dbc.Col([
             dbc.Button(
-                "Listings", outline=True, color="warning", className="me-1", href="/listings")
-            ], width="auto", align="center"),
+                "Listings", outline=True, color="warning", className="me-1", href="/listings", size="sm")
+            ],  width="auto", align="center"),
             #], xs=2, sm=2, md=2, lg=2, xl=2, align="center")
         dbc.Col([
-            dbc.Button("🤔 Aide", id="open", color="success", outline=True, className="me-1"),
+            dbc.Button("🤔 Aide", id="open", color="success", outline=True, className="me-1", size="sm"),
             dbc.Modal([
                 dbc.ModalHeader("Informations & Aide"),
                 dbc.ModalBody([
@@ -56,12 +56,12 @@ nav_button = \
                     html.Div([], id="help-txt"),
                 ]),
                 dbc.ModalFooter(
-                    dbc.Button("Fermer", id="close-button", color="secondary", className="ml-auto")
+                    dbc.Button("Fermer", id="close-button", color="secondary", className="ml-auto", size="sm")
                 ),
                 ], id="info-modal", size="lg", centered=True, is_open=False),
             ],  width="auto"),
         dbc.Col([
-            dbc.Button("🎂", id="anniv", color="light", outline=True, className="me-1"),
+            dbc.Button("🎂", id="anniv", color="light", outline=True, className="me-1", size="sm"),
             dbc.Modal([
                 dbc.ModalHeader("🎂"),
                 dbc.ModalBody([

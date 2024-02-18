@@ -263,7 +263,7 @@ layout = html.Div([
     dbc.Row([
         dbc.Col([
             dbc.Button(
-                title="  Top 5 Hommes  ", id="top_5_h", outline=False, color="primary", className="top_5", href="/club", size="lg"),
+                title="  Top 5 Hommes  ", id="top_5_h", outline=False, color="primary", className="top_5", href="/club"),
             html.Br(),
 
             html.Div([
@@ -291,7 +291,7 @@ layout = html.Div([
 
         dbc.Col([
             dbc.Button(
-                title="  Top 5 Femmes  ", id="top_5_f", outline=False, color="primary", className="top_5", href="/club", size="lg"),
+                title="  Top 5 Femmes  ", id="top_5_f", outline=False, color="primary", className="top_5", href="/club"),
             html.Br(),
 
             html.Div([

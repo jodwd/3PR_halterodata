@@ -30,6 +30,7 @@ qry = """SELECT * FROM
             ,   cat.RangSerie                   as "RangSerie"
             ,   cat."CatePoids"                 as "CatePoids"
             ,   cat."CateAge"                   as "CateAge"
+            ,   cat."CateMaster"                as "CateMaster"
             ,   cat.Arrache                     as "Arr"
             ,   cat.EpJete                      as "EpJ"
             ,   cat.PoidsTotal                  as "Total"
@@ -73,6 +74,7 @@ dash.register_page(__name__, name='3PR - Listings', title='3PR - Listings', imag
 # df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
 nom_ligue = list(set(df['Ligue'].tolist()))
 nom_age = list(set(df['CateAge'].tolist()))
+nom_age_masters = list(set(df['CateMaster'].tolist()))
 nom_poids = list(set(df['CatePoids'].tolist()))
 nom_sexe = list(set(df['Sexe'].tolist()))
 nom_nat = list(set(df['Pays'].tolist()))
@@ -166,8 +168,15 @@ layout = html.Div([
 
     dbc.Row([
         dbc.Col([
+            daq.BooleanSwitch(id='bool_masters',
+                              on=False,
+                              label={"label": "Masters", 'style': {"color": "white"}},
+                              labelPosition="bottom",
+                              color="#FFC107"),
+        ], xs=3, sm=3, md=2, lg=2, xl=1),
+        dbc.Col([
             dbc.Button("↪️ Reset", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
-        ], width=2),
+        ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.Slider(
                 min=df['SaisonAnnee'].min(),
@@ -179,7 +188,7 @@ layout = html.Div([
                 tooltip={"placement": "bottom", "always_visible": True},
                 id='year-slider',
                 className='slider_zone')
-        ], width=10),
+        ], xs=6, sm=6, md=8, lg=8, xl=10),
     ]),
 
     html.Br(),
@@ -217,20 +226,24 @@ layout = html.Div([
 @callback(
     Output('my_txt_input1', 'options'),
     [Input('year-slider', 'value'),
+     Input('bool_masters', 'on'),
      Input('my_txt_input2', 'value'),
      Input('my_txt_input3', 'value'),
      Input('my_txt_input4', 'value'),
      Input('my_txt_input5', 'value'),
      Input('my_txt_input6', 'value')]
 )
-def update_datalist(selected_year, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
+def update_datalist(selected_year, on, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
     if txt_inserted2:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
     if txt_inserted3:
-        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        if on == False:
+            filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        else:
+            filtered_df = filtered_df[(filtered_df['CateMaster'].isin(txt_inserted3))]
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
     if txt_inserted5:
@@ -245,6 +258,7 @@ def update_datalist(selected_year, txt_inserted2, txt_inserted3, txt_inserted4, 
 @callback(
     Output('my_txt_input2', 'options'),
     [Input('year-slider', 'value'),
+     Input('bool_masters', 'on'),
      Input('my_txt_input1', 'value'),
      Input('my_txt_input3', 'value'),
      Input('my_txt_input4', 'value'),
@@ -252,14 +266,17 @@ def update_datalist(selected_year, txt_inserted2, txt_inserted3, txt_inserted4, 
      Input('my_txt_input6', 'value')]
 )
 
-def update_datalist(selected_year, txt_inserted1, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
+def update_datalist(selected_year, on, txt_inserted1, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
     if txt_inserted1:
         filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
     if txt_inserted3:
-        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        if on == False:
+            filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        else:
+            filtered_df = filtered_df[(filtered_df['CateMaster'].isin(txt_inserted3))]
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
     if txt_inserted5:
@@ -274,13 +291,14 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted3, txt_inserted4, 
 @callback(
     Output('my_txt_input3', 'options'),
     [Input('year-slider', 'value'),
+     Input('bool_masters', 'on'),
      Input('my_txt_input1', 'value'),
      Input('my_txt_input2', 'value'),
      Input('my_txt_input4', 'value'),
      Input('my_txt_input5', 'value'),
      Input('my_txt_input6', 'value')]
 )
-def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4, txt_inserted5, txt_inserted6):
+def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted4, txt_inserted5, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -295,13 +313,17 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4, 
     if txt_inserted6:
         filtered_df = filtered_df[(filtered_df['Serie'].isin(txt_inserted6))]
 
-    nom_age = list(set(filtered_df['CateAge'].tolist()))
+    if on == False:
+        nom_age = list(set(filtered_df['CateAge'].tolist()))
+    else:
+        nom_age = list(set(filtered_df['CateMaster'].tolist()))
     opt = [x for x in sorted(nom_age)]
     return opt
 
 @callback(
     Output('my_txt_input4', 'options'),
     [Input('year-slider', 'value'),
+     Input('bool_masters', 'on'),
      Input('my_txt_input1', 'value'),
      Input('my_txt_input2', 'value'),
      Input('my_txt_input3', 'value'),
@@ -309,7 +331,7 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted4, 
      Input('my_txt_input6', 'value')],
     prevent_initial_call=True
 )
-def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted5, txt_inserted6):
+def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted5, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -318,7 +340,10 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
     if txt_inserted2:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
     if txt_inserted3:
-        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        if on == False:
+            filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        else:
+            filtered_df = filtered_df[(filtered_df['CateMaster'].isin(txt_inserted3))]
     if txt_inserted5:
         filtered_df = filtered_df[(filtered_df['Pays'].isin(txt_inserted5))]
     if txt_inserted6:
@@ -331,13 +356,14 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
 @callback(
     Output('my_txt_input5', 'options'),
     [Input('year-slider', 'value'),
+     Input('bool_masters', 'on'),
      Input('my_txt_input1', 'value'),
      Input('my_txt_input2', 'value'),
      Input('my_txt_input3', 'value'),
      Input('my_txt_input4', 'value'),
      Input('my_txt_input6', 'value')]
 )
-def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted6):
+def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted6):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -346,7 +372,10 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
     if txt_inserted2:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
     if txt_inserted3:
-        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        if on == False:
+            filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        else:
+            filtered_df = filtered_df[(filtered_df['CateMaster'].isin(txt_inserted3))]
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
     if txt_inserted6:
@@ -358,13 +387,14 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
 @callback(
     Output('my_txt_input6', 'options'),
     [Input('year-slider', 'value'),
+     Input('bool_masters', 'on'),
      Input('my_txt_input1', 'value'),
      Input('my_txt_input2', 'value'),
      Input('my_txt_input3', 'value'),
      Input('my_txt_input4', 'value'),
      Input('my_txt_input5', 'value')]
 )
-def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5):
+def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -373,7 +403,10 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
     if txt_inserted2:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
     if txt_inserted3:
-        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        if on == False:
+            filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        else:
+            filtered_df = filtered_df[(filtered_df['CateMaster'].isin(txt_inserted3))]
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
     if txt_inserted5:
@@ -388,6 +421,7 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
     [Output('ag-datatable-l', "rowData"),
      Output('ag-datatable-l', "columnDefs")],
     [Input('year-slider', 'value'),
+     Input('bool_masters', 'on'),
      Input(component_id='my_txt_input1', component_property='value'),  # sexe
      Input(component_id='my_txt_input2', component_property='value'),  # poids
      Input(component_id='my_txt_input3', component_property='value'),  # age
@@ -397,7 +431,7 @@ def update_datalist(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, 
      Input(component_id='my_txt_input7', component_property='value'),  # compétition
      ])
 
-def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7):
+def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -412,8 +446,14 @@ def update_data(selected_year, txt_inserted1, txt_inserted2, txt_inserted3, txt_
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
         filtered_df = filtered_df.sort_values(by=['Total', 'IWF'], ascending=[False, False])
         print(txt_inserted2)
+    # Gestion spécifique masters
+    if on == True:
+        filtered_df = filtered_df[(filtered_df['CateMaster'].str.len()>0)]
     if txt_inserted3:
-        filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        if on == False:
+            filtered_df = filtered_df[(filtered_df['CateAge'].isin(txt_inserted3))]
+        else:
+            filtered_df = filtered_df[(filtered_df['CateMaster'].isin(txt_inserted3))]
         print(txt_inserted3)
     if txt_inserted4:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(txt_inserted4))]
@@ -557,6 +597,7 @@ def toggle_modal_athl(reset_l_clicks):
         ]
 
     return cols
+
 
 if __name__ == '__main__':
     run_server(debug=True)

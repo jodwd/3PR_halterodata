@@ -200,10 +200,16 @@ layout = html.Div([
     # Zone graph
     html.Br(),
     dbc.Row([
-
+        dbc.Col([
+            daq.BooleanSwitch(id='bool_total',
+                              on=False,
+                              label={"label": "IWF/Total", 'style': {"color": "white"}},
+                              labelPosition="bottom",
+                              color="#A11C0F"),
+        ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dbc.Button("↪️ Reset", id="reset_col", color="light", outline=True, className="mt-auto", size="sm"),
-        ], width=2),
+        ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.RangeSlider(
                 df['SaisonAnnee'].min(),
@@ -214,7 +220,7 @@ layout = html.Div([
                 id='year-slider',
                 className='slider_zone'
                 ),
-            ], width=10),
+            ], xs=6, sm=6, md=8, lg=8, xl=10),
 
 
         dbc.Col([
@@ -351,10 +357,11 @@ def update_athletes_list(selected_year):
     [Output('graph-with-slider', 'figure'),
      Output('graph-with-slider', 'style')],
     [Input('year-slider', 'value'),
+     Input('bool_total', 'on'),
      Input(component_id='my_txt_input', component_property='value'),
      Input("reset_col", "n_clicks")
      ])
-def update_figure(selected_year, txt_inserted, n_clicks):
+def update_figure(selected_year, on, txt_inserted, n_clicks):
     if selected_year == '':
         selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
     fdf = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
@@ -367,7 +374,11 @@ def update_figure(selected_year, txt_inserted, n_clicks):
         display_graph = {'display': 'block'}
 
         #Paramètres de graph
-        fig = px.scatter(fdf, x="Date", y="IWF",  hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
+        if on == True:
+            fig = px.scatter(fdf, x="Date", y="Total",  hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
+                                      color="Nom", log_x=False, size_max=55,color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"], )
+        else:
+            fig = px.scatter(fdf, x="Date", y="IWF",  hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
                                       color="Nom", log_x=False, size_max=55,color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"], )
         fig.update_traces(marker=dict(size=10, symbol='circle') )
         fig.update_xaxes(categoryorder="category ascending")
@@ -393,17 +404,20 @@ def update_figure(selected_year, txt_inserted, n_clicks):
 @callback(
     [Output('ag_datatable_athl', 'rowData')],
     [Input('year-slider', 'value'),
+     Input('bool_total', 'on'),
      Input('my_txt_input', 'value')
      ])
-def update_data_ag(selected_year, txt_inserted):
+def update_data_ag(selected_year, on, txt_inserted):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     if txt_inserted:
         fdf = df[df['Nom'].isin(txt_inserted) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     else:
         fdf = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
-
-    fdf = fdf.sort_values(by=['IWF'], ascending=False)
+    if on == True:
+        fdf = fdf.sort_values(by=['Total'], ascending=False)
+    else:
+        fdf = fdf.sort_values(by=['IWF'], ascending=False)
     dat_ag = fdf.to_dict('records')
 
     return [dat_ag]
