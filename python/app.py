@@ -263,19 +263,24 @@ def anniv(is_open):
         return [txt_anniv]
 
 @app.callback(
-    [Output("bool_light", "label")],
+    [#Output("bool_light", "label"),
+     #Output("bool_light", "labelPosition"),
+     Output("anniv", "color")],
     [Input("bool_light", "on")],
     prevent_initial_call=True
 )
 
-
 def light_mode(on):
+    lbl_pos = "bottom"
     if on == True:
         lbl = {"label": "🌙/🌞", 'style': {"color": "black"}},
+        col_anniv = "secondary"
     else:
         lbl = {"label": "🌙/🌞", 'style': {"color": "white"}},
+        col_anniv = "light"
 
-    return lbl;
+   # return lbl, lbl_pos, col_anniv;
+    return lbl_pos;
 
 if __name__ == "__main__":
     app.run(debug=True)

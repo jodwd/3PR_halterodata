@@ -6,7 +6,7 @@
 }
 
 .body_light {
-    background-color: rgb(40,40,45);
+    background-color: rgb(248, 249, 250);
     margin-left: 0px;
     margin-right: 0px;
 }
@@ -50,7 +50,7 @@
 }
 
 .ag-theme-quartz-dark {
-    --ag-odd-row-background-color: rgb(0, 0, 0, 0.03);
+    --ag-odd-row-background-color: rgb(0, 0, 0, 0.05);
     --ag-header-column-resize-handle-color: rgb(161, 28, 15);
 
     --ag-font-size: 12px;
@@ -58,7 +58,7 @@
 }
 
 .ag-theme-quartz {
-    --ag-odd-row-background-color: rgb(0, 0, 0, 0.03);
+    --ag-odd-row-background-color: rgb(249, 250, 251);
     --ag-header-column-resize-handle-color: rgb(161, 28, 15);
 
     --ag-font-size: 12px;
