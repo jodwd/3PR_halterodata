@@ -9,7 +9,6 @@ import os
 from dash.dependencies import Input, Output
 import dash_daq as daq
 import dash_bootstrap_components as dbc
-import json
 
 
 # Connection à la base SQLite
@@ -796,16 +795,6 @@ def update_table_athl4(txt_inserted, is_open_athl4):
 
 def toggle_modal_athl(reset_clicks):
     color_mode = 'color'
-
-    # Place this command at the start of each callback
-    ctx = dash.callback_context
-
-    # Show CTX values
-    print(u''' ctx = {}'''.format(json.dumps({
-        'states': ctx.states,
-        'triggered': ctx.triggered,
-        'inputs': ctx.inputs
-    }, indent=2)))
 
     #if reset_clicks:
     cols = [
