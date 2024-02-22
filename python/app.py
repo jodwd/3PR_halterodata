@@ -1,5 +1,5 @@
 import dash
-from dash import html, dcc, Input, Output, State, html
+from dash import html, dcc, Input, Output, State, html, clientside_callback
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 import sqlite3 as sql
@@ -7,15 +7,14 @@ import pandas as pd
 import os
 import dash_daq as daq
 from datetime import datetime, timedelta
+import dash_breakpoints
 from dash_bootstrap_components._components.Container import Container
-
-
 
 app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'}],
                 use_pages=True)
-app.title = "3PR - Dashboard Haltero"
+app.title = "3PR - Tableau de Bord de l'Haltérophilie en France"
 server = app.server
 
 # Connection à la base SQLite
@@ -33,19 +32,19 @@ nav_button = \
     dbc.Row([
         dbc.Col([
             dbc.Button(
-                "Athletes", outline=True, color="danger", className="me-1", href="/")
-            ], width="auto", align="center"),
+                "Athletes", outline=True, color="danger", className="me-1", href="/", size="sm")
+            ],  width="auto", align="center"),
         dbc.Col([
             dbc.Button(
-                "Clubs", outline=True, color="primary", className="me-1", href="/club")
-            ], width="auto", align="center"),
+                "Clubs", outline=True, color="primary", className="me-1", href="/club", size="sm")
+            ],  width="auto", align="center"),
         dbc.Col([
             dbc.Button(
-                "Listings", outline=True, color="warning", className="me-1", href="/listings")
-            ], width="auto", align="center"),
+                "Listings", outline=True, color="warning", className="me-1", href="/listings", size="sm")
+            ],  width="auto", align="center"),
             #], xs=2, sm=2, md=2, lg=2, xl=2, align="center")
         dbc.Col([
-            dbc.Button("🤔 Aide", id="open", color="success", outline=True, className="me-1"),
+            dbc.Button("🤔 Aide", id="open", color="success", outline=True, className="me-1", size="sm"),
             dbc.Modal([
                 dbc.ModalHeader("Informations & Aide"),
                 dbc.ModalBody([
@@ -56,32 +55,29 @@ nav_button = \
                     html.Div([], id="help-txt"),
                 ]),
                 dbc.ModalFooter(
-                    dbc.Button("Fermer", id="close-button", color="secondary", className="ml-auto")
+                    dbc.Button("Fermer", id="close-button", color="secondary", className="ml-auto", size="sm")
                 ),
                 ], id="info-modal", size="lg", centered=True, is_open=False),
             ],  width="auto"),
         dbc.Col([
-            dbc.Button("🎂", id="anniv", color="light", outline=True, className="me-1"),
+            dbc.Button("🎂", id="anniv", color="light", outline=True, className="me-1", size="sm"),
             dbc.Modal([
                 dbc.ModalHeader("🎂"),
                 dbc.ModalBody([
                     html.Div([html.P("")], id="txt_anniv")
                 ]),
                 dbc.ModalFooter(
-                    dbc.Button("Close", id="close-button-anniv", color="secondary", className="ml-auto")
+                    dbc.Button("Fermer", id="close-button-anniv", color="secondary", className="ml-auto")
                 ),
                 ], id="anniv-modal", size="lg", centered=True, is_open=False),
             ],  width="auto"),
 
-     #   dbc.Col([
-     #      html.Div([
-     #          daq.BooleanSwitch(
-     #              id='our-boolean-switch',
-     #              label="Mode Nuit",
-     #              on=False),
-     #          html.Div(id='boolean-switch-result')
-     #      ])
-     #      ],  width="auto"),
+        dbc.Col([
+           html.Div([
+                html.P("     ")
+           ])
+        ],  width="auto"),
+
     ],
     className="g-0 ms-auto flex-nowrap mt-3 mt-md-0",
     align="center",
@@ -95,8 +91,9 @@ navbar = dbc.Navbar(
                 # Use row and col to control vertical alignment of logo / brand
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src=r'assets/3PR.png', height="52px")),
-                        dbc.Col(dbc.NavbarBrand("Tableau de Bord Haltero", className="ms-2")),
+                        dbc.Col(html.Img(src=r'assets/3PR.png', height="68px")),
+                        dbc.Col(dbc.NavbarBrand("Perfs Haltero  ", className="ms-2", style={"color": "white", 'font-size': "20px"}, id="nav_brand")),
+
                     ],
                     align="center",
                     className="g-0",
@@ -104,6 +101,13 @@ navbar = dbc.Navbar(
                 href="/",
                 style={"textDecoration": "none"},
             ),
+            dbc.Col([
+                daq.BooleanSwitch(
+                    id='bool_light',
+                    label={"label": "🌙/🌞", 'style': {"color": "white"}},
+                    labelPosition="bottom",
+                    on=False),
+            ], width="auto"),
             dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
             dbc.Collapse(
                 nav_button,
@@ -113,14 +117,22 @@ navbar = dbc.Navbar(
             ),
         ]
     ),
+    id="navbar_cont",
     color="dark",
+    fixed="top",
+    sticky="top",
     dark=True,
 )
 
 app.layout = \
-html.Div(children=
-#dbc.Container(
-    [navbar,
+html.Div(children=[
+    html.Div(id="display", className="display_screen_width", hidden=False),
+    dash_breakpoints.WindowBreakpoints(
+        id="breakpoints",
+        widthBreakpointThresholdsPx=[576, 768, 992, 1200, 1400],
+        widthBreakpointNames=["xs", "sm", "md", "lg", "xl", "xxl"]
+    ),
+    navbar,
     html.Div(className='hr1'),
     html.Div(className='hr2'),
     html.Div(className='hr3'),
@@ -129,6 +141,36 @@ html.Div(children=
     #fluid=True,
     id="page-content"
 )
+
+# On change le titre en fonction de la taille de l'écran
+clientside_callback(
+    """(wBreakpoint, w) => {
+        console.log("Only updating when crossing the threshold")
+        return wBreakpoint
+    }""",
+    Output("display", "children"),
+    Input("breakpoints", "widthBreakpoint"),
+    State("breakpoints", "width"),
+)
+@app.callback(
+    Output("nav_brand", "children"),
+    Input("display", "children")
+)
+
+def change_title_screensize(breakpoint_str):
+    breakpoint_name = breakpoint_str
+    if breakpoint_name=="xs" or breakpoint_name=="sm":
+        nav_txt = "Perfs Haltero  "
+    elif breakpoint_name=="md":
+        nav_txt = "Tableau de bord Haltero"
+    elif breakpoint_name=="lg" or breakpoint_name=="xl":
+        nav_txt = "Tableau de bord des Performances en Haltérophilie  "
+    else:
+        nav_txt = "Tableau de bord des Performances en Haltérophilie en France  "
+    print(breakpoint_name)
+    return nav_txt
+
+
 
 #Boutons de Navigation
 @app.callback(
@@ -255,8 +297,6 @@ def anniv(is_open):
         txt_anniv = txt_anniv[0:-2]
 
         return [txt_anniv]
-
-
 
 
 if __name__ == "__main__":
