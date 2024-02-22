@@ -47,7 +47,7 @@ df['MoisCompet'] = pd.Categorical(df['MoisCompet'],
                                   ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
 df2['Série'] = pd.Categorical(df2['Série'],
                                   ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"], ordered=True)
-df = df.sort_values(by=['IWF'], ascending=False)
+df_temp = df[df['Nom']=='ZZZZZ']
 
 dash.register_page(__name__, path='/', name='3PR - Athletes', title='3PR - Dashboard Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
 
@@ -237,7 +237,7 @@ layout = html.Div([
     html.Div([
         dag.AgGrid(
             id = "ag_datatable_athl",
-            rowData = df.to_dict("records"),
+            rowData = df_temp.to_dict("records"),
             columnDefs = [
                         {
                             "headerName": "Athlete",
@@ -425,8 +425,7 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoin
     [Input('year-slider-athl', 'value'),
      Input('bool_total', 'on'),
      Input('my_txt_input', 'value')
-     ],
-     prevent_initial_call=True)
+     ])
 def update_data_ag(selected_year, on, txt_inserted):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
