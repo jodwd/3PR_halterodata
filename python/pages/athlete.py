@@ -9,6 +9,7 @@ import dash_ag_grid as dag
 import os
 from dash.dependencies import Input, Output
 import dash_daq as daq
+import dash_breakpoints
 #from flask import Flask, render_template
 import dash_bootstrap_components as dbc
 
@@ -46,7 +47,7 @@ df['MoisCompet'] = pd.Categorical(df['MoisCompet'],
                                   ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
 df2['Série'] = pd.Categorical(df2['Série'],
                                   ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"], ordered=True)
-
+df = df.sort_values(by=['IWF'], ascending=False)
 
 dash.register_page(__name__, path='/', name='3PR - Athletes', title='3PR - Dashboard Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
 
@@ -236,7 +237,7 @@ layout = html.Div([
     html.Div([
         dag.AgGrid(
             id = "ag_datatable_athl",
-            rowData = df.to_dict("records"),  # **need it
+            rowData = df.to_dict("records"),
             columnDefs = [
                         {
                             "headerName": "Athlete",
@@ -316,14 +317,11 @@ layout = html.Div([
                                 {"field": "Competition", "hide": False}
                             ],
                         }
-
-                          #  ['Nom',  'Date', 'PdC', 'Arr1', 'Arr2', 'Arr3', 'Arr', 'EpJ1', 'EpJ2', 'EpJ3', 'EpJ', 'Total', 'IWF', 'Série', 'Catégorie', 'Competition']
                     ],
             defaultColDef = {"resizable": True, "sortable": True, "filter": True},
             suppressDragLeaveHidesColumns=False,
             dashGridOptions = {"pagination": False},
             className = "ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
-
         )
 
     ]),
@@ -360,9 +358,11 @@ def update_athletes_list(selected_year):
      Input('bool_total', 'on'),
      Input('bool_light', 'on'),
      Input(component_id='my_txt_input', component_property='value'),
-     Input("reset_col", "n_clicks")
-     ])
-def update_figure(selected_year, on, on_light, txt_inserted, n_clicks):
+     Input("reset_col", "n_clicks"),
+     Input("display", "children")
+     ],
+     prevent_initial_call=True)
+def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoint_str):
     if selected_year == '':
         selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
     fdf = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
@@ -372,7 +372,11 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks):
         fdf.Nom = fdf.Nom.astype("category")
         fdf.Nom = fdf.Nom.cat.set_categories(txt_inserted)
         fdf = fdf.sort_values(by='Nom')
-        display_graph = {'display': 'block'}
+
+        if breakpoint_str=="md":
+            display_graph = {'display': 'block', 'height': 300}
+        else:
+            display_graph = {'display': 'block', 'height': '50vh'}
 
         if on_light == True:
             font_col = 'rgb(40,40,45)'
@@ -421,7 +425,8 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks):
     [Input('year-slider-athl', 'value'),
      Input('bool_total', 'on'),
      Input('my_txt_input', 'value')
-     ])
+     ],
+     prevent_initial_call=True)
 def update_data_ag(selected_year, on, txt_inserted):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
