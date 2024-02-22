@@ -5,13 +5,11 @@ from dash.exceptions import PreventUpdate
 import pandas as pd
 import sqlite3 as sql
 import dash_ag_grid as dag
-#import numpy as np
 import os
 from dash.dependencies import Input, Output
 import dash_daq as daq
-import dash_breakpoints
-#from flask import Flask, render_template
 import dash_bootstrap_components as dbc
+import json
 
 
 # Connection à la base SQLite
@@ -798,89 +796,100 @@ def update_table_athl4(txt_inserted, is_open_athl4):
 
 def toggle_modal_athl(reset_clicks):
     color_mode = 'color'
-    if reset_clicks:
-        cols = [
-                    {
-                       "headerName": "Athlete",
-                       "children": [
-                            {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
-                            {"field": "PdC", "width": 80, "hide": False},
-                            {"field": "Catégorie", "width": 100, "hide": False},
-                        ],
-                    },
-                    {
-                       "headerName": "Arraché",
-                       "children": [
-                            {"field": "Arr1", "headerName": "1", "width": 60, "hide": False,
+
+    # Place this command at the start of each callback
+    ctx = dash.callback_context
+
+    # Show CTX values
+    print(u''' ctx = {}'''.format(json.dumps({
+        'states': ctx.states,
+        'triggered': ctx.triggered,
+        'inputs': ctx.inputs
+    }, indent=2)))
+
+    #if reset_clicks:
+    cols = [
+                {
+                   "headerName": "Athlete",
+                   "children": [
+                        {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
+                        {"field": "PdC", "width": 80, "hide": False},
+                        {"field": "Catégorie", "width": 100, "hide": False},
+                    ],
+                },
+                {
+                   "headerName": "Arraché",
+                   "children": [
+                        {"field": "Arr1", "headerName": "1", "width": 60, "hide": False,
+                            'cellStyle': {
+                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
+                            },
+                        },
+                        {"field": "Arr2", "headerName": "2", "width": 60, "hide": False,
+                            'cellStyle': {
+                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
+                            },
+                        },
+                        {"field": "Arr3", "headerName": "3", "width": 60, "hide": False,
+                            'cellStyle': {
+                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
+                            },
+                        },
+                        {"field": "Arr", "width": 75, "hide": False,
+                            'cellStyle': {
+                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
+                            },
+                        },
+                    ],
+                },
+                {
+                    "headerName": "Epaulé Jeté", "hide": False,
+                        "children": [
+                            {"field": "EpJ1", "headerName": "1", "width": 60, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
                                 },
                             },
-                            {"field": "Arr2", "headerName": "2", "width": 60, "hide": False,
+                            {"field": "EpJ2", "headerName": "2", "width": 60, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
                                 },
                             },
-                            {"field": "Arr3", "headerName": "3", "width": 60, "hide": False,
+                            {"field": "EpJ3", "headerName": "3", "width": 60, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
                                 },
                             },
-                            {"field": "Arr", "width": 75, "hide": False,
+                            {"field": "EpJ", "width": 75, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
                                 },
                             },
                         ],
-                    },
-                    {
-                        "headerName": "Epaulé Jeté", "hide": False,
-                            "children": [
-                                {"field": "EpJ1", "headerName": "1", "width": 60, "hide": False,
-                                    'cellStyle': {
-                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
-                                    },
-                                },
-                                {"field": "EpJ2", "headerName": "2", "width": 60, "hide": False,
-                                    'cellStyle': {
-                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
-                                    },
-                                },
-                                {"field": "EpJ3", "headerName": "3", "width": 60, "hide": False,
-                                    'cellStyle': {
-                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
-                                    },
-                                },
-                                {"field": "EpJ", "width": 75, "hide": False,
-                                    'cellStyle': {
-                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
-                                    },
-                                },
-                            ],
-                    },
+                },
 
-                    {
-                        "headerName": "Performance",
-                            "children": [
-                                {"field": "Total", "width": 80, "hide": False, "font-weight": 'bold',
-                                 'cellStyle': {
-                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
-                                    },
-                                 },
-                                {"field": "IWF", "width": 80, "hide": False},
-                                {"field": "Série", "width": 80, "hide": False},
-                            ],
-                    },
-                    {
-                        "headerName": "Compétition",
+                {
+                    "headerName": "Performance",
                         "children": [
-                            {"field": "Date", "width": 150, "hide": False},
-                            {"field": "Competition", "hide": False}
-                            ],
-                    }
-            ]
+                            {"field": "Total", "width": 80, "hide": False, "font-weight": 'bold',
+                             'cellStyle': {
+                                 "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
+                                },
+                             },
+                            {"field": "IWF", "width": 80, "hide": False},
+                            {"field": "Série", "width": 80, "hide": False},
+                        ],
+                },
+                {
+                    "headerName": "Compétition",
+                    "children": [
+                        {"field": "Date", "width": 150, "hide": False},
+                        {"field": "Competition", "hide": False}
+                        ],
+                }
+        ]
 
-        return cols;
+    return cols;
         
 @callback(
     [
