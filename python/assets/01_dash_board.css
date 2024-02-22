@@ -31,7 +31,7 @@
 
 .input_box1 {
     font-size: 12px;
-    color: black;
+    color: rgb(40,40,45);
     width: 100%;
     margin-top: 2%;
 }
@@ -70,6 +70,23 @@
     font-size: 14px;
     color: white;
 
+}
+
+#year-slider-athl .rc-slider-track {
+  background-color: rgb(220, 53, 69);
+}
+
+#year-slider-athl .rc-slider-handle {
+  background-color: rgb(220, 53, 69);
+  border-color: rgb(220, 53, 69);
+}
+
+#year-slider-athl  .rc-slider-dot-active {
+  border-color: rgb(220, 53, 69);
+}
+
+#year-slider-athl .rc-slider-handle-dragging {
+  box-shadow: 0px 0px 0px 2px rgb(220, 53, 69);
 }
 
 .graph-with-slider {

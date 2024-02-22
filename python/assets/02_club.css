@@ -5,13 +5,19 @@
   padding: 0;
 }
 
+.body_light {
+    background-color: rgb(248, 249, 250);
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
 .margins {
   background-color: rgb(40,40,45);
 }
 
 .input-box {
   font-size: 12px;
-  color: black;
+  color: rgb(40,40,45);
   width: 100%;
   margin-top: 2%;
 }
@@ -26,6 +32,23 @@
 
 .top-zone {
   margin-left: 2%;
+}
+
+#year-slider-club .rc-slider-track {
+  background-color: rgb(11, 95, 215);
+}
+
+#year-slider-club .rc-slider-handle {
+  background-color: rgb(11, 95, 215);
+  border-color: rgb(11, 95, 215);
+}
+
+#year-slider-club  .rc-slider-dot-active {
+  border-color: rgb(11, 95, 215);
+}
+
+#year-slider-club .rc-slider-handle-dragging {
+  box-shadow: 0px 0px 0px 2px rgb(0, 45, 165);
 }
 
 .card-title {
@@ -83,8 +106,16 @@
 }
 
 .ag-theme-quartz-dark {
-    --ag-odd-row-background-color: rgb(0, 0, 0, 0.03);
-    --ag-header-column-resize-handle-color: rgb(13, 110, 253);
+    --ag-odd-row-background-color: rgb(0, 0, 0, 0.05);
+    --ag-header-column-resize-handle-color: rgb(161, 28, 15);
+
+    --ag-font-size: 12px;
+    --ag-font-family: 'Helvetica Neue',sans-serif;
+}
+
+.ag-theme-quartz {
+    --ag-odd-row-background-color: rgb(249, 250, 251);
+    --ag-header-column-resize-handle-color: rgb(161, 28, 15);
 
     --ag-font-size: 12px;
     --ag-font-family: 'Helvetica Neue',sans-serif;

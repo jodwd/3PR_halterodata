@@ -168,11 +168,12 @@ layout = html.Div([
 
     dbc.Row([
         dbc.Col([
-            daq.BooleanSwitch(id='bool_masters',
-                              on=False,
-                              label={"label": "Masters", 'style': {"color": "white"}},
-                              labelPosition="bottom",
-                              color="#FFC107"),
+            html.Div([
+                daq.BooleanSwitch(id='bool_masters',
+                                  on=False,
+                                  color="#FFC107"),
+                html.P("Masters"),
+                ], id="div_masters", className="bool_switch"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dbc.Button("↪️ Reset", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
@@ -217,8 +218,8 @@ layout = html.Div([
     ),
     html.Br(),
     html.Div(id='none', children=[], style={'display': 'none'})
-],
-    id='app_code',
+    ],
+    id='app_code_l',
     className='body'
 )
 
@@ -598,6 +599,29 @@ def toggle_modal_athl(reset_l_clicks):
 
     return cols
 
+@callback(
+    [Output("app_code_l", "className"),
+     Output("ag-datatable-l", "className"),
+     Output("reset_col_list", "color"),
+     Output("div_masters", "className")],
+    [Input("bool_light", "on")]
+)
+
+def light_mode_list(on):
+
+    #masters_label_pos = "bottom"
+    if on == True:
+        css_body = "body_light"
+        css_grid = "ag-theme-quartz"
+        reset_color = "secondary"
+        masters_label_classname = "bool_switch_light"
+    else:
+        css_body = "body"
+        css_grid = "ag-theme-quartz-dark"
+        reset_color = "light"
+        masters_label_classname = "bool_switch"
+
+    return css_body, css_grid, reset_color, masters_label_classname;
 
 if __name__ == '__main__':
     run_server(debug=True)

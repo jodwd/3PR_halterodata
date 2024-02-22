@@ -205,7 +205,7 @@ layout = html.Div([
                               on=False,
                               label={"label": "IWF/Total", 'style': {"color": "white"}},
                               labelPosition="bottom",
-                              color="#A11C0F"),
+                              color="#DC3545"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dbc.Button("↪️ Reset", id="reset_col", color="light", outline=True, className="mt-auto", size="sm"),
@@ -217,7 +217,7 @@ layout = html.Div([
                 step=None,
                 value=selected_year,
                 marks={str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()},
-                id='year-slider',
+                id='year-slider-athl',
                 className='slider_zone'
                 ),
             ], xs=6, sm=6, md=8, lg=8, xl=10),
@@ -336,14 +336,14 @@ layout = html.Div([
         href='/assets/01_dash_board.css'
     )
     ],
-    id='app_code',
+    id='app_code_athl',
     className='body'
 )
 
 # Mise à jour de la liste d'athlète dispo en fonction des années de référence
 @callback(
     Output('my_txt_input', 'options'),
-    Input('year-slider', 'value'),
+    Input('year-slider-athl', 'value'),
     prevent_initial_call=True
 )
 def update_athletes_list(selected_year):
@@ -356,7 +356,7 @@ def update_athletes_list(selected_year):
 @callback(
     [Output('graph-with-slider', 'figure'),
      Output('graph-with-slider', 'style')],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-athl', 'value'),
      Input('bool_total', 'on'),
      Input('bool_light', 'on'),
      Input(component_id='my_txt_input', component_property='value'),
@@ -375,7 +375,7 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks):
         display_graph = {'display': 'block'}
 
         if on_light == True:
-            font_col = "black"
+            font_col = 'rgb(40,40,45)'
             plot_col = 'rgb(249, 250, 251)'
         else:
             font_col = "white"
@@ -383,12 +383,17 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks):
 
 
         #Paramètres de graph
+        if on_light == True:
+            color_seq = ["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#282D2D", "purple", "#54B4D3", "#9FA6B2"]
+        else:
+            color_seq = ["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"]
+
         if on == True:
             fig = px.scatter(fdf, x="Date", y="Total",  hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
-                                      color="Nom", log_x=False, size_max=55,color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"], )
+                                      color="Nom", log_x=False, size_max=55,color_discrete_sequence=color_seq, )
         else:
             fig = px.scatter(fdf, x="Date", y="IWF",  hover_name="Competition", hover_data=["Arr", "EpJ", "PdC", "Série"],
-                                      color="Nom", log_x=False, size_max=55,color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"], )
+                                      color="Nom", log_x=False, size_max=55,color_discrete_sequence=color_seq, )
         fig.update_traces(marker=dict(size=10, symbol='circle'))
 
         fig.update_xaxes(categoryorder="category ascending", gridcolor='LightGrey')
@@ -413,7 +418,7 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks):
 # Mise à jour data table
 @callback(
     [Output('ag_datatable_athl', 'rowData')],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-athl', 'value'),
      Input('bool_total', 'on'),
      Input('my_txt_input', 'value')
      ])
@@ -455,7 +460,7 @@ def update_data_ag(selected_year, on, txt_inserted):
      Output("athlete4_nom_info", "children"),
      Output("athlete4_club", "children"),
      Output("athlete4_annivmax", "children")],
-    [Input('year-slider', 'value'),
+    [Input('year-slider-athl', 'value'),
      Input(component_id='my_txt_input', component_property='value')
      ])
 
@@ -784,17 +789,12 @@ def update_table_athl4(txt_inserted, is_open_athl4):
 
 @callback(
     Output("ag_datatable_athl", "columnDefs"),
-    [Input("reset_col", "n_clicks"),
-     Input('bool_light', 'on')]
+    [Input("reset_col", "n_clicks")]
 )
 
-def toggle_modal_athl(reset_clicks, on):
-
-
+def toggle_modal_athl(reset_clicks):
     color_mode = 'color'
-
-
-    if reset_clicks or on:
+    if reset_clicks:
         cols = [
                     {
                        "headerName": "Athlete",
@@ -879,12 +879,13 @@ def toggle_modal_athl(reset_clicks, on):
         return cols;
         
 @callback(
-    [Output("app_code", "className"),
+    [
+     Output("app_code_athl", "className"),
      Output("ag_datatable_athl", "className"),
      Output("reset_col", "color"),
-     Output("bool_total", "label")],
-    [Input("bool_light", "on")],
-    prevent_initial_call=True
+     Output("bool_total", "label"),
+     Output("year-slider-athl", "marks")],
+    [Input("bool_light", "on")]
 )
 
 def light_mode_athl(on):
@@ -892,14 +893,16 @@ def light_mode_athl(on):
         css_body = "body_light"
         css_grid = "ag-theme-quartz"
         reset_color = "secondary"
-        iwf_total_label = {"label": "IWF/Total", 'style': {"color": "black"}},
+        iwf_total_label = {"label": "IWF/Total", 'style': {"color": "rgb(40,40,45)"}}
+        slider_marks = {str(year): {'label' : str(year), 'style':{'color':'rgb(40,40,45)'}} for year in df['SaisonAnnee'].unique()}
     else:
         css_body = "body"
         css_grid = "ag-theme-quartz-dark"
         reset_color = "light"
-        iwf_total_label = {"label": "IWF/Total", 'style': {"color": "white"}},
+        iwf_total_label = {"label": "IWF/Total", 'style': {"color": "white"}}
+        slider_marks = {str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()}
 
-    return css_body, css_grid, reset_color, iwf_total_label;
+    return css_body, css_grid, reset_color, iwf_total_label, slider_marks;
 
 
 if __name__ == '__main__':

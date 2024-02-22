@@ -35,6 +35,13 @@
     margin-right: 0px;
 }
 
+.display_screen_width {
+    width: 0;
+    height: 0;
+    font-size: 0px;
+}
+
+
 .hr1 {
   background-color: rgb(161, 28, 15);
   width: 100%;

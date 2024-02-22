@@ -5,14 +5,48 @@
   padding: 0;
 }
 
+.body_light {
+    background-color: rgb(248, 249, 250);
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
 .title-box {
   float: left;
-  color: black;
+  color: rgb(40,40,45);
 }
+
+.bool_switch {
+    color: white;
+    text-align: center;
+}
+
+.bool_switch_light {
+    color: rgb(40,40,45);
+    text-align: center;
+}
+
+#year-slider .rc-slider-track {
+  background-color: rgb(240, 173, 78);
+}
+
+#year-slider .rc-slider-handle {
+  background-color: rgb(240, 173, 78);
+  border-color: rgb(240, 173, 78);
+}
+
+#year-slider  .rc-slider-dot-active {
+  border-color: rgb(240, 173, 78);
+}
+
+#year-slider .rc-slider-handle-dragging {
+  box-shadow: 0px 0px 0px 2px rgb(240, 173, 78);
+}
+
 
 .input-box {
   font-size: 12px;
-  color: black;
+  color: rgb(40,40,45);
   width: 100%;
   margin-top: 1%;
 }
@@ -49,8 +83,16 @@
 /* Content */
 
 .ag-theme-quartz-dark {
-    --ag-odd-row-background-color: rgb(0, 0, 0, 0.03);
-    --ag-header-column-resize-handle-color: rgb(255, 193, 7);
+    --ag-odd-row-background-color: rgb(0, 0, 0, 0.05);
+    --ag-header-column-resize-handle-color: rgb(240, 173, 78);
+
+    --ag-font-size: 12px;
+    --ag-font-family: 'Helvetica Neue',sans-serif;
+}
+
+.ag-theme-quartz {
+    --ag-odd-row-background-color: rgb(249, 250, 251);
+    --ag-header-column-resize-handle-color: rgb(240, 173, 78);
 
     --ag-font-size: 12px;
     --ag-font-family: 'Helvetica Neue',sans-serif;

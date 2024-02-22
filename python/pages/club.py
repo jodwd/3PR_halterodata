@@ -328,7 +328,7 @@ layout = html.Div([
     html.Br(),
     html.Br(),
     ],
-    id='app_code',
+    id='app_code_club',
     className='body'
 )
 
@@ -855,6 +855,28 @@ def toggle_modal_athl(reset_club_clicks):
                     {"field": "Max IWF", "width": 80, "hide": False},
                 ]
     return cols, cols
+
+@callback(
+    [Output("app_code_club", "className"),
+     Output("ag-datatable-h", "className"),
+     Output("ag-datatable-f", "className"),
+     Output("reset_col_club", "color")],
+    [Input("bool_light", "on")]
+)
+
+def light_mode_club(on):
+    if on == True:
+        css_body = "body_light"
+        css_grid = "ag-theme-quartz"
+        reset_color = "secondary"
+    else:
+        css_body = "body"
+        css_grid = "ag-theme-quartz-dark"
+        reset_color = "light"
+
+    return css_body, css_grid, css_grid, reset_color;
+
+
 
 if __name__ == '__main__':
     run_server(debug=True)
