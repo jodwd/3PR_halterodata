@@ -63,7 +63,6 @@ df['Max IWF Saison'] = round(df['Max IWF Saison'], 3) # Arrondi à 3 virgule pou
 df['Max IWF'] = round(df['Max IWF'], 3)
 df['IWF U13'] = round(df['IWF U13'], 3)
 df['IWF'] = round(df['IWF'], 3)
-
 updated_title = 'Listings'
 
 # app = dash.Dash(__name__)
@@ -492,7 +491,7 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                 {"field": "Arr", "width": 60},
                 {"field": "EpJ", "width": 60},
                 {"field": "Total", "width": 60, "hide": False},
-                {"field": "Tot U13", "width": 60, "hide": True},
+                {"field": "Tot U13", "width": 80, "hide": True},
                 {"field": "PdC", "width": 80},
                 {"field": "IWF", "width": 80, "hide": False},
                 {"field": "IWF U13", "width": 80, "hide": True},
@@ -514,42 +513,43 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
     l3 = ['U13']
     if txt_inserted3:
         if txt_inserted3 == l1 or txt_inserted3 == l2 or txt_inserted3 == l3:
+            print(txt_inserted3)
             if txt_inserted2:
                 filtered_df = filtered_df.sort_values(by=['Tot U13', 'IWF U13'], ascending=[False, False])
             else:
-                filtered_df = filtered_df.sort_values(by=['IWF U13', 'Total'], ascending=[False, False])
-                columns = [
-                    {
-                        "headerName": "Athlete",
-                        "children": [
-                            {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
-                            {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
-                            {"field": "Né en", "width": 70, "hide": False},
-                            {"field": "Pays", "width": 60, "hide": False},
-                            {"field": "Club", "width": 160, "hide": False},
-                        ],
-                    },
-                    {
-                        "headerName": "Performance",
-                        "children": [
-                            {"field": "Arr", "width": 60, "hide": False},
-                            {"field": "EpJ", "width": 60, "hide": False},
-                            {"field": "Total ", "width": 60, "hide": True},
-                            {"field": "Tot U13 ", "width": 60, "hide": False},
-                            {"field": "PdC", "width": 80, "hide": False},
-                            {"field": "IWF", "width": 80, "hide": True},
-                            {"field": "IWF U13", "width": 80, "hide": False},
-                            {"field": "Serie", "width": 80, "hide": False},
-                        ],
-                    },
-                    {
-                        "headerName": "Compétition",
-                        "children": [
-                            {"field": "Date", "width": 100, "hide": False},
-                            {"field": "Compet", "width": 250, "hide": False},
-                        ],
-                    },
-                ]
+                filtered_df = filtered_df.sort_values(by=['IWF U13', 'Tot U13'], ascending=[False, False])
+            columns = [
+                {
+                    "headerName": "Athlete",
+                    "children": [
+                        {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
+                        {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
+                        {"field": "Né en", "width": 70, "hide": False},
+                        {"field": "Pays", "width": 60, "hide": False},
+                        {"field": "Club", "width": 160, "hide": False},
+                    ],
+                },
+                {
+                    "headerName": "Performance",
+                    "children": [
+                        {"field": "Arr", "width": 60, "hide": False},
+                        {"field": "EpJ", "width": 60, "hide": False},
+                        {"field": "Total ", "width": 60, "hide": True},
+                        {"field": "Tot U13", "width": 80, "hide": False},
+                        {"field": "PdC", "width": 80, "hide": False},
+                        {"field": "IWF", "width": 80, "hide": True},
+                        {"field": "IWF U13", "width": 80, "hide": False},
+                        {"field": "Serie", "width": 80, "hide": False},
+                    ],
+                },
+                {
+                    "headerName": "Compétition",
+                    "children": [
+                        {"field": "Date", "width": 100, "hide": False},
+                        {"field": "Compet", "width": 250, "hide": False},
+                    ],
+                },
+            ]
 
 
     dat = filtered_df.to_dict('records')
@@ -581,7 +581,7 @@ def toggle_modal_athl(reset_l_clicks):
                     {"field": "Arr", "width": 60, "hide": False},
                     {"field": "EpJ", "width": 60, "hide": False},
                     {"field": "Total", "width": 60},
-                    {"field": "Tot U13", "width": 60},
+                    {"field": "Tot U13", "width": 80},
                     {"field": "PdC", "width": 80, "hide": False},
                     {"field": "IWF", "width": 80},
                     {"field": "IWF U13", "width": 80},
