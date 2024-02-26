@@ -1,9 +1,14 @@
 
 .body {
-  background-color: rgb(40,40,45);
+    background-color: rgb(40,40,45);
+    margin-left: 0px;
+    margin-right: 0px;
 }
-.margins {
-  background-color: rgb(40,40,45);
+
+.body_light {
+    background-color: rgb(248, 249, 250);
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 .filter_zone {
@@ -16,99 +21,107 @@
     font-family: 'Helvetica Neue', sans-serif;
 }
 
-.title-box {
-     font-family: 'Helvetica Neue', sans-serif;
-     width: 95%;
-     margin-top: 2%;
-     margin-left: 2%;
-     text-align: center;
+.titlebox {
+    font-family: 'Helvetica Neue', sans-serif;
+    width: 90%;
+    margin-top: 2%;
+    margin-left: 2%;
+    text-align: center;
 }
 
 .input_box1 {
-  font-size: 14px;
-  color: black;
-  width: 90%;
-  height: 20vmin;
-  margin-top: 2%;
-  margin-left: 2%;
+    font-size: 12px;
+    color: rgb(40,40,45);
+    width: 100%;
+    margin-top: 2%;
 }
 
 
 .card-title{
-  font-size: 14px;
-  font-weight: bold;
-  line-height: 14px;
-  text-align: justify;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 13px;
+    text-align: justify;
 }
 .card-text{
-  font-size: 14px;
-  line-height: 16px;
-  text-align: justify;
+    font-size: 14px;
+    line-height: 16px;
+    text-align: justify;
 }
 
-.data_tab {
-  margin-top: -20px;
-  margin-left: -20px;
-  /*background-color: rgb(40,40,45);*/
-  font-family: 'Helvetica Neue', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 12px;
-  color: black;
-  width=100%;
- }
+.ag-theme-quartz-dark {
+    --ag-odd-row-background-color: rgb(0, 0, 0, 0.05);
+    --ag-header-column-resize-handle-color: rgb(161, 28, 15);
 
-.athl_data_tab {
-  font-family: 'Helvetica Neue', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 12px;
-  color: black;
-  width=100%;
- }
-
- .slider_zone {
-  font-family: 'Helvetica Neue', sans-serif;
-  font-size: 14px;
-  color: white;
+    --ag-font-size: 12px;
+    --ag-font-family: 'Helvetica Neue',sans-serif;
 }
- .graph-with-slider {
-  font-family: 'Helvetica Neue', sans-serif;
-  font-size: 14px;
-  rgb(40,40,45);
+
+.ag-theme-quartz {
+    --ag-odd-row-background-color: rgb(249, 250, 251);
+    --ag-header-column-resize-handle-color: rgb(161, 28, 15);
+
+    --ag-font-size: 12px;
+    --ag-font-family: 'Helvetica Neue',sans-serif;
+}
+
+.slider_zone {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    color: white;
+
+}
+
+#year-slider-athl .rc-slider-track {
+  background-color: rgb(220, 53, 69);
+}
+
+#year-slider-athl .rc-slider-handle {
+  background-color: rgb(220, 53, 69);
+  border-color: rgb(220, 53, 69);
+}
+
+#year-slider-athl  .rc-slider-dot-active {
+  border-color: rgb(220, 53, 69);
+}
+
+#year-slider-athl .rc-slider-handle-dragging {
+  box-shadow: 0px 0px 0px 2px rgb(220, 53, 69);
+}
+
+.graph-with-slider {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    color: white;
 }
 
 /* Sidebar */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 200px;
-  background-color: #f1f1f1;
-  padding: 0px;
-  overflow-x: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 200px;
+    background-color: #f1f1f1;
+    padding: 0px;
+    overflow-x: hidden;
 }
 
 .sidebar a {
-  display: block;
-  color: #000;
-  padding: 0px;
-  text-decoration: none;
+    display: block;
+    color: #000;
+    padding: 0px;
+    text-decoration: none;
 }
 
 .sidebar a:hover {
-  background-color: #ddd;
+    background-color: #ddd;
 }
 
-/* Content */
-
-.data_tab {
-  margin-left: 2vw;
-  margin-right: 2vw;
-  padding: 2vw;
-  font-family: "Goudy Bookletter 1911", sans-serif;
-}
 
 /* Charts */
 .plot {
-  width: 100%;
-  height: 500px;
-  margin-bottom: 20px;
+    width: 100%;
+    height: 500px;
+    margin-bottom: 20px;
 }
