@@ -506,288 +506,134 @@ def updated_athletes(selected_year, txt_inserted):
         updated_show[2], f"{updated_name[2]}", f"{updated_name[2]}" + ' ' + f"{updated_date_naiss[2]}",f"{updated_club[2]}", f"{updated_anniv[2]}"+ ' | PR ' + f"{updated_max[2]}", \
         updated_show[3], f"{updated_name[3]}", f"{updated_name[3]}" + ' ' + f"{updated_date_naiss[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}"+ ' | PR ' + f"{updated_max[3]}"
 
-# Gestion ouverture +Info Carte 1
+# Gestion ouverture +Info Cartes Athlètes
 @callback(
-    Output("athl1-modal", "is_open"),
-    [Input("open_athl1", "n_clicks"),
-    Input("close-athl1", "n_clicks")],
-    State("athl1-modal", "is_open"),
-    prevent_initial_call=True
-)
-
-def toggle_modal_athl(open_clicks, close_clicks, is_open_athl1):
-    if open_clicks or close_clicks:
-        return not is_open_athl1
-    return is_open_athl1
-
-# +Info Carte 1
-@callback(
-    [Output("athl1-graph", "figure"),
-     Output("athl1-graph", "style"),
-     Output("athl1-table", "children")],
-    [Input(component_id='my_txt_input', component_property='value'),
-     Input("athl1-modal", "is_open")],
-    prevent_initial_call=True
-)
-
-def update_table_athl1(txt_inserted, is_open_athl1):
-    if not is_open_athl1 or not txt_inserted:
-        raise PreventUpdate
-    if is_open_athl1:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        athl1 = txt_inserted[0]
-        qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-                 max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                , max(round(cat.IWF_Calcul,3)) as "IWF" 
-              FROM ATHLETE as ath 
-              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-              LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-              
-              where ath.Nom='""" + athl1 + """'
-              group by cmp.SaisonAnnee, clb.club
-              order by cmp.SaisonAnnee asc"""
-        df_athl1 = pd.read_sql_query(qry, conn)
-        df_athl1.head()
-
-        df2_athl1 = df2[(df2['Nom'] == txt_inserted[0])]
-        df2_athl1['Série'] = pd.Categorical(df2_athl1['Série'],
-                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-                                      ordered=True)
-        df2_athl1 = df2_athl1.sort_values(by=['Série'])
-        print(df2_athl1)
-
-        fig_athl1 = px.histogram(df2_athl1, x="Série", color="Catégorie",
-                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
-                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
-
-        fig_athl1.update_layout(font_size=12,
-                          legend=dict(
-                              orientation="h",
-                              yanchor="bottom",
-                              y=1.05,
-                              xanchor="left",
-                              x=-0.05
-                          ))
-        display_graph_athl1 = {'display': 'block'}
-
-        return fig_athl1, display_graph_athl1, [dbc.Table.from_dataframe(df_athl1, responsive = True, striped=True, bordered=True, hover=True)]
-
-# Gestion ouverture +Info Carte 2
-@callback(
+    [Output("athl1-modal", "is_open"),
     Output("athl2-modal", "is_open"),
-    [Input("open_athl2", "n_clicks"),
-    Input("close-athl2", "n_clicks")],
-    State("athl2-modal", "is_open"),
-    prevent_initial_call=True
-)
-
-def toggle_modal_athl(open_clicks, close_clicks, is_open_athl2):
-    if open_clicks or close_clicks:
-        return not is_open_athl2
-    return is_open_athl2
-
-# +Info Carte 2
-@callback(
-    [Output("athl2-graph", "figure"),
-     Output("athl2-graph", "style"),
-     Output("athl2-table", "children")],
-    [Input(component_id='my_txt_input', component_property='value'),
-     Input("athl2-modal", "is_open")],
-    prevent_initial_call=True
-)
-
-def update_table_athl2(txt_inserted, is_open_athl2):
-    if not is_open_athl2 or not txt_inserted:
-        raise PreventUpdate
-    if is_open_athl2:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        athl2 = txt_inserted[1]
-        qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-                 max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                , max(round(cat.IWF_Calcul,3)) as "IWF" 
-              FROM ATHLETE as ath 
-              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-              LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-              
-              where ath.Nom='""" + athl2 + """'
-              group by cmp.SaisonAnnee, clb.club
-              order by cmp.SaisonAnnee asc"""
-        df_athl2 = pd.read_sql_query(qry, conn)
-        df_athl2.head()
-
-        df2_athl2 = df2[(df2['Nom'] == txt_inserted[1])]
-        df2_athl2['Série'] = pd.Categorical(df2_athl2['Série'],
-                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-                                      ordered=True)
-        df2_athl2 = df2_athl2.sort_values(by=['Série'])
-        print(df2_athl2)
-
-        fig_athl2 = px.histogram(df2_athl2, x="Série", color="Catégorie",
-                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
-                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
-        #fig_athl2.update_xaxes(categoryorder="category ascending")
-
-        fig_athl2.update_layout(font_size=12,
-                          legend=dict(
-                              orientation="h",
-                              yanchor="bottom",
-                              y=1.05,
-                              xanchor="left",
-                              x=-0.05
-                          ))
-        display_graph_athl2 = {'display': 'block'}
-
-        return fig_athl2, display_graph_athl2, [dbc.Table.from_dataframe(df_athl2, responsive = True, striped=True, bordered=True, hover=True)]
-
-# Gestion ouverture +Info Carte 3
-@callback(
     Output("athl3-modal", "is_open"),
-    [Input("open_athl3", "n_clicks"),
-    Input("close-athl3", "n_clicks")],
-    State("athl3-modal", "is_open"),
-    prevent_initial_call=True
-)
-
-def toggle_modal_athl(open_clicks, close_clicks, is_open_athl3):
-    if open_clicks or close_clicks:
-        return not is_open_athl3
-    return is_open_athl3
-
-# +Info Carte 3
-@callback(
-    [Output("athl3-graph", "figure"),
-     Output("athl3-graph", "style"),
-     Output("athl3-table", "children")],
-    [Input(component_id='my_txt_input', component_property='value'),
-     Input("athl3-modal", "is_open")],
-    prevent_initial_call=True
-)
-
-def update_table_athl3(txt_inserted, is_open_athl3):
-    if not is_open_athl3 or not txt_inserted:
-        raise PreventUpdate
-    if is_open_athl3:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        athl3 = txt_inserted[2]
-        qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-                 max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                , max(round(cat.IWF_Calcul,3)) as "IWF" 
-              FROM ATHLETE as ath 
-              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-              LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-              
-              where ath.Nom='""" + athl3 + """'
-              group by cmp.SaisonAnnee, clb.club
-              order by cmp.SaisonAnnee asc"""
-        df_athl3 = pd.read_sql_query(qry, conn)
-        df_athl3.head()
-
-        df2_athl3 = df2[(df2['Nom'] == txt_inserted[2])]
-        df2_athl3['Série'] = pd.Categorical(df2_athl3['Série'],
-                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-                                      ordered=True)
-        df2_athl3 = df2_athl3.sort_values(by=['Série'])
-        print(df2_athl3)
-
-        fig_athl3 = px.histogram(df2_athl3, x="Série", color="Catégorie",
-                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
-                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
-
-        fig_athl3.update_layout(font_size=12,
-                          legend=dict(
-                              orientation="h",
-                              yanchor="bottom",
-                              y=1.05,
-                              xanchor="left",
-                              x=-0.05
-                          ))
-        display_graph_athl3 = {'display': 'block'}
-
-        return fig_athl3, display_graph_athl3, [dbc.Table.from_dataframe(df_athl3, responsive = True, striped=True, bordered=True, hover=True)]
-
-# Gestion ouverture +Info Carte 4
-@callback(
-    Output("athl4-modal", "is_open"),
-    [Input("open_athl4", "n_clicks"),
+    Output("athl4-modal", "is_open")],
+    [Input("open_athl1", "n_clicks"),
+    Input("open_athl2", "n_clicks"),
+    Input("open_athl3", "n_clicks"),
+    Input("open_athl4", "n_clicks"),
+    Input("close-athl1", "n_clicks"),
+    Input("close-athl2", "n_clicks"),
+    Input("close-athl3", "n_clicks"),
     Input("close-athl4", "n_clicks")],
-    State("athl4-modal", "is_open"),
+    [State("athl1-modal", "is_open"),
+    State("athl2-modal", "is_open"),
+    State("athl3-modal", "is_open"),
+    State("athl4-modal", "is_open")],
     prevent_initial_call=True
 )
 
 # +Info Carte 4
-def toggle_modal_athl(open_clicks, close_clicks, is_open_athl4):
-    if open_clicks or close_clicks:
-        return not is_open_athl4
-    return is_open_athl4
+def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4, close_clicks1, close_clicks2, close_clicks3, close_clicks4, is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4):
+    if open_clicks1 or close_clicks1:
+        is_open_athl1 = not is_open_athl1
+        is_open_athl2 = False
+        is_open_athl3 = False
+        is_open_athl4 = False
+    if open_clicks2 or close_clicks2:
+        is_open_athl2 = not is_open_athl2
+        is_open_athl1 = False
+        is_open_athl3 = False
+        is_open_athl4 = False
+    if open_clicks3 or close_clicks3:
+        is_open_athl3 = not is_open_athl3
+        is_open_athl1 = False
+        is_open_athl2 = False
+        is_open_athl4 = False
+    if open_clicks4 or close_clicks4:
+        is_open_athl4 = not is_open_athl4
+        is_open_athl1 = False
+        is_open_athl2 = False
+        is_open_athl3 = False
+
+    print(str(open_clicks1) + ' ' + str(close_clicks1))
+    return is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4
+
 
 @callback(
-    [Output("athl4-graph", "figure"),
+    [Output("athl1-graph", "figure"),
+     Output("athl1-graph", "style"),
+     Output("athl1-table", "children"),
+     Output("athl2-graph", "figure"),
+     Output("athl2-graph", "style"),
+     Output("athl2-table", "children"),
+     Output("athl3-graph", "figure"),
+     Output("athl3-graph", "style"),
+     Output("athl3-table", "children"),
+     Output("athl4-graph", "figure"),
      Output("athl4-graph", "style"),
      Output("athl4-table", "children")],
     [Input(component_id='my_txt_input', component_property='value'),
+     Input("athl1-modal", "is_open"),
+     Input("athl2-modal", "is_open"),
+     Input("athl3-modal", "is_open"),
      Input("athl4-modal", "is_open")],
     prevent_initial_call=True
 )
 
-def update_table_athl4(txt_inserted, is_open_athl4):
-    if not is_open_athl4 or not txt_inserted:
+def update_table_athl4(txt_inserted, is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4):
+    if (not is_open_athl1 and not is_open_athl2 and not is_open_athl3 and not is_open_athl4) or not txt_inserted:
         raise PreventUpdate
+    if is_open_athl1:
+        athl = txt_inserted[0]
+    if is_open_athl2:
+        athl = txt_inserted[1]
+    if is_open_athl3:
+        athl = txt_inserted[2]
     if is_open_athl4:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
+        athl = txt_inserted[3]
+    dirname = os.path.dirname(__file__)
+    path_db = os.path.join(dirname, 'dataltero.db')
+    conn = sql.connect(database=path_db)
+    qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
+                    max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
+                   , max(round(cat.IWF_Calcul,3)) as "IWF" 
+                 FROM ATHLETE as ath 
+                 LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
+                 LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+                 LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
 
-        athl4 = txt_inserted[3]
-        qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-                 max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                , max(round(cat.IWF_Calcul,3)) as "IWF" 
-              FROM ATHLETE as ath 
-              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-              LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-              
-              where ath.Nom='""" + athl4 + """'
-              group by cmp.SaisonAnnee, clb.club
-              order by cmp.SaisonAnnee asc"""
-        df_athl4 = pd.read_sql_query(qry, conn)
-        df_athl4.head()
+                 where ath.Nom='""" + athl + """'
+                 group by cmp.SaisonAnnee, clb.club
+                 order by cmp.SaisonAnnee asc"""
+    df_athl = pd.read_sql_query(qry, conn)
+    df_athl.head()
 
-        df2_athl4 = df2[(df2['Nom'] == txt_inserted[3])]
-        df2_athl4['Série'] = pd.Categorical(df2_athl4['Série'],
-                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-                                      ordered=True)
-        df2_athl4 = df2_athl4.sort_values(by=['Série'])
-        print(df2_athl4)
+    df2_athl = df2[(df2['Nom'] == athl)]
+    df2_athl['Série'] = pd.Categorical(df2_athl['Série'],
+                                        ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
+                                        ordered=True)
+    df2_athl = df2_athl.sort_values(by=['Série'])
+    print(df2_athl)
 
-        fig_athl4 = px.histogram(df2_athl4, x="Série", color="Catégorie",
-                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
-                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
+    fig_athl = px.histogram(df2_athl, x="Série", color="Catégorie",
+                             color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple",
+                                                      "#54B4D3", "#9FA6B2"],
+                             category_orders={
+                                 "Série": ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
 
-        fig_athl4.update_layout(font_size=12,
-                          legend=dict(
-                              orientation="h",
-                              yanchor="bottom",
-                              y=1.05,
-                              xanchor="left",
-                              x=-0.05
-                          ))
-        display_graph_athl4 = {'display': 'block'}
+    fig_athl.update_layout(font_size=12,
+                            legend=dict(
+                                orientation="h",
+                                yanchor="bottom",
+                                y=1.05,
+                                xanchor="left",
+                                x=-0.05
+                            ))
+    display_graph_athl = {'display': 'block'}
 
-        return fig_athl4, display_graph_athl4, [dbc.Table.from_dataframe(df_athl4, responsive = True, striped=True, bordered=True, hover=True)]
-
-
+    if is_open_athl1:
+        return fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update,
+    if is_open_athl2:
+            return dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+    if is_open_athl3:
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update,
+    if is_open_athl4:
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)]
 @callback(
     Output("ag_datatable_athl", "columnDefs"),
     [Input("reset_col", "n_clicks")]
