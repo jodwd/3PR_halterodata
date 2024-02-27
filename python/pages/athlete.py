@@ -21,7 +21,18 @@ qry = """SELECT ath.Nom, ath.DateNaissance as "Né le"
       , substr(cmp."NomCompetitionCourt", 1, 64) as "Competition", cat."PoidsDeCorps" as "PdC", clb.Club
       , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date"
       , cat.Arr1, cat.Arr2, cat.Arr3, cat.Arrache as "Arr", cat.Epj1, cat.Epj2, cat.Epj3, cat.EpJete as "EpJ"
-      , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF" 
+      , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF"             
+      ,   ath."MondeSEN"         
+      ,   ath."MondeU20"       
+      ,   ath."MondeU17"   
+      ,   ath."MondeMasters"               
+      ,   ath."EuropeSEN"          
+      ,   ath."EuropeU23"       
+      ,   ath."EuropeU20"       
+      ,   ath."EuropeU17"       
+      ,   ath."EuropeMasters"   
+      ,   ath."FranceElite"     
+      ,   ath."GrandPrixFederal"
       FROM ATHLETE as ath 
       LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
       LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
@@ -101,7 +112,11 @@ layout = html.Div([
                                 ),
                                 dbc.Button("+ Info", id="open_athl1", color="danger", className="mt-auto", size="sm"),
                                 dbc.Modal([
-                                    dbc.ModalHeader("Information", id="athlete1_nom_info"),
+                                    dbc.ModalHeader([
+                                        html.Div(dbc.ModalTitle("Information", id="athlete1_nom_info")),
+                                        html.Br(),
+                                    ]),
+                                    dbc.ModalHeader(dbc.ModalTitle("Achievements", id='athlete1_achievements')),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl1-graph', style = {'display': 'none'}),
                                         html.Div(id="athl1-table", className="athl_data_tab"),
@@ -127,7 +142,11 @@ layout = html.Div([
                                 ),
                                 dbc.Button("+ Info", id="open_athl2", color="primary", className="mt-auto", size="sm"),
                                 dbc.Modal([
-                                    dbc.ModalHeader("Information", id="athlete2_nom_info"),
+                                    dbc.ModalHeader([
+                                        dbc.ModalTitle("Information", id="athlete2_nom_info"),
+                                        html.Br(),
+                                        html.P("Achievements", id='athlete2_achievements')
+                                    ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl2-graph', style = {'display': 'none'}),
                                         html.Div(id="athl2-table", className="athl_data_tab"),
@@ -153,7 +172,11 @@ layout = html.Div([
                                 ),
                                 dbc.Button("+ Info", id="open_athl3", color="warning", className="mt-auto", size="sm"),
                                 dbc.Modal([
-                                    dbc.ModalHeader("Information", id="athlete3_nom_info"),
+                                    dbc.ModalHeader([
+                                        dbc.ModalTitle("Information", id="athlete3_nom_info"),
+                                        html.Br(),
+                                        html.P("Achievements", id='athlete3_achievements')
+                                    ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl3-graph', style = {'display': 'none'}),
                                         html.Div(id="athl3-table", className="athl_data_tab"),
@@ -179,7 +202,11 @@ layout = html.Div([
                                 ),
                                 dbc.Button("+ Info", id="open_athl4", color="success", className="mt-auto", size="sm"),
                                 dbc.Modal([
-                                    dbc.ModalHeader("Information", id="athlete4_nom_info"),
+                                    dbc.ModalHeader([
+                                        dbc.ModalTitle("Information", id="athlete4_nom_info"),
+                                        html.Br(),
+                                        html.P("Achievements", id='athlete4_achievements')
+                                    ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl4-graph', style = {'display': 'none'}),
                                         html.Div(id="athl4-table", className="athl_data_tab"),
@@ -444,67 +471,82 @@ def update_data_ag(selected_year, on, txt_inserted):
     [Output('athl_card1', 'style'),
      Output("athlete1_nom", "children"),
      Output("athlete1_nom_info", "children"),
+     Output("athlete1_achievements", "children"),
      Output("athlete1_club", "children"),
      Output("athlete1_annivmax", "children"),
      Output('athl_card2', 'style'),
      Output("athlete2_nom", "children"),
      Output("athlete2_nom_info", "children"),
+     Output("athlete2_achievements", "children"),
      Output("athlete2_club", "children"),
      Output("athlete2_annivmax", "children"),
      Output('athl_card3', 'style'),
      Output("athlete3_nom", "children"),
      Output("athlete3_nom_info", "children"),
+     Output("athlete3_achievements", "children"),
      Output("athlete3_club", "children"),
      Output("athlete3_annivmax", "children"),
      Output('athl_card4', 'style'),
      Output("athlete4_nom", "children"),
      Output("athlete4_nom_info", "children"),
+     Output("athlete4_achievements", "children"),
      Output("athlete4_club", "children"),
      Output("athlete4_annivmax", "children")],
     [Input('year-slider-athl', 'value'),
      Input(component_id='my_txt_input', component_property='value')
      ])
 
-def updated_athletes(selected_year, txt_inserted):
+def up_athletes(selected_year, txt_inserted):
     # Perform any manipulation on input_value and return the updated title
     print(txt_inserted)
-    updated_show = [{'display': 'none'}] * 4
-    updated_name = [''] * 4
-    updated_club = [''] * 4
-    updated_anniv = [''] * 4
-    updated_date_naiss = [''] * 4
-    updated_max = [''] * 4
-    updated_arr = [''] * 4
-    updated_epj = [''] * 4
-    updated_total = [''] * 4
-    updated_pdc = [''] * 4
+    up_show = [{'display': 'none'}] * 4
+    up_name = [''] * 4
+    up_club = [''] * 4
+    up_anniv = [''] * 4
+    up_date_naiss = [''] * 4
+    up_max = [''] * 4
+    up_arr = [''] * 4
+    up_epj = [''] * 4
+    up_total = [''] * 4
+    up_pdc = [''] * 4
+    up_achievements = [''] * 4
 
     n = 0
     if txt_inserted is None:
         raise PreventUpdate
     for i in txt_inserted:
-        updated_name[n] = i
+        up_name[n] = i
         df1 = df[(df['Nom'] == i) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
         df1 = df1.sort_values(by=['Date'], ascending=False)
         if len(df1['Club'].values[0]) > 19:
-            updated_club[n] = df1['Club'].values[0][0:18] + '.'
+            up_club[n] = df1['Club'].values[0][0:18] + '.'
         else:
-            updated_club[n] = df1['Club'].values[0]
-        updated_show[n] = {'display': 'block'}
-        updated_anniv[n] = (df1['Né le'].values[0])[-4:]
-        updated_date_naiss[n] = (df1['Né le'].values[0])
-        updated_max[n] = str(df1['IWF'].max()) + ' IWF'
-        updated_arr[n] = str(df1['Arr'].max()) + '/'
-        updated_epj[n] = str(df1['EpJ'].max()) + '/'
-        updated_total[n] = df1['Total'].max()
+            up_club[n] = df1['Club'].values[0]
+        up_show[n] = {'display': 'block'}
+        up_anniv[n] = (df1['Né le'].values[0])[-4:]
+        up_date_naiss[n] = (df1['Né le'].values[0])
+        up_max[n] = str(df1['IWF'].max()) + ' IWF'
+        up_arr[n] = str(df1['Arr'].max()) + '/'
+        up_epj[n] = str(df1['EpJ'].max()) + '/'
+        up_total[n] = df1['Total'].max()
         pdc_df = df1['Total'].idxmax()
-        updated_pdc[n] = str(df.loc[pdc_df, 'PdC']) + 'kg'
+        up_pdc[n] = str(df.loc[pdc_df, 'PdC']) + 'kg'
+        up_achievements[n] = '\n'
+        if df1['MondeSEN'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['MondeSEN'].values[0]) + '🌎 / '
+        if df1['MondeU20'].values[0]+df1['MondeU17'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['MondeU20'].values[0]+df1['MondeU17'].values[0]) + '🌎🐥 / '
+        if df1['MondeMasters'].values[0]>0:
+            if df1['Sexe'].values[0]=='F':
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + '🌎👵 / '
+            else:
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + '🌎👴 / '
         n = n + 1
 
-    return updated_show[0], f"{updated_name[0]}", f"{updated_name[0]}" + ' ' + f"{updated_date_naiss[0]}", f"{updated_club[0]}", f"{updated_anniv[0]}" + ' | PR ' + f"{updated_max[0]}",\
-        updated_show[1], f"{updated_name[1]}", f"{updated_name[1]}" + ' ' + f"{updated_date_naiss[1]}",f"{updated_club[1]}", f"{updated_anniv[1]}"+ ' | PR ' + f"{updated_max[1]}",  \
-        updated_show[2], f"{updated_name[2]}", f"{updated_name[2]}" + ' ' + f"{updated_date_naiss[2]}",f"{updated_club[2]}", f"{updated_anniv[2]}"+ ' | PR ' + f"{updated_max[2]}", \
-        updated_show[3], f"{updated_name[3]}", f"{updated_name[3]}" + ' ' + f"{updated_date_naiss[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}"+ ' | PR ' + f"{updated_max[3]}"
+    return up_show[0], f"{up_name[0]}", f"{up_name[0]}" + ' ' + f"{up_date_naiss[0]}", f"{up_achievements[0]}", f"{up_club[0]}", f"{up_anniv[0]}" + ' | PR ' + f"{up_max[0]}",\
+        up_show[1], f"{up_name[1]}", f"{up_name[1]}" + ' ' + f"{up_date_naiss[1]}", f"{up_achievements[1]}",f"{up_club[1]}", f"{up_anniv[1]}"+ ' | PR ' + f"{up_max[1]}",  \
+        up_show[2], f"{up_name[2]}", f"{up_name[2]}" + ' ' + f"{up_date_naiss[2]}", f"{up_achievements[2]}",f"{up_club[2]}", f"{up_anniv[2]}"+ ' | PR ' + f"{up_max[2]}", \
+        up_show[3], f"{up_name[3]}", f"{up_name[3]}" + ' ' + f"{up_date_naiss[3]}", f"{up_achievements[3]}", f"{up_club[3]}", f"{up_anniv[3]}"+ ' | PR ' + f"{up_max[3]}"
 
 # Gestion ouverture +Info Cartes Athlètes
 @callback(

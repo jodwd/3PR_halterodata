@@ -78,7 +78,7 @@ nom_poids = list(set(df['CatePoids'].tolist()))
 nom_sexe = list(set(df['Sexe'].tolist()))
 nom_nat = list(set(df['Pays'].tolist()))
 nom_serie = df['Serie'].unique().tolist()
-nom_competition = ['Critérium National', 'Challenge Avenir', 'Chpt Départemental', 'Chpt Ligue', 'Cpe de France', 'France Elite', 'Grand Prix Fédéral', 'TOP 9', 'NAT 1', 'NAT 2', 'REG 1',
+nom_competition = ['Critérium National', 'Challenge Avenir', 'Chpt Départemental', 'Chpt Ligue', 'Cpe de France', 'France Elite', 'Fédéral', 'TOP 9', 'NAT 1', 'NAT 2', 'REG 1',
                    'Monde', 'Trophée Nat']
 
 # body
