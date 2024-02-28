@@ -1,6 +1,6 @@
 import dash
 import plotly.express as px
-from dash import dash_table, dcc, html, callback
+from dash import dash_table, dcc, html, callback, clientside_callback
 from dash.exceptions import PreventUpdate
 import pandas as pd
 import sqlite3 as sql
@@ -176,6 +176,7 @@ layout = html.Div([
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dbc.Button("↪️ Reset", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("💾 Excel", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.Slider(
@@ -622,6 +623,29 @@ def light_mode_list(on):
         masters_label_classname = "bool_switch"
 
     return css_body, css_grid, reset_color, masters_label_classname;
+
+#Export Excel
+clientside_callback(
+    """async function (n) {
+        if (n) {
+            grid1Api = await dash_ag_grid.getApiAsync("ag-datatable-l")
+            var spreadsheets = [];
+
+            spreadsheets.push(
+              grid1Api.getSheetDataForExcel({ sheetName: 'Listings' })
+            );
+
+            grid1Api.exportMultipleSheetsAsExcel({
+              data: spreadsheets,
+              fileName: 'listings.xlsx',
+            });
+        }
+        return dash_clientside.no_update
+    }""",
+    Output("excel_export_list", "n_clicks"),
+    Input("excel_export_list", "n_clicks"),
+    prevent_initial_call=True
+)
 
 if __name__ == '__main__':
     run_server(debug=True)

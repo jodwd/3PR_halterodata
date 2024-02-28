@@ -1,6 +1,6 @@
 import dash
 import plotly.express as px
-from dash import dash_table, dcc, callback, State, html
+from dash import dash_table, dcc, callback, State, html, clientside_callback
 from dash.exceptions import PreventUpdate
 import pandas as pd
 import sqlite3 as sql
@@ -207,6 +207,7 @@ layout = html.Div([
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dbc.Button("↪️ Reset", id="reset_col", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("💾 Excel", id="excel_export", color="light", outline=True, className="mt-auto", size="sm"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.RangeSlider(
@@ -234,6 +235,7 @@ layout = html.Div([
     html.Div([
         dag.AgGrid(
             id = "ag_datatable_athl",
+            enableEnterpriseModules=True,
             rowData = df_temp.to_dict("records"),
             columnDefs = [
                         {
@@ -462,7 +464,7 @@ def update_data_ag(selected_year, on, txt_inserted):
      Output("athlete4_club", "children"),
      Output("athlete4_annivmax", "children")],
     [Input('year-slider-athl', 'value'),
-     Input(component_id='my_txt_input', component_property='value')
+     Input('my_txt_input', 'value')
      ])
 
 def updated_athletes(selected_year, txt_inserted):
@@ -525,7 +527,7 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_athl1):
     [Output("athl1-graph", "figure"),
      Output("athl1-graph", "style"),
      Output("athl1-table", "children")],
-    [Input(component_id='my_txt_input', component_property='value'),
+    [Input('my_txt_input', 'value'),
      Input("athl1-modal", "is_open")],
     prevent_initial_call=True
 )
@@ -595,7 +597,7 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_athl2):
     [Output("athl2-graph", "figure"),
      Output("athl2-graph", "style"),
      Output("athl2-table", "children")],
-    [Input(component_id='my_txt_input', component_property='value'),
+    [Input('my_txt_input', 'value'),
      Input("athl2-modal", "is_open")],
     prevent_initial_call=True
 )
@@ -666,7 +668,7 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_athl3):
     [Output("athl3-graph", "figure"),
      Output("athl3-graph", "style"),
      Output("athl3-table", "children")],
-    [Input(component_id='my_txt_input', component_property='value'),
+    [Input('my_txt_input', 'value'),
      Input("athl3-modal", "is_open")],
     prevent_initial_call=True
 )
@@ -736,7 +738,7 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_athl4):
     [Output("athl4-graph", "figure"),
      Output("athl4-graph", "style"),
      Output("athl4-table", "children")],
-    [Input(component_id='my_txt_input', component_property='value'),
+    [Input('my_txt_input', 'value'),
      Input("athl4-modal", "is_open")],
     prevent_initial_call=True
 )
@@ -905,6 +907,39 @@ def light_mode_athl(on):
         slider_marks = {str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()}
 
     return css_body, css_grid, reset_color, iwf_total_label, slider_marks;
+
+#Export Excel
+clientside_callback(
+    """async function (n, txt) {
+        if (n) {
+            grid1Api = await dash_ag_grid.getApiAsync("ag_datatable_athl")
+            var spreadsheets = [];
+            if (typeof txt[0] === 'undefined') {
+                s_name = 'Perfs_Athletes';
+                f_name = 'perf_athletes.xlsx'
+            } else if (txt.length === 1) {
+                s_name = 'Perfs_' + txt[0];
+                f_name = 'perf_' + txt[0] + '.xlsx'
+            } else {
+                s_name = 'Perfs_' + txt[0] + 'et+';
+                f_name = 'perf_' + txt[0] + '_et_autres.xlsx'
+            }
+            spreadsheets.push(
+                grid1Api.getSheetDataForExcel({ sheetName: s_name})
+            );
+            
+            grid1Api.exportMultipleSheetsAsExcel({
+              data: spreadsheets,
+              fileName: f_name,
+            });
+        }
+        return dash_clientside.no_update
+    }""",
+    Output("excel_export", "n_clicks"),
+    Input("excel_export", "n_clicks"),
+    State('my_txt_input', 'value'),
+    prevent_initial_call=True
+)
 
 
 if __name__ == '__main__':

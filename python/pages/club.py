@@ -1,6 +1,6 @@
 import dash
 import plotly.express as px
-from dash import dash_table, dcc, callback, State, html
+from dash import dash_table, dcc, callback, State, html, clientside_callback
 from dash.exceptions import PreventUpdate
 import pandas as pd
 import sqlite3 as sql
@@ -244,7 +244,8 @@ layout = html.Div([
     dbc.Row([
         dbc.Col([
             dbc.Button("↪️ Reset", id="reset_col_club", color="light", outline=True, className="mt-auto", size="sm"),
-        ], width=2),
+            dbc.Button("💾 Excel", id="excel_export_club", color="light", outline=True, className="mt-auto", size="sm"),
+        ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.Slider(
                 min=df['SaisonAnnee'].min(),
@@ -256,7 +257,7 @@ layout = html.Div([
                 tooltip={"placement": "bottom", "always_visible": True},
                 id='year-slider-club',
                 className='slider_zone')
-        ], width=10),
+        ], xs=9, sm=9, md=10, lg=10, xl=11),
     ]),
 
     #top 5 H & F
@@ -269,6 +270,7 @@ layout = html.Div([
             html.Div([
                 dag.AgGrid(
                     id="ag-datatable-h",
+                    enableEnterpriseModules=True,
                     rowData=dfh.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
@@ -297,6 +299,7 @@ layout = html.Div([
             html.Div([
                 dag.AgGrid(
                     id="ag-datatable-f",
+                    enableEnterpriseModules=True,
                     rowData=dff.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
@@ -758,8 +761,8 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_u20):
     #Output("u20-graph", "style"),
      Output("u20-table", "children")],
     [Input('year-slider-club', 'value'),
-     Input(component_id='txt-ligue', component_property='value'),
-     Input(component_id='txt-club', component_property='value'),
+     Input('txt-ligue', 'value'),
+     Input('txt-club', 'value'),
      Input("u20-modal", "is_open")],
     prevent_initial_call=True
 )
@@ -876,6 +879,40 @@ def light_mode_club(on):
 
     return css_body, css_grid, css_grid, reset_color;
 
+
+#Export Excel
+clientside_callback(
+    """async function (n, txt_club, txt_ligue) {
+        if (n) {
+            grid1Api = await dash_ag_grid.getApiAsync("ag-datatable-h")
+            grid2Api = await dash_ag_grid.getApiAsync("ag-datatable-f")
+            var spreadsheets = [];
+
+            spreadsheets.push(
+              grid1Api.getSheetDataForExcel({ sheetName: 'Hommes' }),
+              grid2Api.getSheetDataForExcel({ sheetName: 'Femmes',})
+            );
+            
+            if ((typeof txt_club[0] === 'undefined') && (typeof txt_ligue[0] === 'undefined')) {
+                fname = 'dashboard_club.xlsx'      
+            } else if (txt_club.length > 0) {
+                fname = 'dashboard_club_' + txt_club[0] + '.xlsx'           
+            } else {
+                fname = 'dashboard_club_' + txt_ligue[0] + '.xlsx'
+            };
+            grid1Api.exportMultipleSheetsAsExcel({
+              data: spreadsheets,
+              fileName: fname,
+            });
+        }
+        return dash_clientside.no_update
+    }""",
+    Output("excel_export_club", "n_clicks"),
+    Input("excel_export_club", "n_clicks"),
+    [State('txt-club', 'value'),
+    State('txt-ligue', 'value')],
+    prevent_initial_call=True
+)
 
 
 if __name__ == '__main__':
