@@ -4,7 +4,7 @@
 
 
 # Infos clés
-Ce projet est basé sur les données Scoresheet appartenant la FFHM.
+Ce projet est uniquement basé sur les données Scoresheet appartenant la FFHM. Aucune donnée n'est gérée manuellement. 
 
 Les données sont récupérés via un script en ruby.
 
@@ -12,7 +12,7 @@ Ces données sont chargées dans une base de données SQL Lite (pages\dataltero.
 
 Chaque page utilise des requêtes qui se sourcent sur cette base SQL Lite.
 
-Le traitement des données de ces requêtes utilise le module Pandas.
+Le traitement des données de ces requêtes utilise le module Python Pandas.
 
 La visualisation des données est basée sur Plotly / Dash.
 
