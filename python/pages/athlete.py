@@ -10,7 +10,6 @@ from dash.dependencies import Input, Output
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 
-
 # Connection à la base SQLite
 dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
@@ -22,23 +21,10 @@ qry = """SELECT ath.Nom, ath.DateNaissance as "Né le"
       , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date", cat.Sexe
       , cat.Arr1, cat.Arr2, cat.Arr3, cat.Arrache as "Arr", cat.Epj1, cat.Epj2, cat.Epj3, cat.EpJete as "EpJ"
       , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF"             
-      ,   ath."MondeSEN"         
-      ,   ath."MondeU20"       
-      ,   ath."MondeU17"   
-      ,   ath."MondeMasters"               
-      ,   ath."EuropeSEN"          
-      ,   ath."EuropeU23"       
-      ,   ath."EuropeU20"       
-      ,   ath."EuropeU17"       
-      ,   ath."EuropeMasters"   
-      ,   ath."FranceElite"     
-      ,   ath."GrandPrixFederal"     
-      ,   ath."TropheeNationalU13"     
-      ,   ath."NbCompet"
-      ,   ath."Nb6sur6"
-      ,   ath."Nb2sur6DerniereBarre"
-      ,   ath."NbBulles"
-      ,   ath."NbDoublesBulles"
+      ,   ath."MondeSEN",    ath."MondeU20",    ath."MondeU17",    ath."MondeMasters"               
+      ,   ath."EuropeSEN",   ath."EuropeU23",   ath."EuropeU20",   ath."EuropeU17",   ath."EuropeMasters"   
+      ,   ath."FranceElite",   ath."GrandPrixFederal",   ath."TropheeNationalU13"     
+      ,   ath."NbCompet",   ath."Nb6sur6",   ath."Nb2sur6DerniereBarre",   ath."NbBulles",   ath."NbDoublesBulles"
       FROM ATHLETE as ath 
       LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
       LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
@@ -57,12 +43,9 @@ df2.head()
 
 # Reformatage des donnée de la requête
 df['IWF'] = round(df['IWF'], 3)
-df['MoisCompet'] = pd.Categorical(df['MoisCompet'],
-                                  ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
-df2['Série'] = pd.Categorical(df2['Série'],
-                                  ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"], ordered=True)
+df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
+df2['Série'] = pd.Categorical(df2['Série'], ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"], ordered=True)
 df_temp = df[df['Nom']=='ZZZZZ']
-
 dash.register_page(__name__, path='/', name='3PR - Athletes', title='3PR - Dashboard Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
 
 # Liste d'athlètes = ceux qui ont tiré sur la plage par défaut càd l'année dernière + l'année en cours
@@ -318,8 +301,6 @@ layout = html.Div([
                 className='slider_zone'
                 ),
             ], xs=6, sm=6, md=8, lg=8, xl=10),
-
-
         dbc.Col([
             dcc.Graph(
                 id='graph-with-slider',
@@ -422,10 +403,8 @@ layout = html.Div([
         )
 
     ]),
-
     html.Br(),
     html.Br(),
-
     html.Link(
         rel='stylesheet',
         href='/assets/01_dash_board.css'
@@ -469,7 +448,6 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoin
         fdf.Nom = fdf.Nom.astype("category")
         fdf.Nom = fdf.Nom.cat.set_categories(txt_inserted)
         fdf = fdf.sort_values(by='Nom')
-
         if breakpoint_str=="md":
             display_graph = {'display': 'block', 'height': 300}
         else:
@@ -481,7 +459,6 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoin
         else:
             font_col = "white"
             plot_col = 'rgb(40,40,45)'
-
 
         #Paramètres de graph
         if on_light == True:
@@ -513,7 +490,6 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoin
     else:
         fig = px.scatter()
         display_graph = {'display': 'none'}
-
     return fig, display_graph
 
 # Mise à jour data table
@@ -535,9 +511,7 @@ def update_data_ag(selected_year, on, txt_inserted):
     else:
         fdf = fdf.sort_values(by=['IWF'], ascending=False)
     dat_ag = fdf.to_dict('records')
-
     return [dat_ag]
-
 
 # Génération des cartes des 4 premiers athlètes
 @callback(
@@ -570,8 +544,7 @@ def update_data_ag(selected_year, on, txt_inserted):
      Output("athlete4_annivmax", "children"),
      Output('ach_aide-div_athl4', 'style')],
     [Input('year-slider-athl', 'value'),
-     Input('my_txt_input', 'value')
-     ])
+     Input('my_txt_input', 'value')])
 
 def up_athletes(selected_year, txt_inserted):
     # Perform any manipulation on input_value and return the updated title
@@ -656,7 +629,6 @@ def up_athletes(selected_year, txt_inserted):
             up_show_ach_aide[n]={'display': 'block'}
         else:
             up_show_ach_aide[n]={'display': 'none'}
-
         n = n + 1
 
     return  up_show[0], f"{up_name[0]}", f"{up_name[0]}" + '  ' + f"{up_date_naiss[0]}" + f"{up_achievements[0]}", f"{up_club[0]}", f"{up_anniv[0]}" + ' | PR ' + f"{up_max[0]}", up_show_ach_aide[0], \
@@ -707,10 +679,8 @@ def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4, cl
         is_open_athl1 = False
         is_open_athl2 = False
         is_open_athl3 = False
-
     print(str(open_clicks1) + ' ' + str(close_clicks1))
     return is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4
-
 
 @callback(
     [Output("athl1-graph", "figure"),
@@ -762,12 +732,10 @@ def update_table_athl4(txt_inserted, is_open_athl1, is_open_athl2, is_open_athl3
     df_athl.head()
 
     df2_athl = df2[(df2['Nom'] == athl)]
-    df2_athl['Série'] = pd.Categorical(df2_athl['Série'],
-                                        ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
+    df2_athl['Série'] = pd.Categorical(df2_athl['Série'], ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
                                         ordered=True)
     df2_athl = df2_athl.sort_values(by=['Série'])
     print(df2_athl)
-
     fig_athl = px.histogram(df2_athl, x="Série", color="Catégorie",
                              color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple",
                                                       "#54B4D3", "#9FA6B2"],
@@ -799,8 +767,6 @@ def update_table_athl4(txt_inserted, is_open_athl1, is_open_athl2, is_open_athl3
 
 def toggle_modal_athl(reset_clicks):
     color_mode = 'color'
-
-    #if reset_clicks:
     cols = [
                 {
                    "headerName": "Athlete",
@@ -860,7 +826,6 @@ def toggle_modal_athl(reset_clicks):
                             },
                         ],
                 },
-
                 {
                     "headerName": "Performance",
                         "children": [
@@ -881,9 +846,7 @@ def toggle_modal_athl(reset_clicks):
                         ],
                 }
         ]
-
     return cols;
-
 
 @callback(
     [Output("aide_achievements_athl1", "is_open"),
@@ -927,7 +890,6 @@ def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4, cl
         is_open_athl1 = False
         is_open_athl2 = False
         is_open_athl3 = False
-
     print(str(open_clicks1) + ' ' + str(close_clicks1))
     return is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4
 
@@ -946,7 +908,6 @@ def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4, cl
     Input("aide_achievements_athl4", "is_open")],
     prevent_initial_call=True
 )
-
 
 def update_table_athl1(is_open_ach1, is_open_ach2, is_open_ach3, is_open_ach4):
     if not is_open_ach1 and not is_open_ach2 and not is_open_ach3 and not is_open_ach4:
@@ -967,10 +928,8 @@ def update_table_athl1(is_open_ach1, is_open_ach2, is_open_ach3, is_open_ach4):
     if is_open_ach4:
         return dash.no_update, dash.no_update, dash.no_update, [dbc.Table.from_dataframe(df_ach, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, ach_aide_txt
 
-
 @callback(
-    [
-     Output("app_code_athl", "className"),
+    [Output("app_code_athl", "className"),
      Output("ag_datatable_athl", "className"),
      Output("reset_col", "color"),
      Output("bool_total", "label"),
@@ -1027,7 +986,5 @@ clientside_callback(
     prevent_initial_call=True
 )
 
-
 if __name__ == '__main__':
     run_server(debug=True)
-
