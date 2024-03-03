@@ -19,9 +19,26 @@ conn = sql.connect(database=path_db)
 # Requête principale
 qry = """SELECT ath.Nom, ath.DateNaissance as "Né le"
       , substr(cmp."NomCompetitionCourt", 1, 64) as "Competition", cat."PoidsDeCorps" as "PdC", clb.Club
-      , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date"
+      , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date", cat.Sexe
       , cat.Arr1, cat.Arr2, cat.Arr3, cat.Arrache as "Arr", cat.Epj1, cat.Epj2, cat.Epj3, cat.EpJete as "EpJ"
-      , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF" 
+      , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF"             
+      ,   ath."MondeSEN"         
+      ,   ath."MondeU20"       
+      ,   ath."MondeU17"   
+      ,   ath."MondeMasters"               
+      ,   ath."EuropeSEN"          
+      ,   ath."EuropeU23"       
+      ,   ath."EuropeU20"       
+      ,   ath."EuropeU17"       
+      ,   ath."EuropeMasters"   
+      ,   ath."FranceElite"     
+      ,   ath."GrandPrixFederal"     
+      ,   ath."TropheeNationalU13"     
+      ,   ath."NbCompet"
+      ,   ath."Nb6sur6"
+      ,   ath."Nb2sur6DerniereBarre"
+      ,   ath."NbBulles"
+      ,   ath."NbDoublesBulles"
       FROM ATHLETE as ath 
       LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
       LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
@@ -70,29 +87,26 @@ layout = html.Div([
                 ], xs=6, sm=6, md=6, lg=2, xl=2),
 
             # Zone filtres athlètes
-            dbc.Col(
-                html.Div(
+            dbc.Col([
+                html.Div([
                     html.Div([
-                        html.Div([
-                            dcc.Dropdown(
-                                options=[x for x in sorted(list_names)],
-                                multi=True,
-                                id='my_txt_input',
-                                placeholder="Choisir des athlètes...",
-                                className="input_box1",
-                                )
-                            ],
-                            ),
-                        #html.Datalist(id='Nom_athl')
-                        ])
-                ), xs=6, sm=6, md=6, lg=2, xl=2),
+                        dcc.Dropdown(
+                            options=[x for x in sorted(list_names)],
+                            multi=True,
+                            id='my_txt_input',
+                            placeholder="Choisir des athlètes...",
+                            className="input_box1",
+                            )
+                        ]),
+                    #html.Datalist(id='Nom_athl')
+                    ])
+                ], xs=6, sm=6, md=6, lg=2, xl=2),
 
             # Cartes athlètes (masquées par défaut)
             dbc.Col([
                 html.Div([
                     dbc.Card(
-                        dbc.CardBody(
-                            [
+                        dbc.CardBody([
                                 html.Div([html.P("Card 1")], id="athlete1_nom", className="card-title"),
                                 html.Div([
                                     html.Div([html.P("Club")], id="athlete1_club"),
@@ -101,7 +115,28 @@ layout = html.Div([
                                 ),
                                 dbc.Button("+ Info", id="open_athl1", color="danger", className="mt-auto", size="sm"),
                                 dbc.Modal([
-                                    dbc.ModalHeader("Information", id="athlete1_nom_info"),
+                                    dbc.ModalHeader([
+                                        dbc.ModalTitle("Information", id="athlete1_nom_info", class_name='ath_info_header'),
+                                        html.Div([
+                                            dbc.Row([
+                                                dbc.Col([
+                                                    dbc.Button("❓", id="open-aide_achievements-athl1", color="white", className="mt-auto", size="sm"),
+                                                    dbc.Modal([
+                                                        dbc.ModalHeader([
+                                                            dbc.ModalTitle("Information", id="achievement_aide_header_athl1"),
+                                                        ]),
+                                                        dbc.ModalBody([
+                                                            html.P("", id="ach_aide-txt_athl1"),
+                                                            html.Div(id="ach_aide-table_athl1"),
+                                                        ]),
+                                                        dbc.ModalFooter(
+                                                            dbc.Button("Fermer", id="close-aide_achievements-athl1", color="secondary", className="ml-auto")
+                                                        ),
+                                                    ], id="aide_achievements_athl1", size="md", centered=True, is_open=False),
+                                                ]),
+                                            ], align="right"),
+                                        ], id='ach_aide-div_athl1', style= {'display': 'none'})
+                                    ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl1-graph', style = {'display': 'none'}),
                                         html.Div(id="athl1-table", className="athl_data_tab"),
@@ -127,7 +162,28 @@ layout = html.Div([
                                 ),
                                 dbc.Button("+ Info", id="open_athl2", color="primary", className="mt-auto", size="sm"),
                                 dbc.Modal([
-                                    dbc.ModalHeader("Information", id="athlete2_nom_info"),
+                                    dbc.ModalHeader([
+                                        dbc.ModalTitle("Information", id="athlete2_nom_info"),
+                                        html.Div([
+                                            dbc.Row([
+                                                dbc.Col([
+                                                    dbc.Button("❓", id="open-aide_achievements-athl2", color="white", className="mt-auto", size="sm"),
+                                                    dbc.Modal([
+                                                        dbc.ModalHeader([
+                                                            dbc.ModalTitle("Information", id="achievement_aide_header_athl2"),
+                                                        ]),
+                                                        dbc.ModalBody([
+                                                            html.P("", id="ach_aide-txt_athl2"),
+                                                            html.Div(id="ach_aide-table_athl2"),
+                                                        ]),
+                                                        dbc.ModalFooter(
+                                                            dbc.Button("Fermer", id="close-aide_achievements-athl2", color="secondary", className="ml-auto")
+                                                        ),
+                                                    ], id="aide_achievements_athl2", size="md", centered=True, is_open=False),
+                                                ]),
+                                            ], align="right"),
+                                        ], id='ach_aide-div_athl2', style={'display': 'none'})
+                                    ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl2-graph', style = {'display': 'none'}),
                                         html.Div(id="athl2-table", className="athl_data_tab"),
@@ -153,7 +209,28 @@ layout = html.Div([
                                 ),
                                 dbc.Button("+ Info", id="open_athl3", color="warning", className="mt-auto", size="sm"),
                                 dbc.Modal([
-                                    dbc.ModalHeader("Information", id="athlete3_nom_info"),
+                                    dbc.ModalHeader([
+                                        dbc.ModalTitle("Information", id="athlete3_nom_info"),
+                                        html.Div([
+                                            dbc.Row([
+                                                dbc.Col([
+                                                    dbc.Button("❓", id="open-aide_achievements-athl3", color="white", className="mt-auto", size="sm"),
+                                                    dbc.Modal([
+                                                        dbc.ModalHeader([
+                                                            dbc.ModalTitle("Information", id="achievement_aide_header_athl3"),
+                                                        ]),
+                                                        dbc.ModalBody([
+                                                            html.P("", id="ach_aide-txt_athl3"),
+                                                            html.Div(id="ach_aide-table_athl3"),
+                                                        ]),
+                                                        dbc.ModalFooter(
+                                                            dbc.Button("Fermer", id="close-aide_achievements-athl3", color="secondary", className="ml-auto")
+                                                        ),
+                                                    ], id="aide_achievements_athl3", size="md", centered=True, is_open=False),
+                                                ]),
+                                            ], align="right"),
+                                        ], id='ach_aide-div_athl3', style={'display': 'none'})
+                                    ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl3-graph', style = {'display': 'none'}),
                                         html.Div(id="athl3-table", className="athl_data_tab"),
@@ -179,7 +256,28 @@ layout = html.Div([
                                 ),
                                 dbc.Button("+ Info", id="open_athl4", color="success", className="mt-auto", size="sm"),
                                 dbc.Modal([
-                                    dbc.ModalHeader("Information", id="athlete4_nom_info"),
+                                    dbc.ModalHeader([
+                                        dbc.ModalTitle("Information", id="athlete4_nom_info"),
+                                        html.Div([
+                                            dbc.Row([
+                                            dbc.Col([
+                                                dbc.Button("❓", id="open-aide_achievements-athl4", color="white", className="mt-auto", size="sm"),
+                                                    dbc.Modal([
+                                                        dbc.ModalHeader([
+                                                            dbc.ModalTitle("Information", id="achievement_aide_header_athl4"),
+                                                        ]),
+                                                        dbc.ModalBody([
+                                                            html.P("", id="ach_aide-txt_athl4"),
+                                                            html.Div(id="ach_aide-table_athl4"),
+                                                        ]),
+                                                        dbc.ModalFooter(
+                                                            dbc.Button("Fermer", id="close-aide_achievements-athl4", color="secondary", className="ml-auto")
+                                                        ),
+                                                    ], id="aide_achievements_athl4", size="md", centered=True, is_open=False),
+                                                ]),
+                                            ], align="right"),
+                                        ], id='ach_aide-div_athl4', style={'display': 'none'})
+                                    ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl4-graph', style = {'display': 'none'}),
                                         html.Div(id="athl4-table", className="athl_data_tab"),
@@ -446,350 +544,254 @@ def update_data_ag(selected_year, on, txt_inserted):
     [Output('athl_card1', 'style'),
      Output("athlete1_nom", "children"),
      Output("athlete1_nom_info", "children"),
+     #Output("athlete1_achievements", "children"),
      Output("athlete1_club", "children"),
      Output("athlete1_annivmax", "children"),
+     Output('ach_aide-div_athl1', 'style'),
      Output('athl_card2', 'style'),
      Output("athlete2_nom", "children"),
      Output("athlete2_nom_info", "children"),
+     #Output("athlete2_achievements", "children"),
      Output("athlete2_club", "children"),
      Output("athlete2_annivmax", "children"),
+     Output('ach_aide-div_athl2', 'style'),
      Output('athl_card3', 'style'),
      Output("athlete3_nom", "children"),
      Output("athlete3_nom_info", "children"),
+     #Output("athlete3_achievements", "children"),
      Output("athlete3_club", "children"),
      Output("athlete3_annivmax", "children"),
+     Output('ach_aide-div_athl3', 'style'),
      Output('athl_card4', 'style'),
      Output("athlete4_nom", "children"),
      Output("athlete4_nom_info", "children"),
+     #Output("athlete4_achievements", "children"),
      Output("athlete4_club", "children"),
-     Output("athlete4_annivmax", "children")],
+     Output("athlete4_annivmax", "children"),
+     Output('ach_aide-div_athl4', 'style')],
     [Input('year-slider-athl', 'value'),
      Input('my_txt_input', 'value')
      ])
 
-def updated_athletes(selected_year, txt_inserted):
+def up_athletes(selected_year, txt_inserted):
     # Perform any manipulation on input_value and return the updated title
     print(txt_inserted)
-    updated_show = [{'display': 'none'}] * 4
-    updated_name = [''] * 4
-    updated_club = [''] * 4
-    updated_anniv = [''] * 4
-    updated_date_naiss = [''] * 4
-    updated_max = [''] * 4
-    updated_arr = [''] * 4
-    updated_epj = [''] * 4
-    updated_total = [''] * 4
-    updated_pdc = [''] * 4
+    up_show = [{'display': 'none'}] * 4
+    up_name = [''] * 4
+    up_club = [''] * 4
+    up_anniv = [''] * 4
+    up_date_naiss = [''] * 4
+    up_max = [''] * 4
+    up_arr = [''] * 4
+    up_epj = [''] * 4
+    up_total = [''] * 4
+    up_pdc = [''] * 4
+    up_achievements = [''] * 4
+    up_show_ach_aide = [{'display': 'none'}] * 4
 
     n = 0
     if txt_inserted is None:
         raise PreventUpdate
     for i in txt_inserted:
-        updated_name[n] = i
+        up_name[n] = i
         df1 = df[(df['Nom'] == i) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
         df1 = df1.sort_values(by=['Date'], ascending=False)
         if len(df1['Club'].values[0]) > 19:
-            updated_club[n] = df1['Club'].values[0][0:18] + '.'
+            up_club[n] = df1['Club'].values[0][0:18] + '.'
         else:
-            updated_club[n] = df1['Club'].values[0]
-        updated_show[n] = {'display': 'block'}
-        updated_anniv[n] = (df1['Né le'].values[0])[-4:]
-        updated_date_naiss[n] = (df1['Né le'].values[0])
-        updated_max[n] = str(df1['IWF'].max()) + ' IWF'
-        updated_arr[n] = str(df1['Arr'].max()) + '/'
-        updated_epj[n] = str(df1['EpJ'].max()) + '/'
-        updated_total[n] = df1['Total'].max()
+            up_club[n] = df1['Club'].values[0]
+        up_show[n] = {'display': 'block'}
+        up_anniv[n] = (df1['Né le'].values[0])[-4:]
+        up_date_naiss[n] = (df1['Né le'].values[0])
+        up_max[n] = str(df1['IWF'].max()) + ' IWF'
+        up_arr[n] = str(df1['Arr'].max()) + '/'
+        up_epj[n] = str(df1['EpJ'].max()) + '/'
+        up_total[n] = df1['Total'].max()
         pdc_df = df1['Total'].idxmax()
-        updated_pdc[n] = str(df.loc[pdc_df, 'PdC']) + 'kg'
+        up_pdc[n] = str(df.loc[pdc_df, 'PdC']) + 'kg'
+        up_achievements[n] = ''
+        if df1['MondeSEN'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['MondeSEN'].values[0]) + ' x 🌎 | '
+        if df1['MondeU20'].values[0]+df1['MondeU17'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['MondeU20'].values[0]+df1['MondeU17'].values[0]) + ' x 🌎🐥 | '
+        if df1['MondeMasters'].values[0]>0:
+            if df1['Sexe'].values[0]=='F':
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + ' x 🌎👵 | '
+            else:
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + ' x 🌎👴 | '
+        if df1['EuropeSEN'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['EuropeSEN'].values[0]) + ' x 🇪🇺 | '
+        if df1['EuropeU23'].values[0]+df1['EuropeU20'].values[0]+df1['EuropeU17'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['EuropeU20'].values[0]+df1['EuropeU17'].values[0]) + ' x 🇪🇺🐥 | '
+        if df1['FranceElite'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['FranceElite'].values[0]) + ' x 🇫🇷 | '
+        if df1['GrandPrixFederal'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['GrandPrixFederal'].values[0]) + ' x 🐔 | '
+        if df1['TropheeNationalU13'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['TropheeNationalU13'].values[0]) + ' x 🇫🇷👶 | '
+        if df1['MondeMasters'].values[0]>0:
+            if df1['Sexe'].values[0]=='F':
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + ' x 🌎👵 | '
+            else:
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + ' x 🌎👴 | '
+        if df1['EuropeMasters'].values[0]>0:
+            if df1['Sexe'].values[0]=='F':
+                up_achievements[n] = up_achievements[n] + str(df1['EuropeMasters'].values[0]) + ' x 🇪🇺👵 | '
+            else:
+                up_achievements[n] = up_achievements[n] + str(df1['EuropeMasters'].values[0]) + ' x 🇪🇺👴 | '
+        if df1['NbCompet'].values[0]==100:
+            up_achievements[n] = up_achievements[n] + ' 💯 | '
+        if df1['NbCompet'].values[0]==50:
+            up_achievements[n] = up_achievements[n] + ' 5️⃣0️⃣ | '
+        if df1['Nb6sur6'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['Nb6sur6'].values[0]) + ' x 👌 | '
+        if df1['Nb2sur6DerniereBarre'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['Nb2sur6DerniereBarre'].values[0]) + ' x 🫣 | '
+        if df1['NbBulles'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['NbBulles'].values[0]) + ' x 🔴 | '
+        if df1['NbDoublesBulles'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['NbDoublesBulles'].values[0]) + ' x 🔴🔴 | '
+        if len(up_achievements[n])>0:
+            up_achievements[n] = ' - ' + up_achievements[n]
+            up_show_ach_aide[n]={'display': 'block'}
+        else:
+            up_show_ach_aide[n]={'display': 'none'}
+
         n = n + 1
 
-    return updated_show[0], f"{updated_name[0]}", f"{updated_name[0]}" + ' ' + f"{updated_date_naiss[0]}", f"{updated_club[0]}", f"{updated_anniv[0]}" + ' | PR ' + f"{updated_max[0]}",\
-        updated_show[1], f"{updated_name[1]}", f"{updated_name[1]}" + ' ' + f"{updated_date_naiss[1]}",f"{updated_club[1]}", f"{updated_anniv[1]}"+ ' | PR ' + f"{updated_max[1]}",  \
-        updated_show[2], f"{updated_name[2]}", f"{updated_name[2]}" + ' ' + f"{updated_date_naiss[2]}",f"{updated_club[2]}", f"{updated_anniv[2]}"+ ' | PR ' + f"{updated_max[2]}", \
-        updated_show[3], f"{updated_name[3]}", f"{updated_name[3]}" + ' ' + f"{updated_date_naiss[3]}", f"{updated_club[3]}", f"{updated_anniv[3]}"+ ' | PR ' + f"{updated_max[3]}"
+    return  up_show[0], f"{up_name[0]}", f"{up_name[0]}" + '  ' + f"{up_date_naiss[0]}" + f"{up_achievements[0]}", f"{up_club[0]}", f"{up_anniv[0]}" + ' | PR ' + f"{up_max[0]}", up_show_ach_aide[0], \
+            up_show[1], f"{up_name[1]}", f"{up_name[1]}" + '  ' + f"{up_date_naiss[1]}" + f"{up_achievements[1]}", f"{up_club[1]}", f"{up_anniv[1]}" + ' | PR ' + f"{up_max[1]}", up_show_ach_aide[1],  \
+            up_show[2], f"{up_name[2]}", f"{up_name[2]}" + '  ' + f"{up_date_naiss[2]}" + f"{up_achievements[2]}", f"{up_club[2]}", f"{up_anniv[2]}" + ' | PR ' + f"{up_max[2]}", up_show_ach_aide[2], \
+            up_show[3], f"{up_name[3]}", f"{up_name[3]}" + '  ' + f"{up_date_naiss[3]}" + f"{up_achievements[3]}", f"{up_club[3]}", f"{up_anniv[3]}" + ' | PR ' + f"{up_max[3]}", up_show_ach_aide[3]
 
-# Gestion ouverture +Info Carte 1
+# Gestion ouverture +Info Cartes Athlètes
 @callback(
-    Output("athl1-modal", "is_open"),
-    [Input("open_athl1", "n_clicks"),
-    Input("close-athl1", "n_clicks")],
-    State("athl1-modal", "is_open"),
-    prevent_initial_call=True
-)
-
-def toggle_modal_athl(open_clicks, close_clicks, is_open_athl1):
-    if open_clicks or close_clicks:
-        return not is_open_athl1
-    return is_open_athl1
-
-# +Info Carte 1
-@callback(
-    [Output("athl1-graph", "figure"),
-     Output("athl1-graph", "style"),
-     Output("athl1-table", "children")],
-    [Input('my_txt_input', 'value'),
-     Input("athl1-modal", "is_open")],
-    prevent_initial_call=True
-)
-
-def update_table_athl1(txt_inserted, is_open_athl1):
-    if not is_open_athl1 or not txt_inserted:
-        raise PreventUpdate
-    if is_open_athl1:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        athl1 = txt_inserted[0]
-        qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-                 max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                , max(round(cat.IWF_Calcul,3)) as "IWF" 
-              FROM ATHLETE as ath 
-              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-              LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-              
-              where ath.Nom='""" + athl1 + """'
-              group by cmp.SaisonAnnee, clb.club
-              order by cmp.SaisonAnnee asc"""
-        df_athl1 = pd.read_sql_query(qry, conn)
-        df_athl1.head()
-
-        df2_athl1 = df2[(df2['Nom'] == txt_inserted[0])]
-        df2_athl1['Série'] = pd.Categorical(df2_athl1['Série'],
-                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-                                      ordered=True)
-        df2_athl1 = df2_athl1.sort_values(by=['Série'])
-        print(df2_athl1)
-
-        fig_athl1 = px.histogram(df2_athl1, x="Série", color="Catégorie",
-                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
-                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
-
-        fig_athl1.update_layout(font_size=12,
-                          legend=dict(
-                              orientation="h",
-                              yanchor="bottom",
-                              y=1.05,
-                              xanchor="left",
-                              x=-0.05
-                          ))
-        display_graph_athl1 = {'display': 'block'}
-
-        return fig_athl1, display_graph_athl1, [dbc.Table.from_dataframe(df_athl1, responsive = True, striped=True, bordered=True, hover=True)]
-
-# Gestion ouverture +Info Carte 2
-@callback(
+    [Output("athl1-modal", "is_open"),
     Output("athl2-modal", "is_open"),
-    [Input("open_athl2", "n_clicks"),
-    Input("close-athl2", "n_clicks")],
-    State("athl2-modal", "is_open"),
-    prevent_initial_call=True
-)
-
-def toggle_modal_athl(open_clicks, close_clicks, is_open_athl2):
-    if open_clicks or close_clicks:
-        return not is_open_athl2
-    return is_open_athl2
-
-# +Info Carte 2
-@callback(
-    [Output("athl2-graph", "figure"),
-     Output("athl2-graph", "style"),
-     Output("athl2-table", "children")],
-    [Input('my_txt_input', 'value'),
-     Input("athl2-modal", "is_open")],
-    prevent_initial_call=True
-)
-
-def update_table_athl2(txt_inserted, is_open_athl2):
-    if not is_open_athl2 or not txt_inserted:
-        raise PreventUpdate
-    if is_open_athl2:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        athl2 = txt_inserted[1]
-        qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-                 max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                , max(round(cat.IWF_Calcul,3)) as "IWF" 
-              FROM ATHLETE as ath 
-              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-              LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-              
-              where ath.Nom='""" + athl2 + """'
-              group by cmp.SaisonAnnee, clb.club
-              order by cmp.SaisonAnnee asc"""
-        df_athl2 = pd.read_sql_query(qry, conn)
-        df_athl2.head()
-
-        df2_athl2 = df2[(df2['Nom'] == txt_inserted[1])]
-        df2_athl2['Série'] = pd.Categorical(df2_athl2['Série'],
-                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-                                      ordered=True)
-        df2_athl2 = df2_athl2.sort_values(by=['Série'])
-        print(df2_athl2)
-
-        fig_athl2 = px.histogram(df2_athl2, x="Série", color="Catégorie",
-                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
-                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
-        #fig_athl2.update_xaxes(categoryorder="category ascending")
-
-        fig_athl2.update_layout(font_size=12,
-                          legend=dict(
-                              orientation="h",
-                              yanchor="bottom",
-                              y=1.05,
-                              xanchor="left",
-                              x=-0.05
-                          ))
-        display_graph_athl2 = {'display': 'block'}
-
-        return fig_athl2, display_graph_athl2, [dbc.Table.from_dataframe(df_athl2, responsive = True, striped=True, bordered=True, hover=True)]
-
-# Gestion ouverture +Info Carte 3
-@callback(
     Output("athl3-modal", "is_open"),
-    [Input("open_athl3", "n_clicks"),
-    Input("close-athl3", "n_clicks")],
-    State("athl3-modal", "is_open"),
-    prevent_initial_call=True
-)
-
-def toggle_modal_athl(open_clicks, close_clicks, is_open_athl3):
-    if open_clicks or close_clicks:
-        return not is_open_athl3
-    return is_open_athl3
-
-# +Info Carte 3
-@callback(
-    [Output("athl3-graph", "figure"),
-     Output("athl3-graph", "style"),
-     Output("athl3-table", "children")],
-    [Input('my_txt_input', 'value'),
-     Input("athl3-modal", "is_open")],
-    prevent_initial_call=True
-)
-
-def update_table_athl3(txt_inserted, is_open_athl3):
-    if not is_open_athl3 or not txt_inserted:
-        raise PreventUpdate
-    if is_open_athl3:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        athl3 = txt_inserted[2]
-        qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-                 max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                , max(round(cat.IWF_Calcul,3)) as "IWF" 
-              FROM ATHLETE as ath 
-              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-              LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-              
-              where ath.Nom='""" + athl3 + """'
-              group by cmp.SaisonAnnee, clb.club
-              order by cmp.SaisonAnnee asc"""
-        df_athl3 = pd.read_sql_query(qry, conn)
-        df_athl3.head()
-
-        df2_athl3 = df2[(df2['Nom'] == txt_inserted[2])]
-        df2_athl3['Série'] = pd.Categorical(df2_athl3['Série'],
-                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-                                      ordered=True)
-        df2_athl3 = df2_athl3.sort_values(by=['Série'])
-        print(df2_athl3)
-
-        fig_athl3 = px.histogram(df2_athl3, x="Série", color="Catégorie",
-                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
-                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
-
-        fig_athl3.update_layout(font_size=12,
-                          legend=dict(
-                              orientation="h",
-                              yanchor="bottom",
-                              y=1.05,
-                              xanchor="left",
-                              x=-0.05
-                          ))
-        display_graph_athl3 = {'display': 'block'}
-
-        return fig_athl3, display_graph_athl3, [dbc.Table.from_dataframe(df_athl3, responsive = True, striped=True, bordered=True, hover=True)]
-
-# Gestion ouverture +Info Carte 4
-@callback(
-    Output("athl4-modal", "is_open"),
-    [Input("open_athl4", "n_clicks"),
+    Output("athl4-modal", "is_open")],
+    [Input("open_athl1", "n_clicks"),
+    Input("open_athl2", "n_clicks"),
+    Input("open_athl3", "n_clicks"),
+    Input("open_athl4", "n_clicks"),
+    Input("close-athl1", "n_clicks"),
+    Input("close-athl2", "n_clicks"),
+    Input("close-athl3", "n_clicks"),
     Input("close-athl4", "n_clicks")],
-    State("athl4-modal", "is_open"),
+    [State("athl1-modal", "is_open"),
+    State("athl2-modal", "is_open"),
+    State("athl3-modal", "is_open"),
+    State("athl4-modal", "is_open")],
     prevent_initial_call=True
 )
 
 # +Info Carte 4
-def toggle_modal_athl(open_clicks, close_clicks, is_open_athl4):
-    if open_clicks or close_clicks:
-        return not is_open_athl4
-    return is_open_athl4
+def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4, close_clicks1, close_clicks2, close_clicks3, close_clicks4, is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4):
+    if open_clicks1 or close_clicks1:
+        is_open_athl1 = not is_open_athl1
+        is_open_athl2 = False
+        is_open_athl3 = False
+        is_open_athl4 = False
+    if open_clicks2 or close_clicks2:
+        is_open_athl2 = not is_open_athl2
+        is_open_athl1 = False
+        is_open_athl3 = False
+        is_open_athl4 = False
+    if open_clicks3 or close_clicks3:
+        is_open_athl3 = not is_open_athl3
+        is_open_athl1 = False
+        is_open_athl2 = False
+        is_open_athl4 = False
+    if open_clicks4 or close_clicks4:
+        is_open_athl4 = not is_open_athl4
+        is_open_athl1 = False
+        is_open_athl2 = False
+        is_open_athl3 = False
+
+    print(str(open_clicks1) + ' ' + str(close_clicks1))
+    return is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4
+
 
 @callback(
-    [Output("athl4-graph", "figure"),
+    [Output("athl1-graph", "figure"),
+     Output("athl1-graph", "style"),
+     Output("athl1-table", "children"),
+     Output("athl2-graph", "figure"),
+     Output("athl2-graph", "style"),
+     Output("athl2-table", "children"),
+     Output("athl3-graph", "figure"),
+     Output("athl3-graph", "style"),
+     Output("athl3-table", "children"),
+     Output("athl4-graph", "figure"),
      Output("athl4-graph", "style"),
      Output("athl4-table", "children")],
     [Input('my_txt_input', 'value'),
+     Input("athl1-modal", "is_open"),
+     Input("athl2-modal", "is_open"),
+     Input("athl3-modal", "is_open"),
      Input("athl4-modal", "is_open")],
     prevent_initial_call=True
 )
 
-def update_table_athl4(txt_inserted, is_open_athl4):
-    if not is_open_athl4 or not txt_inserted:
+def update_table_athl4(txt_inserted, is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4):
+    if (not is_open_athl1 and not is_open_athl2 and not is_open_athl3 and not is_open_athl4) or not txt_inserted:
         raise PreventUpdate
+    if is_open_athl1:
+        athl = txt_inserted[0]
+    if is_open_athl2:
+        athl = txt_inserted[1]
+    if is_open_athl3:
+        athl = txt_inserted[2]
     if is_open_athl4:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
+        athl = txt_inserted[3]
+    dirname = os.path.dirname(__file__)
+    path_db = os.path.join(dirname, 'dataltero.db')
+    conn = sql.connect(database=path_db)
+    qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
+                    max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
+                   , max(round(cat.IWF_Calcul,3)) as "IWF" 
+                 FROM ATHLETE as ath 
+                 LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
+                 LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+                 LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
 
-        athl4 = txt_inserted[3]
-        qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-                 max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                , max(round(cat.IWF_Calcul,3)) as "IWF" 
-              FROM ATHLETE as ath 
-              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-              LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-              
-              where ath.Nom='""" + athl4 + """'
-              group by cmp.SaisonAnnee, clb.club
-              order by cmp.SaisonAnnee asc"""
-        df_athl4 = pd.read_sql_query(qry, conn)
-        df_athl4.head()
+                 where ath.Nom='""" + athl + """'
+                 group by cmp.SaisonAnnee, clb.club
+                 order by cmp.SaisonAnnee asc"""
+    df_athl = pd.read_sql_query(qry, conn)
+    df_athl.head()
 
-        df2_athl4 = df2[(df2['Nom'] == txt_inserted[3])]
-        df2_athl4['Série'] = pd.Categorical(df2_athl4['Série'],
-                                      ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
-                                      ordered=True)
-        df2_athl4 = df2_athl4.sort_values(by=['Série'])
-        print(df2_athl4)
+    df2_athl = df2[(df2['Nom'] == athl)]
+    df2_athl['Série'] = pd.Categorical(df2_athl['Série'],
+                                        ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
+                                        ordered=True)
+    df2_athl = df2_athl.sort_values(by=['Série'])
+    print(df2_athl)
 
-        fig_athl4 = px.histogram(df2_athl4, x="Série", color="Catégorie",
-                                 color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple", "#54B4D3", "#9FA6B2"],
-                                 category_orders={"Série":["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
+    fig_athl = px.histogram(df2_athl, x="Série", color="Catégorie",
+                             color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple",
+                                                      "#54B4D3", "#9FA6B2"],
+                             category_orders={
+                                 "Série": ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
 
-        fig_athl4.update_layout(font_size=12,
-                          legend=dict(
-                              orientation="h",
-                              yanchor="bottom",
-                              y=1.05,
-                              xanchor="left",
-                              x=-0.05
-                          ))
-        display_graph_athl4 = {'display': 'block'}
+    fig_athl.update_layout(font_size=12,
+                            legend=dict(
+                                orientation="h",
+                                yanchor="bottom",
+                                y=1.05,
+                                xanchor="left",
+                                x=-0.05
+                            ))
+    display_graph_athl = {'display': 'block'}
 
-        return fig_athl4, display_graph_athl4, [dbc.Table.from_dataframe(df_athl4, responsive = True, striped=True, bordered=True, hover=True)]
-
-
+    if is_open_athl1:
+        return fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update,
+    if is_open_athl2:
+            return dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+    if is_open_athl3:
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update,
+    if is_open_athl4:
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)]
 @callback(
     Output("ag_datatable_athl", "columnDefs"),
     [Input("reset_col", "n_clicks")]
@@ -881,7 +883,91 @@ def toggle_modal_athl(reset_clicks):
         ]
 
     return cols;
-        
+
+
+@callback(
+    [Output("aide_achievements_athl1", "is_open"),
+    Output("aide_achievements_athl2", "is_open"),
+    Output("aide_achievements_athl3", "is_open"),
+    Output("aide_achievements_athl4", "is_open")],
+    [Input("open-aide_achievements-athl1", "n_clicks"),
+    Input("open-aide_achievements-athl2", "n_clicks"),
+    Input("open-aide_achievements-athl3", "n_clicks"),
+    Input("open-aide_achievements-athl4", "n_clicks"),
+    Input("close-aide_achievements-athl1", "n_clicks"),
+    Input("close-aide_achievements-athl2", "n_clicks"),
+    Input("close-aide_achievements-athl3", "n_clicks"),
+    Input("close-aide_achievements-athl4", "n_clicks")],
+    [State("aide_achievements_athl1", "is_open"),
+    State("aide_achievements_athl2", "is_open"),
+    State("aide_achievements_athl3", "is_open"),
+    State("aide_achievements_athl4", "is_open")],
+    prevent_initial_call=True
+)
+
+# Aide Achievements
+def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4, close_clicks1, close_clicks2, close_clicks3, close_clicks4, is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4):
+    if open_clicks1 or close_clicks1:
+        is_open_athl1 = not is_open_athl1
+        is_open_athl2 = False
+        is_open_athl3 = False
+        is_open_athl4 = False
+    if open_clicks2 or close_clicks2:
+        is_open_athl2 = not is_open_athl2
+        is_open_athl1 = False
+        is_open_athl3 = False
+        is_open_athl4 = False
+    if open_clicks3 or close_clicks3:
+        is_open_athl3 = not is_open_athl3
+        is_open_athl1 = False
+        is_open_athl2 = False
+        is_open_athl4 = False
+    if open_clicks4 or close_clicks4:
+        is_open_athl4 = not is_open_athl4
+        is_open_athl1 = False
+        is_open_athl2 = False
+        is_open_athl3 = False
+
+    print(str(open_clicks1) + ' ' + str(close_clicks1))
+    return is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4
+
+@callback(
+    [Output("ach_aide-table_athl1", "children"),
+    Output("ach_aide-table_athl2", "children"),
+    Output("ach_aide-table_athl3", "children"),
+    Output("ach_aide-table_athl4", "children"),
+    Output("ach_aide-txt_athl1", "children"),
+    Output("ach_aide-txt_athl2", "children"),
+    Output("ach_aide-txt_athl3", "children"),
+    Output("ach_aide-txt_athl4", "children")],
+    [Input("aide_achievements_athl1", "is_open"),
+    Input("aide_achievements_athl2", "is_open"),
+    Input("aide_achievements_athl3", "is_open"),
+    Input("aide_achievements_athl4", "is_open")],
+    prevent_initial_call=True
+)
+
+
+def update_table_athl1(is_open_ach1, is_open_ach2, is_open_ach3, is_open_ach4):
+    if not is_open_ach1 and not is_open_ach2 and not is_open_ach3 and not is_open_ach4:
+        raise PreventUpdate
+    ach_aide_txt = 'Les symboles affichés à coté de la date de naissance de l''athlète représentent les participations ou performances détaillées dans le tableau ci-dessous : '
+    ach = [['🌎', 'Championnats du Monde'], ['🇪🇺', 'Championnats d''Europe'], ['🇫🇷', 'France Elite'], ['🐥', 'Jeunes (U15 à U23)'], ['🇫🇷👶', 'Trophée National U13'], ['👵👴', 'Masters'],
+           ['🐔', 'Grand Prix Fédéral'], ['💯', 'Au moins 100 Compétitions'], ['5️⃣0️⃣', 'Au moins 50 Compétitions'], ['👌', '6/6'],
+           ['🫣', '2/6 sur les dernières barres des 2 mouvements'], ['🔴', 'Bulle'], ['🔴🔴', 'Double Bulle']]
+
+    # Create the pandas DataFrame
+    df_ach = pd.DataFrame(ach, columns=['Symbole', 'Signification'])
+    if is_open_ach1:
+        return [dbc.Table.from_dataframe(df_ach, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, ach_aide_txt, dash.no_update, dash.no_update, dash.no_update
+    if is_open_ach2:
+        return dash.no_update, [dbc.Table.from_dataframe(df_ach, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, ach_aide_txt,  dash.no_update, dash.no_update
+    if is_open_ach3:
+        return dash.no_update, dash.no_update, [dbc.Table.from_dataframe(df_ach, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, ach_aide_txt,  dash.no_update
+    if is_open_ach4:
+        return dash.no_update, dash.no_update, dash.no_update, [dbc.Table.from_dataframe(df_ach, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, ach_aide_txt
+
+
 @callback(
     [
      Output("app_code_athl", "className"),

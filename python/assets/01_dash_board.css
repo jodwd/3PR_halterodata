@@ -49,6 +49,11 @@
     text-align: justify;
 }
 
+.ath_info_header{
+    font-size: 20px;
+    line-height: 20px;
+}
+
 .ag-theme-quartz-dark {
     --ag-odd-row-background-color: rgb(0, 0, 0, 0.05);
     --ag-header-column-resize-handle-color: rgb(161, 28, 15);
