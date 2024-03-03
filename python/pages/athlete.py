@@ -19,7 +19,7 @@ conn = sql.connect(database=path_db)
 # Requête principale
 qry = """SELECT ath.Nom, ath.DateNaissance as "Né le"
       , substr(cmp."NomCompetitionCourt", 1, 64) as "Competition", cat."PoidsDeCorps" as "PdC", clb.Club
-      , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date"
+      , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date", cat.Sexe
       , cat.Arr1, cat.Arr2, cat.Arr3, cat.Arrache as "Arr", cat.Epj1, cat.Epj2, cat.Epj3, cat.EpJete as "EpJ"
       , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF"             
       ,   ath."MondeSEN"         
@@ -32,7 +32,13 @@ qry = """SELECT ath.Nom, ath.DateNaissance as "Né le"
       ,   ath."EuropeU17"       
       ,   ath."EuropeMasters"   
       ,   ath."FranceElite"     
-      ,   ath."GrandPrixFederal"
+      ,   ath."GrandPrixFederal"     
+      ,   ath."TropheeNationalU13"     
+      ,   ath."NbCompet"
+      ,   ath."Nb6sur6"
+      ,   ath."Nb2sur6DerniereBarre"
+      ,   ath."NbBulles"
+      ,   ath."NbDoublesBulles"
       FROM ATHLETE as ath 
       LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
       LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
@@ -81,29 +87,26 @@ layout = html.Div([
                 ], xs=6, sm=6, md=6, lg=2, xl=2),
 
             # Zone filtres athlètes
-            dbc.Col(
-                html.Div(
+            dbc.Col([
+                html.Div([
                     html.Div([
-                        html.Div([
-                            dcc.Dropdown(
-                                options=[x for x in sorted(list_names)],
-                                multi=True,
-                                id='my_txt_input',
-                                placeholder="Choisir des athlètes...",
-                                className="input_box1",
-                                )
-                            ],
-                            ),
-                        #html.Datalist(id='Nom_athl')
-                        ])
-                ), xs=6, sm=6, md=6, lg=2, xl=2),
+                        dcc.Dropdown(
+                            options=[x for x in sorted(list_names)],
+                            multi=True,
+                            id='my_txt_input',
+                            placeholder="Choisir des athlètes...",
+                            className="input_box1",
+                            )
+                        ]),
+                    #html.Datalist(id='Nom_athl')
+                    ])
+                ], xs=6, sm=6, md=6, lg=2, xl=2),
 
             # Cartes athlètes (masquées par défaut)
             dbc.Col([
                 html.Div([
                     dbc.Card(
-                        dbc.CardBody(
-                            [
+                        dbc.CardBody([
                                 html.Div([html.P("Card 1")], id="athlete1_nom", className="card-title"),
                                 html.Div([
                                     html.Div([html.P("Club")], id="athlete1_club"),
@@ -113,10 +116,27 @@ layout = html.Div([
                                 dbc.Button("+ Info", id="open_athl1", color="danger", className="mt-auto", size="sm"),
                                 dbc.Modal([
                                     dbc.ModalHeader([
-                                        html.Div(dbc.ModalTitle("Information", id="athlete1_nom_info")),
-                                        html.Br(),
+                                        dbc.ModalTitle("Information", id="athlete1_nom_info", class_name='ath_info_header'),
+                                        html.Div([
+                                            dbc.Row([
+                                                dbc.Col([
+                                                    dbc.Button("❓", id="open-aide_achievements-athl1", color="white", className="mt-auto", size="sm"),
+                                                    dbc.Modal([
+                                                        dbc.ModalHeader([
+                                                            dbc.ModalTitle("Information", id="achievement_aide_header_athl1"),
+                                                        ]),
+                                                        dbc.ModalBody([
+                                                            html.P("", id="ach_aide-txt_athl1"),
+                                                            html.Div(id="ach_aide-table_athl1"),
+                                                        ]),
+                                                        dbc.ModalFooter(
+                                                            dbc.Button("Fermer", id="close-aide_achievements-athl1", color="secondary", className="ml-auto")
+                                                        ),
+                                                    ], id="aide_achievements_athl1", size="md", centered=True, is_open=False),
+                                                ]),
+                                            ], align="right"),
+                                        ], id='ach_aide-div_athl1', style= {'display': 'none'})
                                     ]),
-                                    dbc.ModalHeader(dbc.ModalTitle("Achievements", id='athlete1_achievements')),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl1-graph', style = {'display': 'none'}),
                                         html.Div(id="athl1-table", className="athl_data_tab"),
@@ -144,8 +164,25 @@ layout = html.Div([
                                 dbc.Modal([
                                     dbc.ModalHeader([
                                         dbc.ModalTitle("Information", id="athlete2_nom_info"),
-                                        html.Br(),
-                                        html.P("Achievements", id='athlete2_achievements')
+                                        html.Div([
+                                            dbc.Row([
+                                                dbc.Col([
+                                                    dbc.Button("❓", id="open-aide_achievements-athl2", color="white", className="mt-auto", size="sm"),
+                                                    dbc.Modal([
+                                                        dbc.ModalHeader([
+                                                            dbc.ModalTitle("Information", id="achievement_aide_header_athl2"),
+                                                        ]),
+                                                        dbc.ModalBody([
+                                                            html.P("", id="ach_aide-txt_athl2"),
+                                                            html.Div(id="ach_aide-table_athl2"),
+                                                        ]),
+                                                        dbc.ModalFooter(
+                                                            dbc.Button("Fermer", id="close-aide_achievements-athl2", color="secondary", className="ml-auto")
+                                                        ),
+                                                    ], id="aide_achievements_athl2", size="md", centered=True, is_open=False),
+                                                ]),
+                                            ], align="right"),
+                                        ], id='ach_aide-div_athl2', style={'display': 'none'})
                                     ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl2-graph', style = {'display': 'none'}),
@@ -174,8 +211,25 @@ layout = html.Div([
                                 dbc.Modal([
                                     dbc.ModalHeader([
                                         dbc.ModalTitle("Information", id="athlete3_nom_info"),
-                                        html.Br(),
-                                        html.P("Achievements", id='athlete3_achievements')
+                                        html.Div([
+                                            dbc.Row([
+                                                dbc.Col([
+                                                    dbc.Button("❓", id="open-aide_achievements-athl3", color="white", className="mt-auto", size="sm"),
+                                                    dbc.Modal([
+                                                        dbc.ModalHeader([
+                                                            dbc.ModalTitle("Information", id="achievement_aide_header_athl3"),
+                                                        ]),
+                                                        dbc.ModalBody([
+                                                            html.P("", id="ach_aide-txt_athl3"),
+                                                            html.Div(id="ach_aide-table_athl3"),
+                                                        ]),
+                                                        dbc.ModalFooter(
+                                                            dbc.Button("Fermer", id="close-aide_achievements-athl3", color="secondary", className="ml-auto")
+                                                        ),
+                                                    ], id="aide_achievements_athl3", size="md", centered=True, is_open=False),
+                                                ]),
+                                            ], align="right"),
+                                        ], id='ach_aide-div_athl3', style={'display': 'none'})
                                     ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl3-graph', style = {'display': 'none'}),
@@ -204,8 +258,25 @@ layout = html.Div([
                                 dbc.Modal([
                                     dbc.ModalHeader([
                                         dbc.ModalTitle("Information", id="athlete4_nom_info"),
-                                        html.Br(),
-                                        html.P("Achievements", id='athlete4_achievements')
+                                        html.Div([
+                                            dbc.Row([
+                                            dbc.Col([
+                                                dbc.Button("❓", id="open-aide_achievements-athl4", color="white", className="mt-auto", size="sm"),
+                                                    dbc.Modal([
+                                                        dbc.ModalHeader([
+                                                            dbc.ModalTitle("Information", id="achievement_aide_header_athl4"),
+                                                        ]),
+                                                        dbc.ModalBody([
+                                                            html.P("", id="ach_aide-txt_athl4"),
+                                                            html.Div(id="ach_aide-table_athl4"),
+                                                        ]),
+                                                        dbc.ModalFooter(
+                                                            dbc.Button("Fermer", id="close-aide_achievements-athl4", color="secondary", className="ml-auto")
+                                                        ),
+                                                    ], id="aide_achievements_athl4", size="md", centered=True, is_open=False),
+                                                ]),
+                                            ], align="right"),
+                                        ], id='ach_aide-div_athl4', style={'display': 'none'})
                                     ]),
                                     dbc.ModalBody([
                                         dcc.Graph(id='athl4-graph', style = {'display': 'none'}),
@@ -471,27 +542,31 @@ def update_data_ag(selected_year, on, txt_inserted):
     [Output('athl_card1', 'style'),
      Output("athlete1_nom", "children"),
      Output("athlete1_nom_info", "children"),
-     Output("athlete1_achievements", "children"),
+     #Output("athlete1_achievements", "children"),
      Output("athlete1_club", "children"),
      Output("athlete1_annivmax", "children"),
+     Output('ach_aide-div_athl1', 'style'),
      Output('athl_card2', 'style'),
      Output("athlete2_nom", "children"),
      Output("athlete2_nom_info", "children"),
-     Output("athlete2_achievements", "children"),
+     #Output("athlete2_achievements", "children"),
      Output("athlete2_club", "children"),
      Output("athlete2_annivmax", "children"),
+     Output('ach_aide-div_athl2', 'style'),
      Output('athl_card3', 'style'),
      Output("athlete3_nom", "children"),
      Output("athlete3_nom_info", "children"),
-     Output("athlete3_achievements", "children"),
+     #Output("athlete3_achievements", "children"),
      Output("athlete3_club", "children"),
      Output("athlete3_annivmax", "children"),
+     Output('ach_aide-div_athl3', 'style'),
      Output('athl_card4', 'style'),
      Output("athlete4_nom", "children"),
      Output("athlete4_nom_info", "children"),
-     Output("athlete4_achievements", "children"),
+     #Output("athlete4_achievements", "children"),
      Output("athlete4_club", "children"),
-     Output("athlete4_annivmax", "children")],
+     Output("athlete4_annivmax", "children"),
+     Output('ach_aide-div_athl4', 'style')],
     [Input('year-slider-athl', 'value'),
      Input(component_id='my_txt_input', component_property='value')
      ])
@@ -510,6 +585,7 @@ def up_athletes(selected_year, txt_inserted):
     up_total = [''] * 4
     up_pdc = [''] * 4
     up_achievements = [''] * 4
+    up_show_ach_aide = [{'display': 'none'}] * 4
 
     n = 0
     if txt_inserted is None:
@@ -531,22 +607,60 @@ def up_athletes(selected_year, txt_inserted):
         up_total[n] = df1['Total'].max()
         pdc_df = df1['Total'].idxmax()
         up_pdc[n] = str(df.loc[pdc_df, 'PdC']) + 'kg'
-        up_achievements[n] = '\n'
+        up_achievements[n] = ''
         if df1['MondeSEN'].values[0]>0:
-            up_achievements[n] = up_achievements[n] + str(df1['MondeSEN'].values[0]) + '🌎 / '
+            up_achievements[n] = up_achievements[n] + str(df1['MondeSEN'].values[0]) + ' x 🌎 | '
         if df1['MondeU20'].values[0]+df1['MondeU17'].values[0]>0:
-            up_achievements[n] = up_achievements[n] + str(df1['MondeU20'].values[0]+df1['MondeU17'].values[0]) + '🌎🐥 / '
+            up_achievements[n] = up_achievements[n] + str(df1['MondeU20'].values[0]+df1['MondeU17'].values[0]) + ' x 🌎🐥 | '
         if df1['MondeMasters'].values[0]>0:
             if df1['Sexe'].values[0]=='F':
-                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + '🌎👵 / '
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + ' x 🌎👵 | '
             else:
-                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + '🌎👴 / '
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + ' x 🌎👴 | '
+        if df1['EuropeSEN'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['EuropeSEN'].values[0]) + ' x 🇪🇺 | '
+        if df1['EuropeU23'].values[0]+df1['EuropeU20'].values[0]+df1['EuropeU17'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['EuropeU20'].values[0]+df1['EuropeU17'].values[0]) + ' x 🇪🇺🐥 | '
+        if df1['FranceElite'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['FranceElite'].values[0]) + ' x 🇫🇷 | '
+        if df1['GrandPrixFederal'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['GrandPrixFederal'].values[0]) + ' x 🐔 | '
+        if df1['TropheeNationalU13'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['TropheeNationalU13'].values[0]) + ' x 🇫🇷👶 | '
+        if df1['MondeMasters'].values[0]>0:
+            if df1['Sexe'].values[0]=='F':
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + ' x 🌎👵 | '
+            else:
+                up_achievements[n] = up_achievements[n] + str(df1['MondeMasters'].values[0]) + ' x 🌎👴 | '
+        if df1['EuropeMasters'].values[0]>0:
+            if df1['Sexe'].values[0]=='F':
+                up_achievements[n] = up_achievements[n] + str(df1['EuropeMasters'].values[0]) + ' x 🇪🇺👵 | '
+            else:
+                up_achievements[n] = up_achievements[n] + str(df1['EuropeMasters'].values[0]) + ' x 🇪🇺👴 | '
+        if df1['NbCompet'].values[0]==100:
+            up_achievements[n] = up_achievements[n] + ' 💯 | '
+        if df1['NbCompet'].values[0]==50:
+            up_achievements[n] = up_achievements[n] + ' 5️⃣0️⃣ | '
+        if df1['Nb6sur6'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['Nb6sur6'].values[0]) + ' x 👌 | '
+        if df1['Nb2sur6DerniereBarre'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['Nb2sur6DerniereBarre'].values[0]) + ' x 🫣 | '
+        if df1['NbBulles'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['NbBulles'].values[0]) + ' x 🔴 | '
+        if df1['NbDoublesBulles'].values[0]>0:
+            up_achievements[n] = up_achievements[n] + str(df1['NbDoublesBulles'].values[0]) + ' x 🔴🔴 | '
+        if len(up_achievements[n])>0:
+            up_achievements[n] = ' - ' + up_achievements[n]
+            up_show_ach_aide[n]={'display': 'block'}
+        else:
+            up_show_ach_aide[n]={'display': 'none'}
+
         n = n + 1
 
-    return up_show[0], f"{up_name[0]}", f"{up_name[0]}" + ' ' + f"{up_date_naiss[0]}", f"{up_achievements[0]}", f"{up_club[0]}", f"{up_anniv[0]}" + ' | PR ' + f"{up_max[0]}",\
-        up_show[1], f"{up_name[1]}", f"{up_name[1]}" + ' ' + f"{up_date_naiss[1]}", f"{up_achievements[1]}",f"{up_club[1]}", f"{up_anniv[1]}"+ ' | PR ' + f"{up_max[1]}",  \
-        up_show[2], f"{up_name[2]}", f"{up_name[2]}" + ' ' + f"{up_date_naiss[2]}", f"{up_achievements[2]}",f"{up_club[2]}", f"{up_anniv[2]}"+ ' | PR ' + f"{up_max[2]}", \
-        up_show[3], f"{up_name[3]}", f"{up_name[3]}" + ' ' + f"{up_date_naiss[3]}", f"{up_achievements[3]}", f"{up_club[3]}", f"{up_anniv[3]}"+ ' | PR ' + f"{up_max[3]}"
+    return  up_show[0], f"{up_name[0]}", f"{up_name[0]}" + '  ' + f"{up_date_naiss[0]}" + f"{up_achievements[0]}", f"{up_club[0]}", f"{up_anniv[0]}" + ' | PR ' + f"{up_max[0]}", up_show_ach_aide[0], \
+            up_show[1], f"{up_name[1]}", f"{up_name[1]}" + '  ' + f"{up_date_naiss[1]}" + f"{up_achievements[1]}", f"{up_club[1]}", f"{up_anniv[1]}" + ' | PR ' + f"{up_max[1]}", up_show_ach_aide[1],  \
+            up_show[2], f"{up_name[2]}", f"{up_name[2]}" + '  ' + f"{up_date_naiss[2]}" + f"{up_achievements[2]}", f"{up_club[2]}", f"{up_anniv[2]}" + ' | PR ' + f"{up_max[2]}", up_show_ach_aide[2], \
+            up_show[3], f"{up_name[3]}", f"{up_name[3]}" + '  ' + f"{up_date_naiss[3]}" + f"{up_achievements[3]}", f"{up_club[3]}", f"{up_anniv[3]}" + ' | PR ' + f"{up_max[3]}", up_show_ach_aide[3]
 
 # Gestion ouverture +Info Cartes Athlètes
 @callback(
@@ -767,7 +881,91 @@ def toggle_modal_athl(reset_clicks):
         ]
 
     return cols;
-        
+
+
+@callback(
+    [Output("aide_achievements_athl1", "is_open"),
+    Output("aide_achievements_athl2", "is_open"),
+    Output("aide_achievements_athl3", "is_open"),
+    Output("aide_achievements_athl4", "is_open")],
+    [Input("open-aide_achievements-athl1", "n_clicks"),
+    Input("open-aide_achievements-athl2", "n_clicks"),
+    Input("open-aide_achievements-athl3", "n_clicks"),
+    Input("open-aide_achievements-athl4", "n_clicks"),
+    Input("close-aide_achievements-athl1", "n_clicks"),
+    Input("close-aide_achievements-athl2", "n_clicks"),
+    Input("close-aide_achievements-athl3", "n_clicks"),
+    Input("close-aide_achievements-athl4", "n_clicks")],
+    [State("aide_achievements_athl1", "is_open"),
+    State("aide_achievements_athl2", "is_open"),
+    State("aide_achievements_athl3", "is_open"),
+    State("aide_achievements_athl4", "is_open")],
+    prevent_initial_call=True
+)
+
+# Aide Achievements
+def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4, close_clicks1, close_clicks2, close_clicks3, close_clicks4, is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4):
+    if open_clicks1 or close_clicks1:
+        is_open_athl1 = not is_open_athl1
+        is_open_athl2 = False
+        is_open_athl3 = False
+        is_open_athl4 = False
+    if open_clicks2 or close_clicks2:
+        is_open_athl2 = not is_open_athl2
+        is_open_athl1 = False
+        is_open_athl3 = False
+        is_open_athl4 = False
+    if open_clicks3 or close_clicks3:
+        is_open_athl3 = not is_open_athl3
+        is_open_athl1 = False
+        is_open_athl2 = False
+        is_open_athl4 = False
+    if open_clicks4 or close_clicks4:
+        is_open_athl4 = not is_open_athl4
+        is_open_athl1 = False
+        is_open_athl2 = False
+        is_open_athl3 = False
+
+    print(str(open_clicks1) + ' ' + str(close_clicks1))
+    return is_open_athl1, is_open_athl2, is_open_athl3, is_open_athl4
+
+@callback(
+    [Output("ach_aide-table_athl1", "children"),
+    Output("ach_aide-table_athl2", "children"),
+    Output("ach_aide-table_athl3", "children"),
+    Output("ach_aide-table_athl4", "children"),
+    Output("ach_aide-txt_athl1", "children"),
+    Output("ach_aide-txt_athl2", "children"),
+    Output("ach_aide-txt_athl3", "children"),
+    Output("ach_aide-txt_athl4", "children")],
+    [Input("aide_achievements_athl1", "is_open"),
+    Input("aide_achievements_athl2", "is_open"),
+    Input("aide_achievements_athl3", "is_open"),
+    Input("aide_achievements_athl4", "is_open")],
+    prevent_initial_call=True
+)
+
+
+def update_table_athl1(is_open_ach1, is_open_ach2, is_open_ach3, is_open_ach4):
+    if not is_open_ach1 and not is_open_ach2 and not is_open_ach3 and not is_open_ach4:
+        raise PreventUpdate
+    ach_aide_txt = 'Les symboles affichés à coté de la date de naissance de l''athlète représentent les participations ou performances détaillées dans le tableau ci-dessous : '
+    ach = [['🌎', 'Championnats du Monde'], ['🇪🇺', 'Championnats d''Europe'], ['🇫🇷', 'France Elite'], ['🐥', 'Jeunes (U15 à U23)'], ['🇫🇷👶', 'Trophée National U13'], ['👵👴', 'Masters'],
+           ['🐔', 'Grand Prix Fédéral'], ['💯', 'Au moins 100 Compétitions'], ['5️⃣0️⃣', 'Au moins 50 Compétitions'], ['👌', '6/6'],
+           ['🫣', '2/6 sur les dernières barres des 2 mouvements'], ['🔴', 'Bulle'], ['🔴🔴', 'Double Bulle']]
+
+    # Create the pandas DataFrame
+    df_ach = pd.DataFrame(ach, columns=['Symbole', 'Signification'])
+    if is_open_ach1:
+        return [dbc.Table.from_dataframe(df_ach, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, ach_aide_txt, dash.no_update, dash.no_update, dash.no_update
+    if is_open_ach2:
+        return dash.no_update, [dbc.Table.from_dataframe(df_ach, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, ach_aide_txt,  dash.no_update, dash.no_update
+    if is_open_ach3:
+        return dash.no_update, dash.no_update, [dbc.Table.from_dataframe(df_ach, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, ach_aide_txt,  dash.no_update
+    if is_open_ach4:
+        return dash.no_update, dash.no_update, dash.no_update, [dbc.Table.from_dataframe(df_ach, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, ach_aide_txt
+
+
 @callback(
     [
      Output("app_code_athl", "className"),

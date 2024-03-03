@@ -657,10 +657,7 @@ def toggle_modal_athl(open_clicks, close_clicks, is_open_u10_u13):
 
 # +Info Carte 1
 @callback(
-    [
-    #Output("u10_u13-graph", "figure"),
-    #Output("u10_u13-graph", "style"),
-     Output("u10_u13-table", "children")],
+    [Output("u10_u13-table", "children")],
     [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value'),
