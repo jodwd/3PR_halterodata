@@ -42,7 +42,6 @@ nav_button = \
             dbc.Button(
                 "Listings", outline=True, color="warning", className="me-1", href="/listings", size="sm")
             ],  width="auto", align="center"),
-            #], xs=2, sm=2, md=2, lg=2, xl=2, align="center")
         dbc.Col([
             dbc.Button("🤔 Aide", id="open", color="success", outline=True, className="me-1", size="sm"),
             dbc.Modal([
@@ -60,7 +59,11 @@ nav_button = \
                 ], id="info-modal", size="lg", centered=True, is_open=False),
             ],  width="auto"),
         dbc.Col([
-            dbc.Button("🎂", id="anniv", color="light", outline=True, className="me-1", size="sm"),
+            dbc.Button(
+                "Blog", outline=True, color="light", className="me-1", href="/blog", size="sm")
+            ],  width="auto", align="center"),
+        dbc.Col([
+            dbc.Button("🎂", id="anniv", color="secondary", outline=True, className="me-1", size="sm"),
             dbc.Modal([
                 dbc.ModalHeader("🎂"),
                 dbc.ModalBody([
@@ -91,7 +94,7 @@ navbar = dbc.Navbar(
                 # Use row and col to control vertical alignment of logo / brand
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src=r'assets/3PR.png', height="68px")),
+                        dbc.Col(html.Img(src=app.get_asset_url('3PR.png'), height="68px")),
                         dbc.Col(dbc.NavbarBrand("Perfs Haltero  ", className="ms-2", style={"color": "white", 'font-size': "20px"}, id="nav_brand")),
 
                     ],

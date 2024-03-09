@@ -1,0 +1,100 @@
+
+.body {
+    background-color: rgb(40,40,45);
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.body_light {
+    background-color: rgb(248, 249, 250);
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.article_dash_style {
+    background-color: rgb(40,40,45);
+    margin-left: 0px;
+    margin-right: 0px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    color: white;
+}
+
+.article_dash_style_light {
+    background-color: rgb(248, 249, 250);
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.top_zone {
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+.titlebox_blog {
+    font-family: 'Helvetica Neue', sans-serif;
+    width: 90%;
+    margin-top: 2%;
+    margin-left: 2%;
+    text-align: center;
+}
+
+.input_box {
+    font-size: 12px;
+    color: rgb(40,40,45);
+    width: 100%;
+    margin-top: 2%;
+}
+
+
+.card-title{
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 13px;
+    text-align: justify;
+}
+.card-text{
+    font-size: 14px;
+    line-height: 16px;
+    text-align: justify;
+}
+
+.ag-theme-quartz-dark {
+    --ag-odd-row-background-color: rgb(0, 0, 0, 0.05);
+    --ag-header-column-resize-handle-color: rgb(161, 28, 15);
+
+    --ag-font-size: 12px;
+    --ag-font-family: 'Helvetica Neue',sans-serif;
+}
+
+.ag-theme-quartz {
+    --ag-odd-row-background-color: rgb(249, 250, 251);
+    --ag-header-column-resize-handle-color: rgb(161, 28, 15);
+
+    --ag-font-size: 12px;
+    --ag-font-family: 'Helvetica Neue',sans-serif;
+}
+
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 200px;
+    background-color: #f1f1f1;
+    padding: 0px;
+    overflow-x: hidden;
+}
+
+.sidebar a {
+    display: block;
+    color: #000;
+    padding: 0px;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #ddd;
+}
+
