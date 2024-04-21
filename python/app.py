@@ -142,6 +142,7 @@ html.Div(children=[
     id="page-content"
 )
 
+
 # On change le titre en fonction de la taille de l'écran
 clientside_callback(
     """(wBreakpoint, w) => {
