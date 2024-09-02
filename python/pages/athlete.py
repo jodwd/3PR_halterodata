@@ -397,7 +397,7 @@ layout = html.Div([
                         }
                     ],
             defaultColDef = {"resizable": True, "sortable": True, "filter": True},
-            suppressDragLeaveHidesColumns=False,
+            suppressDragLeaveHidesColumns=True,
             dashGridOptions = {"pagination": False},
             className = "ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
         )
