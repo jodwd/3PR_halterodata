@@ -285,11 +285,11 @@ layout = html.Div([
                               label={"label": "IWF/Total", 'style': {"color": "white"}},
                               labelPosition="bottom",
                               color="#DC3545"),
-        ], xs=3, sm=3, md=2, lg=2, xl=1),
+        ], xs=6, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dbc.Button("↪️ Reset", id="reset_col", color="light", outline=True, className="mt-auto", size="sm"),
             dbc.Button("💾 Excel", id="excel_export", color="light", outline=True, className="mt-auto", size="sm"),
-        ], xs=3, sm=3, md=2, lg=2, xl=1),
+        ], xs=6, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.RangeSlider(
                 df['SaisonAnnee'].min(),
@@ -300,7 +300,7 @@ layout = html.Div([
                 id='year-slider-athl',
                 className='slider_zone'
                 ),
-            ], xs=6, sm=6, md=8, lg=8, xl=10),
+            ], xs=12, sm=6, md=8, lg=8, xl=10),
         dbc.Col([
             dcc.Graph(
                 id='graph-with-slider',
@@ -397,7 +397,7 @@ layout = html.Div([
                         }
                     ],
             defaultColDef = {"resizable": True, "sortable": True, "filter": True},
-            suppressDragLeaveHidesColumns=False,
+            suppressDragLeaveHidesColumns=True,
             dashGridOptions = {"pagination": False},
             className = "ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
         )
@@ -544,9 +544,10 @@ def update_data_ag(selected_year, on, txt_inserted):
      Output("athlete4_annivmax", "children"),
      Output('ach_aide-div_athl4', 'style')],
     [Input('year-slider-athl', 'value'),
-     Input('my_txt_input', 'value')])
+     Input('my_txt_input', 'value'),
+     Input("display", "children")])
 
-def up_athletes(selected_year, txt_inserted):
+def up_athletes(selected_year, txt_inserted, breakpoint_str):
     # Perform any manipulation on input_value and return the updated title
     print(txt_inserted)
     up_show = [{'display': 'none'}] * 4
@@ -569,8 +570,8 @@ def up_athletes(selected_year, txt_inserted):
         up_name[n] = i
         df1 = df[(df['Nom'] == i) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
         df1 = df1.sort_values(by=['Date'], ascending=False)
-        if len(df1['Club'].values[0]) > 19:
-            up_club[n] = df1['Club'].values[0][0:18] + '.'
+        if len(df1['Club'].values[0]) > 21:
+            up_club[n] = df1['Club'].values[0][0:20] + '.'
         else:
             up_club[n] = df1['Club'].values[0]
         up_show[n] = {'display': 'block'}
@@ -630,11 +631,19 @@ def up_athletes(selected_year, txt_inserted):
         else:
             up_show_ach_aide[n]={'display': 'none'}
         n = n + 1
+    if breakpoint_str == "xs" or breakpoint_str == "sm":
+        return  up_show[0], f"{up_name[0]}", f"{up_name[0]}" + '  ' + f"{up_date_naiss[0]}" + f"{up_achievements[0]}", "" , "", up_show_ach_aide[0], \
+                up_show[1], f"{up_name[1]}", f"{up_name[1]}" + '  ' + f"{up_date_naiss[1]}" + f"{up_achievements[1]}", "" , "", up_show_ach_aide[1],  \
+                up_show[2], f"{up_name[2]}", f"{up_name[2]}" + '  ' + f"{up_date_naiss[2]}" + f"{up_achievements[2]}", "" , "", up_show_ach_aide[2], \
+                up_show[3], f"{up_name[3]}", f"{up_name[3]}" + '  ' + f"{up_date_naiss[3]}" + f"{up_achievements[3]}", "" , "", up_show_ach_aide[3]
+    else:
+        return  up_show[0], f"{up_name[0]}", f"{up_name[0]}" + '  ' + f"{up_date_naiss[0]}" + f"{up_achievements[0]}", f"{up_club[0]}", f"{up_anniv[0]}" + ' | PR ' + f"{up_max[0]}", up_show_ach_aide[0], \
+                up_show[1], f"{up_name[1]}", f"{up_name[1]}" + '  ' + f"{up_date_naiss[1]}" + f"{up_achievements[1]}", f"{up_club[1]}", f"{up_anniv[1]}" + ' | PR ' + f"{up_max[1]}", up_show_ach_aide[1],  \
+                up_show[2], f"{up_name[2]}", f"{up_name[2]}" + '  ' + f"{up_date_naiss[2]}" + f"{up_achievements[2]}", f"{up_club[2]}", f"{up_anniv[2]}" + ' | PR ' + f"{up_max[2]}", up_show_ach_aide[2], \
+                up_show[3], f"{up_name[3]}", f"{up_name[3]}" + '  ' + f"{up_date_naiss[3]}" + f"{up_achievements[3]}", f"{up_club[3]}", f"{up_anniv[3]}" + ' | PR ' + f"{up_max[3]}", up_show_ach_aide[3]
 
-    return  up_show[0], f"{up_name[0]}", f"{up_name[0]}" + '  ' + f"{up_date_naiss[0]}" + f"{up_achievements[0]}", f"{up_club[0]}", f"{up_anniv[0]}" + ' | PR ' + f"{up_max[0]}", up_show_ach_aide[0], \
-            up_show[1], f"{up_name[1]}", f"{up_name[1]}" + '  ' + f"{up_date_naiss[1]}" + f"{up_achievements[1]}", f"{up_club[1]}", f"{up_anniv[1]}" + ' | PR ' + f"{up_max[1]}", up_show_ach_aide[1],  \
-            up_show[2], f"{up_name[2]}", f"{up_name[2]}" + '  ' + f"{up_date_naiss[2]}" + f"{up_achievements[2]}", f"{up_club[2]}", f"{up_anniv[2]}" + ' | PR ' + f"{up_max[2]}", up_show_ach_aide[2], \
-            up_show[3], f"{up_name[3]}", f"{up_name[3]}" + '  ' + f"{up_date_naiss[3]}" + f"{up_achievements[3]}", f"{up_club[3]}", f"{up_anniv[3]}" + ' | PR ' + f"{up_max[3]}", up_show_ach_aide[3]
+
+
 
 # Gestion ouverture +Info Cartes Athlètes
 @callback(
@@ -755,98 +764,157 @@ def update_table_athl4(txt_inserted, is_open_athl1, is_open_athl2, is_open_athl3
     if is_open_athl1:
         return fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update,
     if is_open_athl2:
-            return dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+        return dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
     if is_open_athl3:
-            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update,
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update,
     if is_open_athl4:
-            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)]
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)]
 @callback(
-    Output("ag_datatable_athl", "columnDefs"),
-    [Input("reset_col", "n_clicks")]
+    [Output("ag_datatable_athl", "columnDefs"),
+     Output("ag_datatable_athl", "defaultColDef")],
+    [Input("reset_col", "n_clicks"),
+    Input("display", "children")]
 )
 
-def toggle_modal_athl(reset_clicks):
+def toggle_modal_athl(reset_clicks, breakpoint_str):
     color_mode = 'color'
-    cols = [
-                {
-                   "headerName": "Athlete",
-                   "children": [
-                        {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
-                        {"field": "PdC", "width": 80, "hide": False},
-                        {"field": "Catégorie", "width": 100, "hide": False},
-                    ],
-                },
-                {
-                   "headerName": "Arraché",
-                   "children": [
-                        {"field": "Arr1", "headerName": "1", "width": 60, "hide": False,
-                            'cellStyle': {
-                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
-                            },
-                        },
-                        {"field": "Arr2", "headerName": "2", "width": 60, "hide": False,
-                            'cellStyle': {
-                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
-                            },
-                        },
-                        {"field": "Arr3", "headerName": "3", "width": 60, "hide": False,
-                            'cellStyle': {
-                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
-                            },
-                        },
-                        {"field": "Arr", "width": 75, "hide": False,
-                            'cellStyle': {
-                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
-                            },
-                        },
-                    ],
-                },
-                {
-                    "headerName": "Epaulé Jeté", "hide": False,
-                        "children": [
-                            {"field": "EpJ1", "headerName": "1", "width": 60, "hide": False,
+    if breakpoint_str == "sm" or breakpoint_str == "xs":
+        col_not_move = True
+        print(breakpoint_str)
+    else:
+        col_not_move = False
+    defaultColDef={"resizable": True, "sortable": True, "filter": True, "suppressMovable": col_not_move}
+
+    if col_not_move == True:
+        cols = [
+            {
+                "headerName": "Athlete",
+                "children": [
+                    {"field": "Nom", "width": 120, "pinned": "left", "hide": False},
+                    {"field": "PdC", "width": 75, "hide": False},
+                ],
+            },
+            {
+                "headerName": "Arr.",
+                "children": [
+                    {"field": "Arr", "width": 60, "hide": False,
+                     'cellStyle': {
+                         "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
+                     },
+                     },
+                ],
+            },
+            {
+                "headerName": "EpJ", "hide": False,
+                "children": [
+                    {"field": "EpJ", "width": 60, "hide": False,
+                     'cellStyle': {
+                         "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
+                     },
+                     },
+                ],
+            },
+            {
+                "headerName": "Performance",
+                "children": [
+                    {"field": "Total", "width": 80, "hide": False, "font-weight": 'bold',
+                     'cellStyle': {
+                         "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
+                     },
+                     },
+                    {"field": "IWF", "width": 80, "hide": False},
+                    {"field": "Série", "width": 80, "hide": False},
+                ],
+            },
+            {
+                "headerName": "Compétition",
+                "children": [
+                    {"field": "Date", "width": 100, "hide": False},
+                    {"field": "Competition", "hide": False}
+                ],
+            }
+        ]
+    else:
+        cols = [
+                    {
+                       "headerName": "Athlete",
+                       "children": [
+                            {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
+                            {"field": "PdC", "width": 80, "hide": False},
+                            {"field": "Catégorie", "width": 100, "hide": False},
+                        ],
+                    },
+                    {
+                       "headerName": "Arraché",
+                       "children": [
+                            {"field": "Arr1", "headerName": "1", "width": 60, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
                                 },
                             },
-                            {"field": "EpJ2", "headerName": "2", "width": 60, "hide": False,
+                            {"field": "Arr2", "headerName": "2", "width": 60, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
                                 },
                             },
-                            {"field": "EpJ3", "headerName": "3", "width": 60, "hide": False,
+                            {"field": "Arr3", "headerName": "3", "width": 60, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
                                 },
                             },
-                            {"field": "EpJ", "width": 75, "hide": False,
+                            {"field": "Arr", "width": 75, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
                                 },
                             },
                         ],
-                },
-                {
-                    "headerName": "Performance",
-                        "children": [
-                            {"field": "Total", "width": 80, "hide": False, "font-weight": 'bold',
-                             'cellStyle': {
-                                 "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
+                    },
+                    {
+                        "headerName": "Epaulé Jeté", "hide": False,
+                            "children": [
+                                {"field": "EpJ1", "headerName": "1", "width": 60, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
+                                    },
                                 },
-                             },
-                            {"field": "IWF", "width": 80, "hide": False},
-                            {"field": "Série", "width": 80, "hide": False},
-                        ],
-                },
-                {
-                    "headerName": "Compétition",
-                    "children": [
-                        {"field": "Date", "width": 150, "hide": False},
-                        {"field": "Competition", "hide": False}
-                        ],
-                }
-        ]
-    return cols;
+                                {"field": "EpJ2", "headerName": "2", "width": 60, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "EpJ3", "headerName": "3", "width": 60, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "EpJ", "width": 75, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
+                                    },
+                                },
+                            ],
+                    },
+                    {
+                        "headerName": "Performance",
+                            "children": [
+                                {"field": "Total", "width": 80, "hide": False, "font-weight": 'bold',
+                                 'cellStyle': {
+                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
+                                    },
+                                 },
+                                {"field": "IWF", "width": 80, "hide": False},
+                                {"field": "Série", "width": 80, "hide": False},
+                            ],
+                    },
+                    {
+                        "headerName": "Compétition",
+                        "children": [
+                            {"field": "Date", "width": 150, "hide": False},
+                            {"field": "Competition", "hide": False}
+                            ],
+                    }
+            ]
+    return cols, defaultColDef;
 
 @callback(
     [Output("aide_achievements_athl1", "is_open"),

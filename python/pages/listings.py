@@ -205,7 +205,7 @@ layout = html.Div([
             rowData=df.to_dict("records"),  # **need it
             columnDefs=[],
             defaultColDef={"resizable": True, "sortable": True, "filter": False},
-            suppressDragLeaveHidesColumns=False,
+            suppressDragLeaveHidesColumns=True,
             style={"height": 540},
             dashGridOptions={"pagination": False},
             className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
@@ -420,7 +420,8 @@ def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserte
 
 @callback(
     [Output('ag-datatable-l', "rowData"),
-     Output('ag-datatable-l', "columnDefs")],
+     Output('ag-datatable-l', "columnDefs"),
+     Output('ag-datatable-l', "defaultColDef")],
     [Input('year-slider', 'value'),
      Input('bool_masters', 'on'),
      Input(component_id='my_txt_input1', component_property='value'),  # sexe
@@ -430,9 +431,18 @@ def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserte
      Input(component_id='my_txt_input5', component_property='value'),  # nationalité
      Input(component_id='my_txt_input6', component_property='value'),  # série
      Input(component_id='my_txt_input7', component_property='value'),  # compétition
+     Input("display", "children") #taille écran
      ])
 
-def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7):
+def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7, breakpoint_str):
+    #on bloque le déplacement de colonne si l'écran est trop petit
+    if breakpoint_str == "sm" or breakpoint_str == "xs":
+        col_move = True
+    else:
+        col_move = False
+    defaultColDef={"resizable": True, "sortable": True, "filter": True, "suppressMovable": col_move}
+
+
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -555,7 +565,7 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
 
     dat = filtered_df.to_dict('records')
 
-    return dat, columns
+    return dat, columns, defaultColDef
 
 @callback(
     Output("ag-datatable-l", "columnDefs", allow_duplicate=True),

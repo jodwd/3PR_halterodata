@@ -282,7 +282,7 @@ layout = html.Div([
                         {"field": "Max IWF", "width": 80},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
-                    suppressDragLeaveHidesColumns=False,
+                    suppressDragLeaveHidesColumns=True,
                     style={"height": 540},
                     dashGridOptions={"pagination": False},
                     className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
@@ -836,14 +836,22 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
         #fig_athl1, display_graph_athl1,
 
 @callback(
-     Output("ag-datatable-f", "columnDefs"),
+     [Output("ag-datatable-f", "columnDefs"),
      Output("ag-datatable-h", "columnDefs"),
+     Output("ag-datatable-f", "defaultColDef"),
+     Output("ag-datatable-h", "defaultColDef"),
     [Input("reset_col_club", "n_clicks")],
+    Input("display", "children")],
     prevent_initial_call=True
 )
 
-def toggle_modal_athl(reset_club_clicks):
+def toggle_modal_athl(reset_club_clicks, breakpoint_str):
     print(reset_club_clicks)
+    if breakpoint_str == "sm" or breakpoint_str == "xs":
+        col_move = True
+    else:
+        col_move = False
+    defaultColDef={"resizable": True, "sortable": True, "filter": True, "suppressMovable": col_move}
     if reset_club_clicks:
         cols = [
                     {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
@@ -854,7 +862,7 @@ def toggle_modal_athl(reset_club_clicks):
                     {"field": "PdC", "width": 80, "hide": False},
                     {"field": "Max IWF", "width": 80, "hide": False},
                 ]
-    return cols, cols
+    return cols, cols, defaultColDef, defaultColDef
 
 @callback(
     [Output("app_code_club", "className"),
