@@ -489,11 +489,9 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
         {
             "headerName": "Athlete",
             "children": [
-                {"field": "Rang", "width": 30, "pinned": "left"},
-                {"field": "Nom", "width": 160, "pinned": "left"},
-                {"field": "Né en", "width": 70},
-                {"field": "Pays", "width": 60},
-                {"field": "Club", "width": 160},
+                {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
+                {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
+
             ],
         },
         {
@@ -503,17 +501,24 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                 {"field": "EpJ", "width": 60},
                 {"field": "Total", "width": 60, "hide": False},
                 {"field": "Tot U13", "width": 80, "hide": True},
-                {"field": "PdC", "width": 80},
                 {"field": "IWF", "width": 80, "hide": False},
                 {"field": "IWF U13", "width": 80, "hide": True},
+                {"field": "PdC", "width": 80},
                 {"field": "Serie", "width": 80},
             ],
         },
         {
             "headerName": "Compétition",
             "children": [
-                {"field": "Date", "width": 100},
-                {"field": "Compet", "width": 250},
+                {"field": "Date", "width": 100, "hide": False},
+                {"field": "Compet", "width": 250, "hide": False},
+            ],
+        }, {
+            "headerName": "Infos",
+            "children": [
+                {"field": "Né en", "width": 70, "hide": False},
+                {"field": "Pays", "width": 60, "hide": False},
+                {"field": "Club", "width": 160, "hide": False},
             ],
         },
     ]
@@ -535,9 +540,7 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                     "children": [
                         {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
                         {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
-                        {"field": "Né en", "width": 70, "hide": False},
-                        {"field": "Pays", "width": 60, "hide": False},
-                        {"field": "Club", "width": 160, "hide": False},
+
                     ],
                 },
                 {
@@ -547,9 +550,9 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                         {"field": "EpJ", "width": 60, "hide": False},
                         {"field": "Total ", "width": 60, "hide": True},
                         {"field": "Tot U13", "width": 80, "hide": False},
-                        {"field": "PdC", "width": 80, "hide": False},
                         {"field": "IWF", "width": 80, "hide": True},
                         {"field": "IWF U13", "width": 80, "hide": False},
+                        {"field": "PdC", "width": 80, "hide": False},
                         {"field": "Serie", "width": 80, "hide": False},
                     ],
                 },
@@ -558,6 +561,13 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                     "children": [
                         {"field": "Date", "width": 100, "hide": False},
                         {"field": "Compet", "width": 250, "hide": False},
+                    ],
+                }, {
+                    "headerName": "Infos",
+                    "children": [
+                        {"field": "Né en", "width": 70, "hide": False},
+                        {"field": "Pays", "width": 60, "hide": False},
+                        {"field": "Club", "width": 160, "hide": False},
                     ],
                 },
             ]
@@ -581,9 +591,7 @@ def toggle_modal_athl(reset_l_clicks):
                 "children": [
                     {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
                     {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
-                    {"field": "Né en", "width": 70, "hide": False},
-                    {"field": "Pays", "width": 60, "hide": False},
-                    {"field": "Club", "width": 160, "hide": False},
+
                 ],
             },
             {
@@ -593,9 +601,9 @@ def toggle_modal_athl(reset_l_clicks):
                     {"field": "EpJ", "width": 60, "hide": False},
                     {"field": "Total", "width": 60},
                     {"field": "Tot U13", "width": 80},
-                    {"field": "PdC", "width": 80, "hide": False},
                     {"field": "IWF", "width": 80},
                     {"field": "IWF U13", "width": 80},
+                    {"field": "PdC", "width": 80, "hide": False},
                     {"field": "Serie", "width": 80, "hide": False},
                 ],
             },
@@ -604,6 +612,13 @@ def toggle_modal_athl(reset_l_clicks):
                 "children": [
                     {"field": "Date", "width": 100, "hide": False},
                     {"field": "Compet", "width": 250, "hide": False},
+                ],
+            },            {
+                "headerName": "Infos",
+                "children": [
+                    {"field": "Né en", "width": 70, "hide": False},
+                    {"field": "Pays", "width": 60, "hide": False},
+                    {"field": "Club", "width": 160, "hide": False},
                 ],
             },
         ]

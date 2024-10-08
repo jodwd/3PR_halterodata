@@ -155,7 +155,8 @@ clientside_callback(
 )
 @app.callback(
     Output("nav_brand", "children"),
-    Input("display", "children")
+    Input("display", "children"),
+    prevent_initial_call=True
 )
 
 def change_title_screensize(breakpoint_str):
@@ -178,6 +179,7 @@ def change_title_screensize(breakpoint_str):
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],
     [State("navbar-collapse", "is_open")],
+    prevent_initial_call=True
 )
 def toggle_navbar_collapse(n, is_open):
     if n:
@@ -190,6 +192,7 @@ def toggle_navbar_collapse(n, is_open):
     [Input("open", "n_clicks"),
     Input("close-button", "n_clicks")],
     State("info-modal", "is_open"),
+    prevent_initial_call=True
 )
 
 def toggle_info_modal(open_clicks, close_clicks, is_open):
@@ -250,6 +253,7 @@ def page_info(path_name, is_open):
     [Input("anniv", "n_clicks"),
     Input("close-button-anniv", "n_clicks")],
     State("anniv-modal", "is_open"),
+    prevent_initial_call=True
 )
 
 def toggle_anniv_modal(open_clicks, close_clicks, is_open):
@@ -301,4 +305,4 @@ def anniv(is_open):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8057)

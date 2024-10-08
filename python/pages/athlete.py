@@ -41,6 +41,7 @@ qry2 = """SELECT ath.Nom, cat.Serie as "Série", cat.Categorie as "Catégorie"
 df2 = pd.read_sql_query(qry2, conn)
 df2.head()
 
+
 # Reformatage des donnée de la requête
 df['IWF'] = round(df['IWF'], 3)
 df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
@@ -276,6 +277,8 @@ layout = html.Div([
             ], xs=6, sm=3, md=3, lg=2, xl=2),
         ],  className="top_zone",),
 
+
+    print("a"),
     # Zone graph
     html.Br(),
     dbc.Row([
@@ -413,6 +416,7 @@ layout = html.Div([
     id='app_code_athl',
     className='body'
 )
+print("c")
 
 # Mise à jour de la liste d'athlète dispo en fonction des années de référence
 @callback(
@@ -420,6 +424,7 @@ layout = html.Div([
     Input('year-slider-athl', 'value'),
     prevent_initial_call=True
 )
+
 def update_athletes_list(selected_year):
     fdf = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     list_names = list(set(fdf['Nom'].tolist()))
@@ -438,6 +443,7 @@ def update_athletes_list(selected_year):
      Input("display", "children")
      ],
      prevent_initial_call=True)
+
 def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoint_str):
     if selected_year == '':
         selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
@@ -497,8 +503,10 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoin
     [Output('ag_datatable_athl', 'rowData')],
     [Input('year-slider-athl', 'value'),
      Input('bool_total', 'on'),
-     Input('my_txt_input', 'value')
-     ])
+     Input('my_txt_input', 'value')],
+    prevent_initial_call=True
+     )
+
 def update_data_ag(selected_year, on, txt_inserted):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
@@ -511,6 +519,7 @@ def update_data_ag(selected_year, on, txt_inserted):
     else:
         fdf = fdf.sort_values(by=['IWF'], ascending=False)
     dat_ag = fdf.to_dict('records')
+    print("b")
     return [dat_ag]
 
 # Génération des cartes des 4 premiers athlètes
@@ -545,7 +554,8 @@ def update_data_ag(selected_year, on, txt_inserted):
      Output('ach_aide-div_athl4', 'style')],
     [Input('year-slider-athl', 'value'),
      Input('my_txt_input', 'value'),
-     Input("display", "children")])
+     Input("display", "children")],
+     prevent_initial_call=True)
 
 def up_athletes(selected_year, txt_inserted, breakpoint_str):
     # Perform any manipulation on input_value and return the updated title
@@ -773,7 +783,8 @@ def update_table_athl4(txt_inserted, is_open_athl1, is_open_athl2, is_open_athl3
     [Output("ag_datatable_athl", "columnDefs"),
      Output("ag_datatable_athl", "defaultColDef")],
     [Input("reset_col", "n_clicks"),
-    Input("display", "children")]
+    Input("display", "children")],
+     prevent_initial_call=True
 )
 
 def toggle_modal_athl(reset_clicks, breakpoint_str):
@@ -1002,7 +1013,8 @@ def update_table_athl1(is_open_ach1, is_open_ach2, is_open_ach3, is_open_ach4):
      Output("reset_col", "color"),
      Output("bool_total", "label"),
      Output("year-slider-athl", "marks")],
-    [Input("bool_light", "on")]
+    [Input("bool_light", "on")],
+    prevent_initial_call=True
 )
 
 def light_mode_athl(on):
@@ -1019,6 +1031,7 @@ def light_mode_athl(on):
         iwf_total_label = {"label": "IWF/Total", 'style': {"color": "white"}}
         slider_marks = {str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()}
 
+    print("d")
     return css_body, css_grid, reset_color, iwf_total_label, slider_marks;
 
 #Export Excel
