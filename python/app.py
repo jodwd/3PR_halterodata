@@ -216,7 +216,7 @@ def page_info(path_name, is_open):
         print(path_name)
         help_div = []
         if str(path_name) == '/' or str(path_name) == '' or str(path_name) == '/athletes':
-            help_div = [html.H3("Dashboard Athlètes"),
+            help_div = [html.H3("Perfs Athlètes"),
                         html.P("On peut suivre les performances détaillées d'un athlète et les comparer à d'autres athlètes"),
                         html.P("Quand on choisit un athlète une carte apparait en haut qui donne des informations clés sur l'athlète.",
                               "On peut également cliquer sur +Info pour afficher ses performances depuis le début de Scoresheet."),

@@ -47,7 +47,7 @@ df['IWF'] = round(df['IWF'], 3)
 df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
 df2['Série'] = pd.Categorical(df2['Série'], ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"], ordered=True)
 df_temp = df[df['Nom']=='ZZZZZ']
-dash.register_page(__name__, path='/', name='3PR - Athletes', title='3PR - Dashboard Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
+dash.register_page(__name__, path='/', name='3PR - Athletes', title='3PR - Perfs Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
 
 # Liste d'athlètes = ceux qui ont tiré sur la plage par défaut càd l'année dernière + l'année en cours
 selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
@@ -58,9 +58,9 @@ layout = html.Div([
     # Header & filtres
         dbc.Row([            # Titre
             dbc.Col([
-                dbc.Button(" Dashboard Athlètes ", id="title-box", color="danger", className="titlebox", size="lg"),
+                dbc.Button(" Dashboard Athlètes ", id="title-box", color="danger", className="titlebox", size="md"),
                     dbc.Modal([
-                        dbc.ModalHeader(" Dashboard Athlètes ", id="athlete_info_"),
+                        dbc.ModalHeader(" Perfs Athlètes ", id="athlete_info_"),
                         dbc.ModalBody([
                             html.Div([html.P("Cette page...")]),
                         ]),
