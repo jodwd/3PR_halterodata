@@ -285,14 +285,14 @@ layout = html.Div([
         dbc.Col([
             daq.BooleanSwitch(id='bool_total',
                               on=False,
-                              label={"label": "IWF/Total", 'style': {"color": "white"}},
+                              label={"label": "IWF/Total", 'style': {"color": "white", "font-size": "10"}},
                               labelPosition="bottom",
                               color="#DC3545"),
         ], xs=6, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
-            dbc.Button("↪️ Reset", id="reset_col", color="light", outline=True, className="mt-auto", size="sm"),
-            dbc.Button("💾 Excel", id="excel_export", color="light", outline=True, className="mt-auto", size="sm"),
-        ], xs=6, sm=3, md=2, lg=2, xl=1),
+            dbc.Button("↪️", id="reset_col", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("💾", id="excel_export", color="light", outline=True, className="mt-auto", size="sm"),
+        ],  className="boutons", xs=6, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.RangeSlider(
                 df['SaisonAnnee'].min(),
@@ -304,12 +304,6 @@ layout = html.Div([
                 className='slider_zone'
                 ),
             ], xs=12, sm=6, md=8, lg=8, xl=10),
-        dbc.Col([
-            dcc.Graph(
-                id='graph-with-slider',
-                style= {'display': 'none'}
-                ) ,
-        ], width=12),
     ]),
 
     # Zone data table AG Grid
@@ -324,8 +318,6 @@ layout = html.Div([
                             "headerName": "Athlete",
                             "children": [
                                 {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
-                                {"field": "PdC", "width": 80, "hide": False},
-                                {"field": "Catégorie", "width": 100, "hide": False},
                             ],
                         },
                         {
@@ -389,6 +381,8 @@ layout = html.Div([
                                  },
                                 {"field": "IWF", "width": 80, "hide": False},
                                 {"field": "Série", "width": 80, "hide": False},
+                                {"field": "PdC", "width": 80, "hide": False},
+                                {"field": "Catégorie", "width": 100, "hide": False},
                             ],
                         },
                         {
@@ -406,6 +400,14 @@ layout = html.Div([
         )
 
     ]),
+
+    dbc.Col([
+        dcc.Graph(
+            id='graph-with-slider',
+            style={'display': 'none'}
+        ),
+    ], width=12),
+
     html.Br(),
     html.Br(),
     html.Link(
@@ -504,7 +506,6 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoin
     [Input('year-slider-athl', 'value'),
      Input('bool_total', 'on'),
      Input('my_txt_input', 'value')],
-    prevent_initial_call=True
      )
 
 def update_data_ag(selected_year, on, txt_inserted):
@@ -784,7 +785,6 @@ def update_table_athl4(txt_inserted, is_open_athl1, is_open_athl2, is_open_athl3
      Output("ag_datatable_athl", "defaultColDef")],
     [Input("reset_col", "n_clicks"),
     Input("display", "children")],
-     prevent_initial_call=True
 )
 
 def toggle_modal_athl(reset_clicks, breakpoint_str):
@@ -802,7 +802,6 @@ def toggle_modal_athl(reset_clicks, breakpoint_str):
                 "headerName": "Athlete",
                 "children": [
                     {"field": "Nom", "width": 120, "pinned": "left", "hide": False},
-                    {"field": "PdC", "width": 75, "hide": False},
                 ],
             },
             {
@@ -828,13 +827,15 @@ def toggle_modal_athl(reset_clicks, breakpoint_str):
             {
                 "headerName": "Performance",
                 "children": [
-                    {"field": "Total", "width": 80, "hide": False, "font-weight": 'bold',
+                    {"field": "Total", "width": 70, "hide": False, "font-weight": 'bold',
                      'cellStyle': {
                          "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
                      },
                      },
                     {"field": "IWF", "width": 80, "hide": False},
                     {"field": "Série", "width": 80, "hide": False},
+                    {"field": "PdC", "width": 80, "hide": False},
+                    {"field": "Catégorie", "width": 100, "hide": False},
                 ],
             },
             {
@@ -851,8 +852,6 @@ def toggle_modal_athl(reset_clicks, breakpoint_str):
                        "headerName": "Athlete",
                        "children": [
                             {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
-                            {"field": "PdC", "width": 80, "hide": False},
-                            {"field": "Catégorie", "width": 100, "hide": False},
                         ],
                     },
                     {
@@ -908,13 +907,15 @@ def toggle_modal_athl(reset_clicks, breakpoint_str):
                     {
                         "headerName": "Performance",
                             "children": [
-                                {"field": "Total", "width": 80, "hide": False, "font-weight": 'bold',
+                                {"field": "Total", "width": 70, "hide": False, "font-weight": 'bold',
                                  'cellStyle': {
                                      "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
                                     },
                                  },
                                 {"field": "IWF", "width": 80, "hide": False},
                                 {"field": "Série", "width": 80, "hide": False},
+                                {"field": "PdC", "width": 80, "hide": False},
+                                {"field": "Catégorie", "width": 100, "hide": False},
                             ],
                     },
                     {
@@ -1069,3 +1070,17 @@ clientside_callback(
 
 if __name__ == '__main__':
     run_server(debug=True)
+
+#@callback(
+#    [Output("reset_col", "children"),
+#     Output("excel_export", "children")],
+#    [Input("display", "children")],
+#     prevent_initial_call=False)
+
+#def mobile_handling(breakpoint_str):
+#    reset_txt="↪️"
+#    excel_txt="💾"
+#    if breakpoint_str not in ('xs', 'sm'):
+#        reset_txt == "↪️ Reset"
+#        excel_txt == "💾 Excel"
+#    return reset_txt, excel_txt
