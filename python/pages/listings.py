@@ -164,7 +164,7 @@ layout = html.Div([
     ]),
 
     html.Br(),
-
+    #master Switch
     dbc.Row([
         dbc.Col([
             html.Div([
@@ -174,6 +174,7 @@ layout = html.Div([
                 html.P("Masters"),
                 ], id="div_masters", className="bool_switch"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
+
         dbc.Col([
             dbc.Button("↪️ Reset", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
             dbc.Button("💾 Excel", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
