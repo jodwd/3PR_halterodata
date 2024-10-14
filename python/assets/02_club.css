@@ -94,7 +94,9 @@
 }
 
 /* Content */
-
+.boutons {
+    text-align: center;
+}
 
 .top_5 {
   position: relative;

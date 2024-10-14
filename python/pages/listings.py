@@ -175,8 +175,8 @@ layout = html.Div([
                 ], id="div_masters", className="bool_switch"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
-            dbc.Button("↪️ Reset", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
-            dbc.Button("💾 Excel", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("↪️", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("💾", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.Slider(

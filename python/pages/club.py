@@ -243,8 +243,8 @@ layout = html.Div([
 
     dbc.Row([
         dbc.Col([
-            dbc.Button("↪️ Reset", id="reset_col_club", color="light", outline=True, className="mt-auto", size="sm"),
-            dbc.Button("💾 Excel", id="excel_export_club", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("↪️", id="reset_col_club", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("💾", id="excel_export_club", color="light", outline=True, className="mt-auto", size="sm"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.Slider(
@@ -278,8 +278,8 @@ layout = html.Div([
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
-                        {"field": "PdC", "width": 80},
                         {"field": "Max IWF", "width": 80},
+                        {"field": "PdC", "width": 80},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=True,
@@ -307,8 +307,8 @@ layout = html.Div([
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
-                        {"field": "PdC", "width": 80},
                         {"field": "Max IWF", "width": 80},
+                        {"field": "PdC", "width": 80},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=False,
@@ -421,7 +421,7 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
 
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'Serie', 'PdC', 'IWF']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'Serie', 'IWF', 'PdC']
     ]
 
     dat = fdff.to_dict('records')
@@ -449,7 +449,8 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value')
-     ])
+     ],
+    prevent_initial_callback=True)
 
 def updated_athletes(selected_year, txt_ligue, txt_club):
 
@@ -552,7 +553,6 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
           """
     df_ac = pd.read_sql_query(qry_age, conn)
     df_ac.head()
-    print(df_ac)
     print(txt_club)
     print(selected_year)
 
@@ -685,7 +685,6 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u10_u13):
 
         df_u10_u13 = pd.read_sql_query(qry, conn)
         df_u10_u13 = df_u10_u13[df_u10_u13['CateAge'].isin(['U10','U13'])]
-        print(df_u10_u13)
         df_u10_u13.head()
 
         return [dbc.Table.from_dataframe(df_u10_u13, responsive=True, striped=True, bordered=True, hover=True)]
@@ -734,7 +733,6 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u15_u17):
 
         df_u15_u17 = pd.read_sql_query(qry, conn)
         df_u15_u17 = df_u15_u17[df_u15_u17['CateAge'].isin(['U15', 'U17'])]
-        print(df_u15_u17)
         df_u15_u17.head()
 
         return [dbc.Table.from_dataframe(df_u15_u17, responsive=True, striped=True, bordered=True, hover=True)]
@@ -781,7 +779,6 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u20):
 
         df_u20 = pd.read_sql_query(qry, conn)
         df_u20 = df_u20[df_u20['CateAge'].isin(['U20'])]
-        print(df_u20)
         df_u20.head()
 
         return [dbc.Table.from_dataframe(df_u20, responsive=True, striped=True, bordered=True, hover=True)]
@@ -829,7 +826,6 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
 
         df_sen = pd.read_sql_query(qry, conn)
         df_sen = df_sen[df_sen['CateAge'].isin(['SEN'])]
-        print(df_sen)
         df_sen.head()
 
         return [dbc.Table.from_dataframe(df_sen, responsive=True, striped=True, bordered=True, hover=True)]
@@ -846,7 +842,6 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
 )
 
 def toggle_modal_athl(reset_club_clicks, breakpoint_str):
-    print(reset_club_clicks)
     if breakpoint_str == "sm" or breakpoint_str == "xs":
         col_move = True
     else:
