@@ -274,7 +274,7 @@ layout = html.Div([
                     rowData=dfh.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 200, "pinned": "left"},
+                        {"field": "Nom", "width": 170, "pinned": "left"},
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
@@ -303,7 +303,7 @@ layout = html.Div([
                     rowData=dff.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 200, "pinned": "left"},
+                        {"field": "Nom", "width": 170, "pinned": "left"},
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
@@ -850,7 +850,7 @@ def toggle_modal_athl(reset_club_clicks, breakpoint_str):
     if reset_club_clicks:
         cols = [
                     {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
-                    {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
+                    {"field": "Nom", "width": 170, "pinned": "left", "hide": False},
                     {"field": "Arr", "width": 60, "hide": False},
                     {"field": "EpJ", "width": 60, "hide": False},
                     {"field": "Tot", "width": 60, "hide": False},
@@ -863,7 +863,8 @@ def toggle_modal_athl(reset_club_clicks, breakpoint_str):
     [Output("app_code_club", "className"),
      Output("ag-datatable-h", "className"),
      Output("ag-datatable-f", "className"),
-     Output("reset_col_club", "color")],
+     Output("reset_col_club", "color"),
+     Output("excel_export_club", "color")],
     [Input("bool_light", "on")]
 )
 
@@ -877,7 +878,7 @@ def light_mode_club(on):
         css_grid = "ag-theme-quartz-dark"
         reset_color = "light"
 
-    return css_body, css_grid, css_grid, reset_color;
+    return css_body, css_grid, css_grid, reset_color, reset_color;
 
 
 #Export Excel

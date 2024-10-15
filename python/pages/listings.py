@@ -518,7 +518,7 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
             "children": [
                 {"field": "Né en", "width": 70, "hide": False},
                 {"field": "Pays", "width": 60, "hide": False},
-                {"field": "Club", "width": 160, "hide": False},
+                {"field": "Club", "width": 200, "hide": False},
             ],
         },
     ]
@@ -534,6 +534,7 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                 filtered_df = filtered_df.sort_values(by=['Tot U13', 'IWF U13'], ascending=[False, False])
             else:
                 filtered_df = filtered_df.sort_values(by=['IWF U13', 'Tot U13'], ascending=[False, False])
+            filtered_df['Rang'] = filtered_df.groupby(['SaisonAnnee']).cumcount() + 1
             columns = [
                 {
                     "headerName": "Athlete",
@@ -567,7 +568,7 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                     "children": [
                         {"field": "Né en", "width": 70, "hide": False},
                         {"field": "Pays", "width": 60, "hide": False},
-                        {"field": "Club", "width": 160, "hide": False},
+                        {"field": "Club", "width": 200, "hide": False},
                     ],
                 },
             ]
@@ -618,7 +619,7 @@ def toggle_modal_athl(reset_l_clicks):
                 "children": [
                     {"field": "Né en", "width": 70, "hide": False},
                     {"field": "Pays", "width": 60, "hide": False},
-                    {"field": "Club", "width": 160, "hide": False},
+                    {"field": "Club", "width": 200, "hide": False},
                 ],
             },
         ]
@@ -629,6 +630,7 @@ def toggle_modal_athl(reset_l_clicks):
     [Output("app_code_l", "className"),
      Output("ag-datatable-l", "className"),
      Output("reset_col_list", "color"),
+     Output("excel_export_list", "color"),
      Output("div_masters", "className")],
     [Input("bool_light", "on")]
 )
@@ -647,7 +649,7 @@ def light_mode_list(on):
         reset_color = "light"
         masters_label_classname = "bool_switch"
 
-    return css_body, css_grid, reset_color, masters_label_classname;
+    return css_body, css_grid, reset_color, reset_color, masters_label_classname;
 
 #Export Excel
 clientside_callback(

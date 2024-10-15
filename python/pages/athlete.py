@@ -1012,10 +1012,10 @@ def update_table_athl1(is_open_ach1, is_open_ach2, is_open_ach3, is_open_ach4):
     [Output("app_code_athl", "className"),
      Output("ag_datatable_athl", "className"),
      Output("reset_col", "color"),
+     Output("excel_export", "color"),
      Output("bool_total", "label"),
      Output("year-slider-athl", "marks")],
-    [Input("bool_light", "on")],
-    prevent_initial_call=True
+    [Input("bool_light", "on")]
 )
 
 def light_mode_athl(on):
@@ -1023,17 +1023,19 @@ def light_mode_athl(on):
         css_body = "body_light"
         css_grid = "ag-theme-quartz"
         reset_color = "secondary"
+        reset_col_xl = "secondary"
         iwf_total_label = {"label": "IWF/Total", 'style': {"color": "rgb(40,40,45)"}}
         slider_marks = {str(year): {'label' : str(year), 'style':{'color':'rgb(40,40,45)'}} for year in df['SaisonAnnee'].unique()}
     else:
         css_body = "body"
         css_grid = "ag-theme-quartz-dark"
         reset_color = "light"
+        reset_col_xl = "light"
         iwf_total_label = {"label": "IWF/Total", 'style': {"color": "white"}}
         slider_marks = {str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()}
 
     print("d")
-    return css_body, css_grid, reset_color, iwf_total_label, slider_marks;
+    return css_body, css_grid, reset_color, reset_col_xl, iwf_total_label, slider_marks;
 
 #Export Excel
 clientside_callback(
