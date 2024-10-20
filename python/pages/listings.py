@@ -17,7 +17,7 @@ dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
-# Requête TODO : associer les max IWF à une compétition précise (lieu, date...) dans la BDD
+# Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
 qry = """SELECT * FROM
             (SELECT distinct
                 ath.Nom                         as "Nom"
@@ -41,8 +41,8 @@ qry = """SELECT * FROM
             ,   ' ' || cmp.NomCompetitionCourt  as "Compet"
             ,   cmp.DateCompet                  as "Date"
             ,   apr.SaisonAnnee                 as "SaisonAnnee"
-            ,   apr.MaxIWFSaison                as "Max IWF Saison"
-            ,   apr.MaxIWF                      as "Max IWF"
+            ,   apr.MaxIWFSaison                as "IWF Max Saison"
+            ,   apr.MaxIWF                      as "IWF Max"
             ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee", cat.CatePoids
                                   order by cat.PoidsTotal desc)
                                                 as "RowNumMaxCateTotal"
@@ -59,8 +59,8 @@ qry = """SELECT * FROM
 df = pd.read_sql_query(qry, conn)
 
 df = df.sort_values(by=['RangSerie'])
-df['Max IWF Saison'] = round(df['Max IWF Saison'], 3) # Arrondi à 3 virgule pour l'IWF pour le display
-df['Max IWF'] = round(df['Max IWF'], 3)
+df['IWF Max Saison'] = round(df['IWF Max Saison'], 3) # Arrondi à 3 virgule pour l'IWF pour le display
+df['IWF Max'] = round(df['IWF Max'], 3)
 df['IWF U13'] = round(df['IWF U13'], 3)
 df['IWF'] = round(df['IWF'], 3)
 updated_title = 'Listings'

@@ -17,7 +17,7 @@ dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
-# Requête TODO : associer les max IWF à une compétition précise (lieu, date...) dans la BDD
+# Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
 qry = """SELECT * FROM
             (SELECT distinct
                 ath.Nom             as "Nom"
@@ -32,7 +32,7 @@ qry = """SELECT * FROM
             ,   cat.PoidsDeCorps    as "PdC"
             ,   cat.IWF_Calcul      as "IWF"   
             ,   apr.SaisonAnnee     as "SaisonAnnee"
-            ,   apr.MaxIWFSaison    as "Max IWF"
+            ,   apr.MaxIWFSaison    as "IWF Max"
             ,   cat.Serie           as "Serie"
             ,   cat.RangSerie       as "RangSerie"
             ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee" order by cat.IWF_Calcul desc) as "RowNum"
@@ -49,7 +49,7 @@ df = pd.read_sql_query(qry, conn)
 df.head()
 
 df['IWF'] = round(df['IWF'], 3)
-df['Max IWF'] = round(df['Max IWF'], 3)
+df['IWF Max'] = round(df['IWF Max'], 3)
 
 dfh = df
 dff = df
@@ -278,7 +278,7 @@ layout = html.Div([
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
-                        {"field": "Max IWF", "width": 80},
+                        {"field": "IWF Max", "width": 80},
                         {"field": "PdC", "width": 80},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
@@ -307,7 +307,7 @@ layout = html.Div([
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
-                        {"field": "Max IWF", "width": 80},
+                        {"field": "IWF Max", "width": 80},
                         {"field": "PdC", "width": 80},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
@@ -378,14 +378,14 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     else:
         fdfh = fdfh[(fdfh['SaisonAnnee'] == selected_year)]
 
-    fdfh=fdfh.sort_values(by=['Max IWF'], ascending=False)
+    fdfh=fdfh.sort_values(by=['IWF Max'], ascending=False)
     fdfh['Rang'] = fdfh.groupby(['SaisonAnnee']).cumcount()+1
 
     dat = fdfh.to_dict('records')
 
     #Top 5
     filtered_df=round(fdfh.head(5),0)
-    res = filtered_df['Max IWF'].sum()
+    res = filtered_df['IWF Max'].sum()
     updated_title_h = "Top 5 Hommes : " + str(int(res)) + " IWF"
 
     return updated_title_h, dat
@@ -416,7 +416,7 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     else:
         fdff = fdff[(fdff['SaisonAnnee'] == selected_year)]
 
-    fdff=fdff.sort_values(by=['Max IWF'], ascending=False)
+    fdff=fdff.sort_values(by=['IWF Max'], ascending=False)
     fdff['Rang'] = fdff.groupby(['SaisonAnnee']).cumcount()+1
 
     columns = [
@@ -427,7 +427,7 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     dat = fdff.to_dict('records')
 
     filtered_df=round(fdff.head(4),0)
-    res = filtered_df['Max IWF'].sum()
+    res = filtered_df['IWF Max'].sum()
     updated_title_f = "Top 4 Femmes : " + str(int(res)) + " IWF"
 
     return updated_title_f, dat
@@ -596,7 +596,7 @@ def qry_box(txt_club_ligue, txt_ligue, selected_year):
         txt_club = 'clb.Club,'
     qry = """SELECT cmp.SaisonAnnee as "Saison", """ + txt_club + """ ath.Nom, count(clb.club) as "Nb Compet" 
                      , max(cat.Arrache) as "Max Arr", max(cat.EpJete) as "Max EpJ", max(cat.PoidsTotal) as "Max Tot"
-                     , max(round(cat.IWF_Calcul,3)) as "Max IWF"
+                     , max(round(cat.IWF_Calcul,3)) as "IWF Max"
                      , CASE 
                             WHEN cat."CateAge" = 'U10' THEN 'U10'
                             WHEN cat."CateAge" = 'U13' THEN 'U13'
@@ -854,8 +854,8 @@ def toggle_modal_athl(reset_club_clicks, breakpoint_str):
                     {"field": "Arr", "width": 60, "hide": False},
                     {"field": "EpJ", "width": 60, "hide": False},
                     {"field": "Tot", "width": 60, "hide": False},
+                    {"field": "IWF Max", "width": 80, "hide": False},
                     {"field": "PdC", "width": 80, "hide": False},
-                    {"field": "Max IWF", "width": 80, "hide": False},
                 ]
     return cols, cols, defaultColDef, defaultColDef
 
