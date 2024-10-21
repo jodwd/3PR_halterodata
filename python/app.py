@@ -49,9 +49,10 @@ nav_button = \
                 dbc.ModalHeader("Informations & Aide"),
                 dbc.ModalBody([
                     html.P("🐓 Basé sur les données FFHM Scoresheet"),
+                    html.P("🔄 Mise à Jour tous les week-ends"),
                     html.P("🏋️ Données à jour au " + df.iloc[0,0]),
                     html.P("👨‍💻 https://github.com/jodwd/3PR_halterodata"),
-                    html.P("📧 trois3pr@gmail.com"),
+                    html.P("📧 Contact : trois3pr@gmail.com"),
                     html.Div([], id="help-txt"),
                 ]),
                 dbc.ModalFooter(
@@ -155,7 +156,8 @@ clientside_callback(
 )
 @app.callback(
     Output("nav_brand", "children"),
-    Input("display", "children")
+    Input("display", "children"),
+    prevent_initial_call=True
 )
 
 def change_title_screensize(breakpoint_str):
@@ -178,6 +180,7 @@ def change_title_screensize(breakpoint_str):
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],
     [State("navbar-collapse", "is_open")],
+    prevent_initial_call=True
 )
 def toggle_navbar_collapse(n, is_open):
     if n:
@@ -190,6 +193,7 @@ def toggle_navbar_collapse(n, is_open):
     [Input("open", "n_clicks"),
     Input("close-button", "n_clicks")],
     State("info-modal", "is_open"),
+    prevent_initial_call=True
 )
 
 def toggle_info_modal(open_clicks, close_clicks, is_open):
@@ -213,7 +217,7 @@ def page_info(path_name, is_open):
         print(path_name)
         help_div = []
         if str(path_name) == '/' or str(path_name) == '' or str(path_name) == '/athletes':
-            help_div = [html.H3("Dashboard Athlètes"),
+            help_div = [html.H3("Perfs Athlètes"),
                         html.P("On peut suivre les performances détaillées d'un athlète et les comparer à d'autres athlètes"),
                         html.P("Quand on choisit un athlète une carte apparait en haut qui donne des informations clés sur l'athlète.",
                               "On peut également cliquer sur +Info pour afficher ses performances depuis le début de Scoresheet."),
@@ -250,6 +254,7 @@ def page_info(path_name, is_open):
     [Input("anniv", "n_clicks"),
     Input("close-button-anniv", "n_clicks")],
     State("anniv-modal", "is_open"),
+    prevent_initial_call=True
 )
 
 def toggle_anniv_modal(open_clicks, close_clicks, is_open):
@@ -301,4 +306,4 @@ def anniv(is_open):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8057)

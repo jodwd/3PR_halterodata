@@ -17,7 +17,7 @@ dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
-# Requête TODO : associer les max IWF à une compétition précise (lieu, date...) dans la BDD
+# Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
 qry = """SELECT * FROM
             (SELECT distinct
                 ath.Nom             as "Nom"
@@ -32,7 +32,7 @@ qry = """SELECT * FROM
             ,   cat.PoidsDeCorps    as "PdC"
             ,   cat.IWF_Calcul      as "IWF"   
             ,   apr.SaisonAnnee     as "SaisonAnnee"
-            ,   apr.MaxIWFSaison    as "Max IWF"
+            ,   apr.MaxIWFSaison    as "IWF Max"
             ,   cat.Serie           as "Serie"
             ,   cat.RangSerie       as "RangSerie"
             ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee" order by cat.IWF_Calcul desc) as "RowNum"
@@ -49,7 +49,7 @@ df = pd.read_sql_query(qry, conn)
 df.head()
 
 df['IWF'] = round(df['IWF'], 3)
-df['Max IWF'] = round(df['Max IWF'], 3)
+df['IWF Max'] = round(df['IWF Max'], 3)
 
 dfh = df
 dff = df
@@ -243,8 +243,8 @@ layout = html.Div([
 
     dbc.Row([
         dbc.Col([
-            dbc.Button("↪️ Reset", id="reset_col_club", color="light", outline=True, className="mt-auto", size="sm"),
-            dbc.Button("💾 Excel", id="excel_export_club", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("↪️", id="reset_col_club", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("💾", id="excel_export_club", color="light", outline=True, className="mt-auto", size="sm"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.Slider(
@@ -274,15 +274,15 @@ layout = html.Div([
                     rowData=dfh.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 200, "pinned": "left"},
+                        {"field": "Nom", "width": 170, "pinned": "left"},
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
+                        {"field": "IWF Max", "width": 80},
                         {"field": "PdC", "width": 80},
-                        {"field": "Max IWF", "width": 80},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
-                    suppressDragLeaveHidesColumns=False,
+                    suppressDragLeaveHidesColumns=True,
                     style={"height": 540},
                     dashGridOptions={"pagination": False},
                     className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
@@ -303,12 +303,12 @@ layout = html.Div([
                     rowData=dff.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 200, "pinned": "left"},
+                        {"field": "Nom", "width": 170, "pinned": "left"},
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
+                        {"field": "IWF Max", "width": 80},
                         {"field": "PdC", "width": 80},
-                        {"field": "Max IWF", "width": 80},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=False,
@@ -378,14 +378,14 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     else:
         fdfh = fdfh[(fdfh['SaisonAnnee'] == selected_year)]
 
-    fdfh=fdfh.sort_values(by=['Max IWF'], ascending=False)
+    fdfh=fdfh.sort_values(by=['IWF Max'], ascending=False)
     fdfh['Rang'] = fdfh.groupby(['SaisonAnnee']).cumcount()+1
 
     dat = fdfh.to_dict('records')
 
     #Top 5
     filtered_df=round(fdfh.head(5),0)
-    res = filtered_df['Max IWF'].sum()
+    res = filtered_df['IWF Max'].sum()
     updated_title_h = "Top 5 Hommes : " + str(int(res)) + " IWF"
 
     return updated_title_h, dat
@@ -416,18 +416,18 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     else:
         fdff = fdff[(fdff['SaisonAnnee'] == selected_year)]
 
-    fdff=fdff.sort_values(by=['Max IWF'], ascending=False)
+    fdff=fdff.sort_values(by=['IWF Max'], ascending=False)
     fdff['Rang'] = fdff.groupby(['SaisonAnnee']).cumcount()+1
 
     columns = [
             {"name": i, "id": i,  "selectable": True} for i in
-            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'Serie', 'PdC', 'IWF']
+            ['Rang', 'Nom', 'Arr', 'EpJ', 'Tot', 'Serie', 'IWF', 'PdC']
     ]
 
     dat = fdff.to_dict('records')
 
     filtered_df=round(fdff.head(4),0)
-    res = filtered_df['Max IWF'].sum()
+    res = filtered_df['IWF Max'].sum()
     updated_title_f = "Top 4 Femmes : " + str(int(res)) + " IWF"
 
     return updated_title_f, dat
@@ -449,7 +449,8 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
     [Input('year-slider-club', 'value'),
      Input(component_id='txt-ligue', component_property='value'),
      Input(component_id='txt-club', component_property='value')
-     ])
+     ],
+    prevent_initial_callback=True)
 
 def updated_athletes(selected_year, txt_ligue, txt_club):
 
@@ -552,7 +553,6 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
           """
     df_ac = pd.read_sql_query(qry_age, conn)
     df_ac.head()
-    print(df_ac)
     print(txt_club)
     print(selected_year)
 
@@ -596,7 +596,7 @@ def qry_box(txt_club_ligue, txt_ligue, selected_year):
         txt_club = 'clb.Club,'
     qry = """SELECT cmp.SaisonAnnee as "Saison", """ + txt_club + """ ath.Nom, count(clb.club) as "Nb Compet" 
                      , max(cat.Arrache) as "Max Arr", max(cat.EpJete) as "Max EpJ", max(cat.PoidsTotal) as "Max Tot"
-                     , max(round(cat.IWF_Calcul,3)) as "Max IWF"
+                     , max(round(cat.IWF_Calcul,3)) as "IWF Max"
                      , CASE 
                             WHEN cat."CateAge" = 'U10' THEN 'U10'
                             WHEN cat."CateAge" = 'U13' THEN 'U13'
@@ -685,7 +685,6 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u10_u13):
 
         df_u10_u13 = pd.read_sql_query(qry, conn)
         df_u10_u13 = df_u10_u13[df_u10_u13['CateAge'].isin(['U10','U13'])]
-        print(df_u10_u13)
         df_u10_u13.head()
 
         return [dbc.Table.from_dataframe(df_u10_u13, responsive=True, striped=True, bordered=True, hover=True)]
@@ -734,7 +733,6 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u15_u17):
 
         df_u15_u17 = pd.read_sql_query(qry, conn)
         df_u15_u17 = df_u15_u17[df_u15_u17['CateAge'].isin(['U15', 'U17'])]
-        print(df_u15_u17)
         df_u15_u17.head()
 
         return [dbc.Table.from_dataframe(df_u15_u17, responsive=True, striped=True, bordered=True, hover=True)]
@@ -781,7 +779,6 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u20):
 
         df_u20 = pd.read_sql_query(qry, conn)
         df_u20 = df_u20[df_u20['CateAge'].isin(['U20'])]
-        print(df_u20)
         df_u20.head()
 
         return [dbc.Table.from_dataframe(df_u20, responsive=True, striped=True, bordered=True, hover=True)]
@@ -829,38 +826,45 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
 
         df_sen = pd.read_sql_query(qry, conn)
         df_sen = df_sen[df_sen['CateAge'].isin(['SEN'])]
-        print(df_sen)
         df_sen.head()
 
         return [dbc.Table.from_dataframe(df_sen, responsive=True, striped=True, bordered=True, hover=True)]
         #fig_athl1, display_graph_athl1,
 
 @callback(
-     Output("ag-datatable-f", "columnDefs"),
+     [Output("ag-datatable-f", "columnDefs"),
      Output("ag-datatable-h", "columnDefs"),
+     Output("ag-datatable-f", "defaultColDef"),
+     Output("ag-datatable-h", "defaultColDef"),
     [Input("reset_col_club", "n_clicks")],
+    Input("display", "children")],
     prevent_initial_call=True
 )
 
-def toggle_modal_athl(reset_club_clicks):
-    print(reset_club_clicks)
+def toggle_modal_athl(reset_club_clicks, breakpoint_str):
+    if breakpoint_str == "sm" or breakpoint_str == "xs":
+        col_move = True
+    else:
+        col_move = False
+    defaultColDef={"resizable": True, "sortable": True, "filter": True, "suppressMovable": col_move}
     if reset_club_clicks:
         cols = [
                     {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
-                    {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
+                    {"field": "Nom", "width": 170, "pinned": "left", "hide": False},
                     {"field": "Arr", "width": 60, "hide": False},
                     {"field": "EpJ", "width": 60, "hide": False},
                     {"field": "Tot", "width": 60, "hide": False},
+                    {"field": "IWF Max", "width": 80, "hide": False},
                     {"field": "PdC", "width": 80, "hide": False},
-                    {"field": "Max IWF", "width": 80, "hide": False},
                 ]
-    return cols, cols
+    return cols, cols, defaultColDef, defaultColDef
 
 @callback(
     [Output("app_code_club", "className"),
      Output("ag-datatable-h", "className"),
      Output("ag-datatable-f", "className"),
-     Output("reset_col_club", "color")],
+     Output("reset_col_club", "color"),
+     Output("excel_export_club", "color")],
     [Input("bool_light", "on")]
 )
 
@@ -874,7 +878,7 @@ def light_mode_club(on):
         css_grid = "ag-theme-quartz-dark"
         reset_color = "light"
 
-    return css_body, css_grid, css_grid, reset_color;
+    return css_body, css_grid, css_grid, reset_color, reset_color;
 
 
 #Export Excel

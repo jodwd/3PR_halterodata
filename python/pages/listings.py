@@ -17,7 +17,7 @@ dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
-# Requête TODO : associer les max IWF à une compétition précise (lieu, date...) dans la BDD
+# Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
 qry = """SELECT * FROM
             (SELECT distinct
                 ath.Nom                         as "Nom"
@@ -41,8 +41,8 @@ qry = """SELECT * FROM
             ,   ' ' || cmp.NomCompetitionCourt  as "Compet"
             ,   cmp.DateCompet                  as "Date"
             ,   apr.SaisonAnnee                 as "SaisonAnnee"
-            ,   apr.MaxIWFSaison                as "Max IWF Saison"
-            ,   apr.MaxIWF                      as "Max IWF"
+            ,   apr.MaxIWFSaison                as "IWF Max Saison"
+            ,   apr.MaxIWF                      as "IWF Max"
             ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee", cat.CatePoids
                                   order by cat.PoidsTotal desc)
                                                 as "RowNumMaxCateTotal"
@@ -59,8 +59,8 @@ qry = """SELECT * FROM
 df = pd.read_sql_query(qry, conn)
 
 df = df.sort_values(by=['RangSerie'])
-df['Max IWF Saison'] = round(df['Max IWF Saison'], 3) # Arrondi à 3 virgule pour l'IWF pour le display
-df['Max IWF'] = round(df['Max IWF'], 3)
+df['IWF Max Saison'] = round(df['IWF Max Saison'], 3) # Arrondi à 3 virgule pour l'IWF pour le display
+df['IWF Max'] = round(df['IWF Max'], 3)
 df['IWF U13'] = round(df['IWF U13'], 3)
 df['IWF'] = round(df['IWF'], 3)
 updated_title = 'Listings'
@@ -176,8 +176,8 @@ layout = html.Div([
         ], xs=3, sm=3, md=2, lg=2, xl=1),
 
         dbc.Col([
-            dbc.Button("↪️ Reset", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
-            dbc.Button("💾 Excel", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("↪️", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("💾", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
         ], xs=3, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.Slider(
@@ -206,7 +206,7 @@ layout = html.Div([
             rowData=df.to_dict("records"),  # **need it
             columnDefs=[],
             defaultColDef={"resizable": True, "sortable": True, "filter": False},
-            suppressDragLeaveHidesColumns=False,
+            suppressDragLeaveHidesColumns=True,
             style={"height": 540},
             dashGridOptions={"pagination": False},
             className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
@@ -421,7 +421,8 @@ def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserte
 
 @callback(
     [Output('ag-datatable-l', "rowData"),
-     Output('ag-datatable-l', "columnDefs")],
+     Output('ag-datatable-l', "columnDefs"),
+     Output('ag-datatable-l', "defaultColDef")],
     [Input('year-slider', 'value'),
      Input('bool_masters', 'on'),
      Input(component_id='my_txt_input1', component_property='value'),  # sexe
@@ -431,9 +432,18 @@ def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserte
      Input(component_id='my_txt_input5', component_property='value'),  # nationalité
      Input(component_id='my_txt_input6', component_property='value'),  # série
      Input(component_id='my_txt_input7', component_property='value'),  # compétition
+     Input("display", "children") #taille écran
      ])
 
-def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7):
+def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7, breakpoint_str):
+    #on bloque le déplacement de colonne si l'écran est trop petit
+    if breakpoint_str == "sm" or breakpoint_str == "xs":
+        col_move = True
+    else:
+        col_move = False
+    defaultColDef={"resizable": True, "sortable": True, "filter": True, "suppressMovable": col_move}
+
+
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -480,11 +490,9 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
         {
             "headerName": "Athlete",
             "children": [
-                {"field": "Rang", "width": 30, "pinned": "left"},
-                {"field": "Nom", "width": 160, "pinned": "left"},
-                {"field": "Né en", "width": 70},
-                {"field": "Pays", "width": 60},
-                {"field": "Club", "width": 160},
+                {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
+                {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
+
             ],
         },
         {
@@ -494,17 +502,24 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                 {"field": "EpJ", "width": 60},
                 {"field": "Total", "width": 60, "hide": False},
                 {"field": "Tot U13", "width": 80, "hide": True},
-                {"field": "PdC", "width": 80},
                 {"field": "IWF", "width": 80, "hide": False},
                 {"field": "IWF U13", "width": 80, "hide": True},
+                {"field": "PdC", "width": 80},
                 {"field": "Serie", "width": 80},
             ],
         },
         {
             "headerName": "Compétition",
             "children": [
-                {"field": "Date", "width": 100},
-                {"field": "Compet", "width": 250},
+                {"field": "Date", "width": 100, "hide": False},
+                {"field": "Compet", "width": 250, "hide": False},
+            ],
+        }, {
+            "headerName": "Infos",
+            "children": [
+                {"field": "Né en", "width": 70, "hide": False},
+                {"field": "Pays", "width": 60, "hide": False},
+                {"field": "Club", "width": 200, "hide": False},
             ],
         },
     ]
@@ -520,15 +535,14 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                 filtered_df = filtered_df.sort_values(by=['Tot U13', 'IWF U13'], ascending=[False, False])
             else:
                 filtered_df = filtered_df.sort_values(by=['IWF U13', 'Tot U13'], ascending=[False, False])
+            filtered_df['Rang'] = filtered_df.groupby(['SaisonAnnee']).cumcount() + 1
             columns = [
                 {
                     "headerName": "Athlete",
                     "children": [
                         {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
                         {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
-                        {"field": "Né en", "width": 70, "hide": False},
-                        {"field": "Pays", "width": 60, "hide": False},
-                        {"field": "Club", "width": 160, "hide": False},
+
                     ],
                 },
                 {
@@ -538,9 +552,9 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                         {"field": "EpJ", "width": 60, "hide": False},
                         {"field": "Total ", "width": 60, "hide": True},
                         {"field": "Tot U13", "width": 80, "hide": False},
-                        {"field": "PdC", "width": 80, "hide": False},
                         {"field": "IWF", "width": 80, "hide": True},
                         {"field": "IWF U13", "width": 80, "hide": False},
+                        {"field": "PdC", "width": 80, "hide": False},
                         {"field": "Serie", "width": 80, "hide": False},
                     ],
                 },
@@ -550,13 +564,20 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                         {"field": "Date", "width": 100, "hide": False},
                         {"field": "Compet", "width": 250, "hide": False},
                     ],
+                }, {
+                    "headerName": "Infos",
+                    "children": [
+                        {"field": "Né en", "width": 70, "hide": False},
+                        {"field": "Pays", "width": 60, "hide": False},
+                        {"field": "Club", "width": 200, "hide": False},
+                    ],
                 },
             ]
 
 
     dat = filtered_df.to_dict('records')
 
-    return dat, columns
+    return dat, columns, defaultColDef
 
 @callback(
     Output("ag-datatable-l", "columnDefs", allow_duplicate=True),
@@ -572,9 +593,7 @@ def toggle_modal_athl(reset_l_clicks):
                 "children": [
                     {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
                     {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
-                    {"field": "Né en", "width": 70, "hide": False},
-                    {"field": "Pays", "width": 60, "hide": False},
-                    {"field": "Club", "width": 160, "hide": False},
+
                 ],
             },
             {
@@ -584,9 +603,9 @@ def toggle_modal_athl(reset_l_clicks):
                     {"field": "EpJ", "width": 60, "hide": False},
                     {"field": "Total", "width": 60},
                     {"field": "Tot U13", "width": 80},
-                    {"field": "PdC", "width": 80, "hide": False},
                     {"field": "IWF", "width": 80},
                     {"field": "IWF U13", "width": 80},
+                    {"field": "PdC", "width": 80, "hide": False},
                     {"field": "Serie", "width": 80, "hide": False},
                 ],
             },
@@ -595,6 +614,13 @@ def toggle_modal_athl(reset_l_clicks):
                 "children": [
                     {"field": "Date", "width": 100, "hide": False},
                     {"field": "Compet", "width": 250, "hide": False},
+                ],
+            },            {
+                "headerName": "Infos",
+                "children": [
+                    {"field": "Né en", "width": 70, "hide": False},
+                    {"field": "Pays", "width": 60, "hide": False},
+                    {"field": "Club", "width": 200, "hide": False},
                 ],
             },
         ]
@@ -605,6 +631,7 @@ def toggle_modal_athl(reset_l_clicks):
     [Output("app_code_l", "className"),
      Output("ag-datatable-l", "className"),
      Output("reset_col_list", "color"),
+     Output("excel_export_list", "color"),
      Output("div_masters", "className")],
     [Input("bool_light", "on")]
 )
@@ -623,7 +650,7 @@ def light_mode_list(on):
         reset_color = "light"
         masters_label_classname = "bool_switch"
 
-    return css_body, css_grid, reset_color, masters_label_classname;
+    return css_body, css_grid, reset_color, reset_color, masters_label_classname;
 
 #Export Excel
 clientside_callback(

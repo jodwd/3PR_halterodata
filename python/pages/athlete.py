@@ -41,12 +41,13 @@ qry2 = """SELECT ath.Nom, cat.Serie as "Série", cat.Categorie as "Catégorie"
 df2 = pd.read_sql_query(qry2, conn)
 df2.head()
 
+
 # Reformatage des donnée de la requête
 df['IWF'] = round(df['IWF'], 3)
 df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
 df2['Série'] = pd.Categorical(df2['Série'], ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"], ordered=True)
 df_temp = df[df['Nom']=='ZZZZZ']
-dash.register_page(__name__, path='/', name='3PR - Athletes', title='3PR - Dashboard Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
+dash.register_page(__name__, path='/', name='3PR - Athletes', title='3PR - Perfs Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
 
 # Liste d'athlètes = ceux qui ont tiré sur la plage par défaut càd l'année dernière + l'année en cours
 selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
@@ -57,9 +58,9 @@ layout = html.Div([
     # Header & filtres
         dbc.Row([            # Titre
             dbc.Col([
-                dbc.Button(" Dashboard Athlètes ", id="title-box", color="danger", className="titlebox", size="lg"),
+                dbc.Button(" Dashboard Athlètes ", id="title-box", color="danger", className="titlebox", size="md"),
                     dbc.Modal([
-                        dbc.ModalHeader(" Dashboard Athlètes ", id="athlete_info_"),
+                        dbc.ModalHeader(" Perfs Athlètes ", id="athlete_info_"),
                         dbc.ModalBody([
                             html.Div([html.P("Cette page...")]),
                         ]),
@@ -276,20 +277,22 @@ layout = html.Div([
             ], xs=6, sm=3, md=3, lg=2, xl=2),
         ],  className="top_zone",),
 
+
+    print("a"),
     # Zone graph
     html.Br(),
     dbc.Row([
         dbc.Col([
             daq.BooleanSwitch(id='bool_total',
                               on=False,
-                              label={"label": "IWF/Total", 'style': {"color": "white"}},
+                              label={"label": "IWF/Total", 'style': {"color": "white", "font-size": "10"}},
                               labelPosition="bottom",
                               color="#DC3545"),
-        ], xs=3, sm=3, md=2, lg=2, xl=1),
+        ], xs=6, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
-            dbc.Button("↪️ Reset", id="reset_col", color="light", outline=True, className="mt-auto", size="sm"),
-            dbc.Button("💾 Excel", id="excel_export", color="light", outline=True, className="mt-auto", size="sm"),
-        ], xs=3, sm=3, md=2, lg=2, xl=1),
+            dbc.Button("↪️", id="reset_col", color="light", outline=True, className="mt-auto", size="sm"),
+            dbc.Button("💾", id="excel_export", color="light", outline=True, className="mt-auto", size="sm"),
+        ],  className="boutons", xs=6, sm=3, md=2, lg=2, xl=1),
         dbc.Col([
             dcc.RangeSlider(
                 df['SaisonAnnee'].min(),
@@ -300,13 +303,7 @@ layout = html.Div([
                 id='year-slider-athl',
                 className='slider_zone'
                 ),
-            ], xs=6, sm=6, md=8, lg=8, xl=10),
-        dbc.Col([
-            dcc.Graph(
-                id='graph-with-slider',
-                style= {'display': 'none'}
-                ) ,
-        ], width=12),
+            ], xs=12, sm=6, md=8, lg=8, xl=10),
     ]),
 
     # Zone data table AG Grid
@@ -321,8 +318,6 @@ layout = html.Div([
                             "headerName": "Athlete",
                             "children": [
                                 {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
-                                {"field": "PdC", "width": 80, "hide": False},
-                                {"field": "Catégorie", "width": 100, "hide": False},
                             ],
                         },
                         {
@@ -386,6 +381,8 @@ layout = html.Div([
                                  },
                                 {"field": "IWF", "width": 80, "hide": False},
                                 {"field": "Série", "width": 80, "hide": False},
+                                {"field": "PdC", "width": 80, "hide": False},
+                                {"field": "Catégorie", "width": 100, "hide": False},
                             ],
                         },
                         {
@@ -403,6 +400,14 @@ layout = html.Div([
         )
 
     ]),
+
+    dbc.Col([
+        dcc.Graph(
+            id='graph-with-slider',
+            style={'display': 'none'}
+        ),
+    ], width=12),
+
     html.Br(),
     html.Br(),
     html.Link(
@@ -413,6 +418,7 @@ layout = html.Div([
     id='app_code_athl',
     className='body'
 )
+print("c")
 
 # Mise à jour de la liste d'athlète dispo en fonction des années de référence
 @callback(
@@ -420,6 +426,7 @@ layout = html.Div([
     Input('year-slider-athl', 'value'),
     prevent_initial_call=True
 )
+
 def update_athletes_list(selected_year):
     fdf = df[(df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
     list_names = list(set(fdf['Nom'].tolist()))
@@ -438,6 +445,7 @@ def update_athletes_list(selected_year):
      Input("display", "children")
      ],
      prevent_initial_call=True)
+
 def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoint_str):
     if selected_year == '':
         selected_year = [df['SaisonAnnee'].max() - 1, df['SaisonAnnee'].max()]
@@ -497,8 +505,9 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoin
     [Output('ag_datatable_athl', 'rowData')],
     [Input('year-slider-athl', 'value'),
      Input('bool_total', 'on'),
-     Input('my_txt_input', 'value')
-     ])
+     Input('my_txt_input', 'value')],
+     )
+
 def update_data_ag(selected_year, on, txt_inserted):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
@@ -511,6 +520,7 @@ def update_data_ag(selected_year, on, txt_inserted):
     else:
         fdf = fdf.sort_values(by=['IWF'], ascending=False)
     dat_ag = fdf.to_dict('records')
+    print("b")
     return [dat_ag]
 
 # Génération des cartes des 4 premiers athlètes
@@ -544,9 +554,11 @@ def update_data_ag(selected_year, on, txt_inserted):
      Output("athlete4_annivmax", "children"),
      Output('ach_aide-div_athl4', 'style')],
     [Input('year-slider-athl', 'value'),
-     Input('my_txt_input', 'value')])
+     Input('my_txt_input', 'value'),
+     Input("display", "children")],
+     prevent_initial_call=True)
 
-def up_athletes(selected_year, txt_inserted):
+def up_athletes(selected_year, txt_inserted, breakpoint_str):
     # Perform any manipulation on input_value and return the updated title
     print(txt_inserted)
     up_show = [{'display': 'none'}] * 4
@@ -569,8 +581,8 @@ def up_athletes(selected_year, txt_inserted):
         up_name[n] = i
         df1 = df[(df['Nom'] == i) & (df['SaisonAnnee'] >= min(selected_year)) & (df['SaisonAnnee'] <= max(selected_year))]
         df1 = df1.sort_values(by=['Date'], ascending=False)
-        if len(df1['Club'].values[0]) > 19:
-            up_club[n] = df1['Club'].values[0][0:18] + '.'
+        if len(df1['Club'].values[0]) > 21:
+            up_club[n] = df1['Club'].values[0][0:20] + '.'
         else:
             up_club[n] = df1['Club'].values[0]
         up_show[n] = {'display': 'block'}
@@ -630,11 +642,19 @@ def up_athletes(selected_year, txt_inserted):
         else:
             up_show_ach_aide[n]={'display': 'none'}
         n = n + 1
+    if breakpoint_str == "xs" or breakpoint_str == "sm":
+        return  up_show[0], f"{up_name[0]}", f"{up_name[0]}" + '  ' + f"{up_date_naiss[0]}" + f"{up_achievements[0]}", "" , "", up_show_ach_aide[0], \
+                up_show[1], f"{up_name[1]}", f"{up_name[1]}" + '  ' + f"{up_date_naiss[1]}" + f"{up_achievements[1]}", "" , "", up_show_ach_aide[1],  \
+                up_show[2], f"{up_name[2]}", f"{up_name[2]}" + '  ' + f"{up_date_naiss[2]}" + f"{up_achievements[2]}", "" , "", up_show_ach_aide[2], \
+                up_show[3], f"{up_name[3]}", f"{up_name[3]}" + '  ' + f"{up_date_naiss[3]}" + f"{up_achievements[3]}", "" , "", up_show_ach_aide[3]
+    else:
+        return  up_show[0], f"{up_name[0]}", f"{up_name[0]}" + '  ' + f"{up_date_naiss[0]}" + f"{up_achievements[0]}", f"{up_club[0]}", f"{up_anniv[0]}" + ' | PR ' + f"{up_max[0]}", up_show_ach_aide[0], \
+                up_show[1], f"{up_name[1]}", f"{up_name[1]}" + '  ' + f"{up_date_naiss[1]}" + f"{up_achievements[1]}", f"{up_club[1]}", f"{up_anniv[1]}" + ' | PR ' + f"{up_max[1]}", up_show_ach_aide[1],  \
+                up_show[2], f"{up_name[2]}", f"{up_name[2]}" + '  ' + f"{up_date_naiss[2]}" + f"{up_achievements[2]}", f"{up_club[2]}", f"{up_anniv[2]}" + ' | PR ' + f"{up_max[2]}", up_show_ach_aide[2], \
+                up_show[3], f"{up_name[3]}", f"{up_name[3]}" + '  ' + f"{up_date_naiss[3]}" + f"{up_achievements[3]}", f"{up_club[3]}", f"{up_anniv[3]}" + ' | PR ' + f"{up_max[3]}", up_show_ach_aide[3]
 
-    return  up_show[0], f"{up_name[0]}", f"{up_name[0]}" + '  ' + f"{up_date_naiss[0]}" + f"{up_achievements[0]}", f"{up_club[0]}", f"{up_anniv[0]}" + ' | PR ' + f"{up_max[0]}", up_show_ach_aide[0], \
-            up_show[1], f"{up_name[1]}", f"{up_name[1]}" + '  ' + f"{up_date_naiss[1]}" + f"{up_achievements[1]}", f"{up_club[1]}", f"{up_anniv[1]}" + ' | PR ' + f"{up_max[1]}", up_show_ach_aide[1],  \
-            up_show[2], f"{up_name[2]}", f"{up_name[2]}" + '  ' + f"{up_date_naiss[2]}" + f"{up_achievements[2]}", f"{up_club[2]}", f"{up_anniv[2]}" + ' | PR ' + f"{up_max[2]}", up_show_ach_aide[2], \
-            up_show[3], f"{up_name[3]}", f"{up_name[3]}" + '  ' + f"{up_date_naiss[3]}" + f"{up_achievements[3]}", f"{up_club[3]}", f"{up_anniv[3]}" + ' | PR ' + f"{up_max[3]}", up_show_ach_aide[3]
+
+
 
 # Gestion ouverture +Info Cartes Athlètes
 @callback(
@@ -755,98 +775,158 @@ def update_table_athl4(txt_inserted, is_open_athl1, is_open_athl2, is_open_athl3
     if is_open_athl1:
         return fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update,
     if is_open_athl2:
-            return dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+        return dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
     if is_open_athl3:
-            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update,
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], dash.no_update, dash.no_update, dash.no_update,
     if is_open_athl4:
-            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)]
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)]
 @callback(
-    Output("ag_datatable_athl", "columnDefs"),
-    [Input("reset_col", "n_clicks")]
+    [Output("ag_datatable_athl", "columnDefs"),
+     Output("ag_datatable_athl", "defaultColDef")],
+    [Input("reset_col", "n_clicks"),
+    Input("display", "children")],
 )
 
-def toggle_modal_athl(reset_clicks):
+def toggle_modal_athl(reset_clicks, breakpoint_str):
     color_mode = 'color'
-    cols = [
-                {
-                   "headerName": "Athlete",
-                   "children": [
-                        {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
-                        {"field": "PdC", "width": 80, "hide": False},
-                        {"field": "Catégorie", "width": 100, "hide": False},
-                    ],
-                },
-                {
-                   "headerName": "Arraché",
-                   "children": [
-                        {"field": "Arr1", "headerName": "1", "width": 60, "hide": False,
-                            'cellStyle': {
-                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
-                            },
-                        },
-                        {"field": "Arr2", "headerName": "2", "width": 60, "hide": False,
-                            'cellStyle': {
-                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
-                            },
-                        },
-                        {"field": "Arr3", "headerName": "3", "width": 60, "hide": False,
-                            'cellStyle': {
-                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
-                            },
-                        },
-                        {"field": "Arr", "width": 75, "hide": False,
-                            'cellStyle': {
-                                "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
-                            },
-                        },
-                    ],
-                },
-                {
-                    "headerName": "Epaulé Jeté", "hide": False,
-                        "children": [
-                            {"field": "EpJ1", "headerName": "1", "width": 60, "hide": False,
+    if breakpoint_str == "sm" or breakpoint_str == "xs":
+        col_not_move = True
+        print(breakpoint_str)
+    else:
+        col_not_move = False
+    defaultColDef={"resizable": True, "sortable": True, "filter": True, "suppressMovable": col_not_move}
+
+    if col_not_move == True:
+        cols = [
+            {
+                "headerName": "Athlete",
+                "children": [
+                    {"field": "Nom", "width": 120, "pinned": "left", "hide": False},
+                ],
+            },
+            {
+                "headerName": "Arr.",
+                "children": [
+                    {"field": "Arr", "width": 60, "hide": False,
+                     'cellStyle': {
+                         "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
+                     },
+                     },
+                ],
+            },
+            {
+                "headerName": "EpJ", "hide": False,
+                "children": [
+                    {"field": "EpJ", "width": 60, "hide": False,
+                     'cellStyle': {
+                         "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
+                     },
+                     },
+                ],
+            },
+            {
+                "headerName": "Performance",
+                "children": [
+                    {"field": "Total", "width": 70, "hide": False, "font-weight": 'bold',
+                     'cellStyle': {
+                         "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
+                     },
+                     },
+                    {"field": "IWF", "width": 80, "hide": False},
+                    {"field": "Série", "width": 80, "hide": False},
+                    {"field": "PdC", "width": 80, "hide": False},
+                    {"field": "Catégorie", "width": 100, "hide": False},
+                ],
+            },
+            {
+                "headerName": "Compétition",
+                "children": [
+                    {"field": "Date", "width": 100, "hide": False},
+                    {"field": "Competition", "hide": False}
+                ],
+            }
+        ]
+    else:
+        cols = [
+                    {
+                       "headerName": "Athlete",
+                       "children": [
+                            {"field": "Nom", "width": 200, "pinned": "left", "hide": False},
+                        ],
+                    },
+                    {
+                       "headerName": "Arraché",
+                       "children": [
+                            {"field": "Arr1", "headerName": "1", "width": 60, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
                                 },
                             },
-                            {"field": "EpJ2", "headerName": "2", "width": 60, "hide": False,
+                            {"field": "Arr2", "headerName": "2", "width": 60, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
                                 },
                             },
-                            {"field": "EpJ3", "headerName": "3", "width": 60, "hide": False,
+                            {"field": "Arr3", "headerName": "3", "width": 60, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
                                 },
                             },
-                            {"field": "EpJ", "width": 75, "hide": False,
+                            {"field": "Arr", "width": 75, "hide": False,
                                 'cellStyle': {
                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
                                 },
                             },
                         ],
-                },
-                {
-                    "headerName": "Performance",
-                        "children": [
-                            {"field": "Total", "width": 80, "hide": False, "font-weight": 'bold',
-                             'cellStyle': {
-                                 "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
+                    },
+                    {
+                        "headerName": "Epaulé Jeté", "hide": False,
+                            "children": [
+                                {"field": "EpJ1", "headerName": "1", "width": 60, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
+                                    },
                                 },
-                             },
-                            {"field": "IWF", "width": 80, "hide": False},
-                            {"field": "Série", "width": 80, "hide": False},
-                        ],
-                },
-                {
-                    "headerName": "Compétition",
-                    "children": [
-                        {"field": "Date", "width": 150, "hide": False},
-                        {"field": "Competition", "hide": False}
-                        ],
-                }
-        ]
-    return cols;
+                                {"field": "EpJ2", "headerName": "2", "width": 60, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "EpJ3", "headerName": "3", "width": 60, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(220, 76, 100)'} : {" + color_mode + ": 'rgb(20, 164, 77)'}",
+                                    },
+                                },
+                                {"field": "EpJ", "width": 75, "hide": False,
+                                    'cellStyle': {
+                                        "function": "params.value <=0 ? {" + color_mode + ": 'rgb(235, 61, 85)'} : {" + color_mode + ": 'rgb(59, 113, 202)'}",
+                                    },
+                                },
+                            ],
+                    },
+                    {
+                        "headerName": "Performance",
+                            "children": [
+                                {"field": "Total", "width": 70, "hide": False, "font-weight": 'bold',
+                                 'cellStyle': {
+                                     "function": "params.value <=0 ? {" + color_mode + ": 'rgb(255, 41, 65)'} : {" + color_mode + ": 'rgb(44, 98, 217)'}",
+                                    },
+                                 },
+                                {"field": "IWF", "width": 80, "hide": False},
+                                {"field": "Série", "width": 80, "hide": False},
+                                {"field": "PdC", "width": 80, "hide": False},
+                                {"field": "Catégorie", "width": 100, "hide": False},
+                            ],
+                    },
+                    {
+                        "headerName": "Compétition",
+                        "children": [
+                            {"field": "Date", "width": 150, "hide": False},
+                            {"field": "Competition", "hide": False}
+                            ],
+                    }
+            ]
+    return cols, defaultColDef;
 
 @callback(
     [Output("aide_achievements_athl1", "is_open"),
@@ -932,6 +1012,7 @@ def update_table_athl1(is_open_ach1, is_open_ach2, is_open_ach3, is_open_ach4):
     [Output("app_code_athl", "className"),
      Output("ag_datatable_athl", "className"),
      Output("reset_col", "color"),
+     Output("excel_export", "color"),
      Output("bool_total", "label"),
      Output("year-slider-athl", "marks")],
     [Input("bool_light", "on")]
@@ -942,16 +1023,19 @@ def light_mode_athl(on):
         css_body = "body_light"
         css_grid = "ag-theme-quartz"
         reset_color = "secondary"
+        reset_col_xl = "secondary"
         iwf_total_label = {"label": "IWF/Total", 'style': {"color": "rgb(40,40,45)"}}
         slider_marks = {str(year): {'label' : str(year), 'style':{'color':'rgb(40,40,45)'}} for year in df['SaisonAnnee'].unique()}
     else:
         css_body = "body"
         css_grid = "ag-theme-quartz-dark"
         reset_color = "light"
+        reset_col_xl = "light"
         iwf_total_label = {"label": "IWF/Total", 'style': {"color": "white"}}
         slider_marks = {str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()}
 
-    return css_body, css_grid, reset_color, iwf_total_label, slider_marks;
+    print("d")
+    return css_body, css_grid, reset_color, reset_col_xl, iwf_total_label, slider_marks;
 
 #Export Excel
 clientside_callback(
@@ -988,3 +1072,17 @@ clientside_callback(
 
 if __name__ == '__main__':
     run_server(debug=True)
+
+#@callback(
+#    [Output("reset_col", "children"),
+#     Output("excel_export", "children")],
+#    [Input("display", "children")],
+#     prevent_initial_call=False)
+
+#def mobile_handling(breakpoint_str):
+#    reset_txt="↪️"
+#    excel_txt="💾"
+#    if breakpoint_str not in ('xs', 'sm'):
+#        reset_txt == "↪️ Reset"
+#        excel_txt == "💾 Excel"
+#    return reset_txt, excel_txt

@@ -51,6 +51,10 @@
   margin-top: 1%;
 }
 
+.boutons {
+    text-align: center;
+}
+
  .slider_zone {
   font-family: 'Helvetica Neue', sans-serif;
   font-size: 12px;
