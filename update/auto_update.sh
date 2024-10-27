@@ -5,7 +5,7 @@
 #ruby C:\Users\joris\PycharmProjects\halterodata\ruby\athletes_scoresheet.rb
 
 # Step 2: Run the Python script
-python --version
+python3 --version
 echo "Running Python script..."
 python3 C:\Users\joris\PycharmProjects\halterodata\data_transform.py
 
