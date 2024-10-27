@@ -12,7 +12,7 @@ python3 C:\Users\joris\PycharmProjects\halterodata\data_transform.py
 
 # Step 3: Add changes to Git
 echo "Adding changes to Git..."
-cd C:\Users\joris\PycharmProjects\halterodata
+cd C:/Users/joris/PycharmProjects/halterodata
 git checkout uat
 git add .
 
