@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Step 1: Run the Ruby script
-#echo "Running Ruby script..."
-#ruby C:\Users\joris\PycharmProjects\halterodata\ruby\athletes_scoresheet.rb
+echo "Running Ruby script..."
+ruby C:/Users/joris/PycharmProjects/halterodata/ruby/athletes_scoresheet.rb
 
 # Step 2: Run the Python script
 cd C:/Users/joris/PycharmProjects/halterodata
@@ -20,7 +20,7 @@ git add .
 
 # Step 4: Commit changes
 echo "Committing changes..."
-git commit -m "Auto-executed scripts and pushed results"
+git commit -m "Auto-executed refresh - $(date +'%Y-%m-%d')"
 
 # Step 5: Push to GitHub
 echo "Pushing to GitHub..."
