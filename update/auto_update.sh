@@ -5,15 +5,17 @@
 #ruby C:\Users\joris\PycharmProjects\halterodata\ruby\athletes_scoresheet.rb
 
 # Step 2: Run the Python script
-python3 --version
+cd C:/Users/joris/PycharmProjects/halterodata
+git checkout uat
+
+python --version
 echo "Running Python script..."
-python3 C:\Users\joris\PycharmProjects\halterodata\data_transform.py
+python C:\Users\joris\PycharmProjects\halterodata\data_transform.py
 
 
 # Step 3: Add changes to Git
 echo "Adding changes to Git..."
-cd C:/Users/joris/PycharmProjects/halterodata
-git checkout uat
+
 git add .
 
 # Step 4: Commit changes
