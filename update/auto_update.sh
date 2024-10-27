@@ -10,7 +10,7 @@ git checkout uat
 
 python --version
 echo "Running Python script..."
-python C:\Users\joris\PycharmProjects\halterodata\data_transform.py
+python C:/Users/joris/PycharmProjects/halterodata/data_transform.py
 
 
 # Step 3: Add changes to Git
