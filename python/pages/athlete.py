@@ -80,6 +80,7 @@ layout = html.Div([
                             id='my_txt_input',
                             placeholder="Choisir des athlètes...",
                             className="input_box1",
+                            value=''
                             )
                         ]),
                     #html.Datalist(id='Nom_athl')
@@ -1040,7 +1041,7 @@ def light_mode_athl(on):
 #Export Excel
 clientside_callback(
     """async function (n, txt) {
-        if (n) {
+        if (n) { 
             grid1Api = await dash_ag_grid.getApiAsync("ag_datatable_athl")
             var spreadsheets = [];
             if (typeof txt[0] === 'undefined') {
