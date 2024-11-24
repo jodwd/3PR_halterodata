@@ -440,7 +440,7 @@ def update_athletes_list(selected_year):
     [Input('year-slider-athl', 'value'),
      Input('bool_total', 'on'),
      Input('bool_light', 'on'),
-     Input(component_id='my_txt_input', component_property='value'),
+     Input('my_txt_input', 'value'),
      Input("reset_col", "n_clicks"),
      Input("display", "children")
      ],

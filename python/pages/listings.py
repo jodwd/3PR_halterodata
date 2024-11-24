@@ -1,6 +1,6 @@
 import dash
 import plotly.express as px
-from dash import dash_table, dcc, html, callback, clientside_callback
+from dash import dash_table, dcc, html, callback, State, clientside_callback
 from dash.exceptions import PreventUpdate
 import pandas as pd
 import sqlite3 as sql
@@ -78,12 +78,15 @@ nom_poids = list(set(df['CatePoids'].tolist()))
 nom_sexe = list(set(df['Sexe'].tolist()))
 nom_nat = list(set(df['Pays'].tolist()))
 nom_serie = df['Serie'].unique().tolist()
+nom_saison = df['SaisonAnnee'].unique().tolist()
+list_names = df['Nom'].unique().tolist()
 nom_competition = ['Critérium National', 'Chpt Province', 'Chpt Ligue', 'Challenge Avenir', 'Chpt Départemental',  'Cpe de France', 'France Elite', 'Fédéral', 'TOP 9', 'NAT 1', 'NAT 2', 'REG 1',
                    'Monde', 'Trophée Nat']
 
 # body
 layout = html.Div([
     # Header & filtres
+    dcc.Store(id='df_quizz', data={}, storage_type='memory'),
     dbc.Row([
         dbc.Col([
             html.Div(
@@ -178,7 +181,68 @@ layout = html.Div([
         dbc.Col([
             dbc.Button("↪️", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
             dbc.Button("💾", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
-        ], xs=3, sm=3, md=2, lg=2, xl=1),
+            dbc.Button("🎯 Quizz", id="quizz", color="light", outline=True, className="me-1", size="sm"),
+        ], xs=3, sm=3, md=2, lg=2, xl=2),
+
+        dbc.Col([
+            dbc.Modal([
+                dbc.ModalHeader("🎯 Quizz - Top 10"),
+                dbc.ModalBody([
+                    html.P("Choisissez vos options et cliquez sur 'Lancer'. Essayez de deviner tous les athlètes qui composent le top 10. Seuls les athlètes de nationalité française sont inclus."),
+                    dcc.Dropdown(
+                        options=[x for x in sorted(nom_sexe)],
+                        multi=False,
+                        id='quizz_input_s',
+                        placeholder="Sexe",
+                        className="input-box"
+                    ),
+                    dcc.Dropdown(
+                        options=[x for x in sorted(nom_age)],
+                        multi=False,
+                        id='quizz_input_a',
+                        placeholder="Catégorie Age",
+                        className="input-box",
+                    ),
+                    dcc.Dropdown(
+                        options=[x for x in sorted(nom_saison)],
+                        multi=False,
+                        id='quizz_input_sa',
+                        placeholder="Saison",
+                        className="input-box",
+                    ),
+                    dbc.Col([
+                        dbc.Button("▶️ Lancer", id="lancer_quizz", color="secondary", outline=True, className="me-1", size="sm"),
+                        html.Div([
+                            dbc.Button("🏳️ Abandonner", id="stop_quizz", color="secondary", outline=True, className="me-1", size="sm"),
+                        ], id="button_stop", style={'display': 'none'}),
+                    ], xs=12, sm=12, md=12, lg=12, xl=12),
+                    dcc.Dropdown(
+                            options=[x for x in sorted(list_names)],
+                            multi=False,
+                            id='q_athlete_input',
+                            placeholder="Choisir des athlètes...",
+                            className="input_box1",
+                            ),
+                    html.P("C'est parti !", id="txt_reponse"),
+                    html.P("🥇 #1 ", id="n1"),
+                    html.P("🥈 #2 ", id="n2"),
+                    html.P("🥉 #3 ", id="n3"),
+                    html.P("#4 ", id="n4"),
+                    html.P("#5 ", id="n5"),
+                    html.P("#6 ", id="n6"),
+                    html.P("#7 ", id="n7"),
+                    html.P("#8 ", id="n8"),
+                    html.P("#9 ", id="n9"),
+                    html.P("#10 ", id="n10"),
+                    html.Div([], id="txt_quizz"),
+                ]),
+                dbc.ModalFooter(
+                    dbc.Button("Fermer", id="close-button-q", color="secondary", className="ml-auto", size="sm")
+                ),
+            ], id="quizz-modal", size="lg", centered=True, is_open=False),
+        ], width="auto"),
+
+
         dbc.Col([
             dcc.Slider(
                 min=df['SaisonAnnee'].min(),
@@ -190,9 +254,8 @@ layout = html.Div([
                 tooltip={"placement": "bottom", "always_visible": True},
                 id='year-slider',
                 className='slider_zone')
-        ], xs=6, sm=6, md=8, lg=8, xl=10),
+        ], xs=6, sm=6, md=8, lg=8, xl=9),
     ]),
-
     html.Br(),
     html.Div([
     ],
@@ -650,7 +713,137 @@ def light_mode_list(on):
         reset_color = "light"
         masters_label_classname = "bool_switch"
 
-    return css_body, css_grid, reset_color, reset_color, masters_label_classname;
+    return css_body, css_grid, reset_color, reset_color, masters_label_classname
+
+#Bouton Quizz
+@callback(
+    Output("quizz-modal", "is_open"),
+    [Input("quizz", "n_clicks"),
+    Input("close-button-q", "n_clicks")],
+    State("quizz-modal", "is_open"),
+    prevent_initial_call=True
+)
+
+def toggle_info_modal(open_clicks_q, close_clicks_q, is_open_q):
+    if open_clicks_q or close_clicks_q:
+        return not is_open_q
+    print(str(is_open_q))
+    return is_open_q
+
+#Lancer Quizz
+@callback(
+        [Output("button_stop", "style"),
+         Output("df_quizz", "data"),
+         Output("n1", "children", allow_duplicate=True),
+         Output("n2", "children", allow_duplicate=True),
+         Output("n3", "children", allow_duplicate=True),
+         Output("n4", "children", allow_duplicate=True),
+         Output("n5", "children", allow_duplicate=True),
+         Output("n6", "children", allow_duplicate=True),
+         Output("n7", "children", allow_duplicate=True),
+         Output("n8", "children", allow_duplicate=True),
+         Output("n9", "children", allow_duplicate=True),
+         Output("n10", "children", allow_duplicate=True)],
+        [Input("lancer_quizz", "n_clicks"),
+         Input("quizz_input_s", "value"),
+         Input("quizz_input_a", "value"),
+         Input("quizz_input_sa", "value")],
+    prevent_initial_call=True
+)
+
+def quizz_lancer(q_is_open, val_sexe, val_age, val_saisonannee):
+    df_q = pd.DataFrame
+    display_opt = {'display': 'none'}
+    out_init = ['']*10
+    for i in range(0,10):
+        if i == 0:
+            out_init[i] = "🥇 #1 "
+        elif i == 1:
+            out_init[i] = "🥈 #2 "
+        elif i == 2:
+            out_init[i] = "🥉 #3 "
+        else:
+            out_init[i]='#' + str(i+1) + ' '
+
+    if q_is_open:
+        where_qry_quizz = " where ath.""Nationalite""='FR' and cat.Sexe = '" + val_sexe + "'"
+        join_athl_pr=""
+        order_by = " order by apr.""MaxIWF"" desc "
+        if val_age:
+            where_qry_quizz = where_qry_quizz + " and CateAge = '" + val_age + "'"
+        if val_saisonannee:
+            where_qry_quizz = where_qry_quizz + " and cmp.SaisonAnnee = " + str(val_saisonannee) + ""
+            join_athl_pr = " and apr.SaisonAnnee = cmp.SaisonAnnee"
+            order_by = " order by apr.""MaxIWFSaison"" desc "
+
+        display_opt = {'display': 'block'}
+        print(where_qry_quizz)
+        qry_quizz = """SELECT * FROM
+                        (SELECT distinct
+                            ath.Nom                         as "Nom"
+                      FROM ATHLETE as ath 
+                      LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
+                      LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+                      LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
+                      LEFT JOIN ATHLETE_PR as apr on apr.AthleteID = ath.AthleteID"""\
+                     + join_athl_pr + where_qry_quizz + order_by + """)
+                  """
+        # Connection à la base SQLite
+        dirname = os.path.dirname(__file__)
+        path_db = os.path.join(dirname, 'dataltero.db')
+        conn = sql.connect(database=path_db)
+
+        df_q = pd.read_sql_query(qry_quizz, conn)
+        print(df_q)
+    return display_opt, df_q.to_dict('records'), out_init[0], out_init[1], out_init[2], out_init[3], out_init[4], out_init[5], out_init[6], out_init[7], out_init[8], out_init[9]
+
+@callback(
+    [Output("txt_reponse", "children"),
+     Output("n1", "children", allow_duplicate=True),
+     Output("n2", "children", allow_duplicate=True),
+     Output("n3", "children", allow_duplicate=True),
+     Output("n4", "children", allow_duplicate=True),
+     Output("n5", "children", allow_duplicate=True),
+     Output("n6", "children", allow_duplicate=True),
+     Output("n7", "children", allow_duplicate=True),
+     Output("n8", "children", allow_duplicate=True),
+     Output("n9", "children", allow_duplicate=True),
+     Output("n10", "children", allow_duplicate=True)],
+     [Input("q_athlete_input", "value"),
+      Input("df_quizz", "data"),
+      Input("n1", "children"),
+      Input("n2", "children"),
+      Input("n3", "children"),
+      Input("n4", "children"),
+      Input("n5", "children"),
+      Input("n6", "children"),
+      Input("n7", "children"),
+      Input("n8", "children"),
+      Input("n9", "children"),
+      Input("n10", "children")
+      ],
+     allow_duplicates=True,
+     prevent_initial_call=True)
+
+def update_quizz(q_athlete, df_q, n_1, n_2, n_3, n_4, n_5, n_6, n_7, n_8, n_9, n_10):
+    print(q_athlete),
+    df_q_df = pd.DataFrame(df_q)
+    print(df_q_df)
+
+    out = [''] * 10
+    txt_out = q_athlete + " n'est pas dans la liste"
+    for i in range(0, 10):
+        print(i)
+        print(df_q_df['Nom'].values[i])
+        out[i] = str(locals()["n_" + str(i + 1)])
+        if q_athlete == df_q_df['Nom'].values[i]:
+            txt_out = "Bien joué, " + df_q_df['Nom'].values[i] + " est #" + str(i+1)
+            out[i] = str(locals()["n_" + str(i+1)]) + df_q_df['Nom'].values[i]
+            print(str(locals()["n_" + str(i+1)]) + df_q_df['Nom'].values[i])
+
+    return txt_out, out[0], out[1], out[2], out[3], out[4], out[5], out[6], out[7], out[8], out[9]
+
+
 
 #Export Excel
 clientside_callback(
