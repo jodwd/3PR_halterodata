@@ -8,8 +8,10 @@ import os
 import dash_daq as daq
 from datetime import datetime, timedelta
 import dash_breakpoints
+import time
 from dash_bootstrap_components._components.Container import Container
 
+print("0 start : " + str(time.time()))
 app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'}],
@@ -102,6 +104,9 @@ navbar = dbc.Navbar(
                 href="/",
                 style={"textDecoration": "none"},
             ),
+           # dbc.Col([
+           #     html.P("Nouveau : Testez vos connaissances avec la fonctionnalité 'Quizz' sur la page Listing !", style = {"color": "white", 'font-size': "12px"})
+           # ], xs=8, sm=6, md=3, lg=2, xl=2, align="center"),
             dbc.Col([
                 daq.BooleanSwitch(
                     id='bool_light',
@@ -109,6 +114,8 @@ navbar = dbc.Navbar(
                     labelPosition="bottom",
                     on=False),
             ], width="auto"),
+
+
             dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
             dbc.Collapse(
                 nav_button,

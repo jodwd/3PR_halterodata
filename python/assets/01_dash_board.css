@@ -21,6 +21,22 @@
     font-family: 'Helvetica Neue', sans-serif;
 }
 
+.news{
+    font-size: 11px;
+    font-family: 'Helvetica Neue', sans-serif;
+    background-color: rgb(40,40,45);
+    color: white;
+    margin-left: 2%;
+}
+
+.news_light{
+    font-size: 11px;
+    font-family: 'Helvetica Neue', sans-serif;
+    background-color: rgb(248, 249, 250);
+    color: black;
+    margin-left: 2%;
+}
+
 .titlebox {
     font-family: 'Helvetica Neue', sans-serif;
     width: 90%;
