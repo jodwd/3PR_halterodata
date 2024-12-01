@@ -18,43 +18,7 @@ path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
-qry = """SELECT * FROM
-            (SELECT distinct
-                ath.Nom                         as "Nom"
-            ,   substr(ath.DateNaissance, 7, 4) as "Né en"
-            ,   ath."Nationalite"               as "Pays"
-            ,   clb.Club                        as "Club"
-            ,   clb.Ligue                       as "Ligue"
-            ,   cat."Sexe"                      as "Sexe"
-            ,   cat."Serie"                     as "Serie"
-            ,   cat.RangSerie                   as "RangSerie"
-            ,   cat."CatePoids"                 as "CatePoids"
-            ,   cat."CateAge"                   as "CateAge"
-            ,   cat."CateMaster"                as "CateMaster"
-            ,   cat.Arrache                     as "Arr"
-            ,   cat.EpJete                      as "EpJ"
-            ,   cat.PoidsTotal                  as "Total"
-            ,   cat.TotalU13                    as "Tot U13"
-            ,   cat.PoidsDeCorps                as "PdC"
-            ,   cat.IWF_Calcul                  as "IWF"
-            ,   cat.IWF_CalculU13               as "IWF U13"
-            ,   ' ' || cmp.NomCompetitionCourt  as "Compet"
-            ,   cmp.DateCompet                  as "Date"
-            ,   apr.SaisonAnnee                 as "SaisonAnnee"
-            ,   apr.MaxIWFSaison                as "IWF Max Saison"
-            ,   apr.MaxIWF                      as "IWF Max"
-            ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee", cat.CatePoids
-                                  order by cat.PoidsTotal desc)
-                                                as "RowNumMaxCateTotal"
-            ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee"
-                                  order by cat.IWF_Calcul desc)
-                                                as "RowNumMaxSaison"
-          FROM ATHLETE as ath 
-          LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-          LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-          LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-          LEFT JOIN ATHLETE_PR as apr on apr.AthleteID = ath.AthleteID and apr.SaisonAnnee = cmp.SaisonAnnee)
-      """
+qry = """SELECT * FROM REPORT_LISTINGS"""
 
 df = pd.read_sql_query(qry, conn)
 
@@ -188,7 +152,7 @@ layout = html.Div([
             dbc.Modal([
                 dbc.ModalHeader("🎯 Quizz - Top 10"),
                 dbc.ModalBody([
-                    html.P("Choisissez vos options et cliquez sur 'Lancer'. Essayez de deviner tous les athlètes qui composent le top 10. Seuls les athlètes de nationalité française sont inclus."),
+                    html.P("Choisissez vos options et cliquez sur 'Lancer'. Essayez de deviner tous les athlètes qui composent le Top 10. Seuls les athlètes de nationalité française sont inclus."),
                     dcc.Dropdown(
                         options=[x for x in sorted(nom_sexe)],
                         multi=False,
@@ -197,25 +161,29 @@ layout = html.Div([
                         className="input-box"
                     ),
                     dcc.Dropdown(
-                        options=[x for x in sorted(nom_age)],
+                        options=[x for x in ["SEN", "U15", "U17", "U20"]],
                         multi=False,
                         id='quizz_input_a',
                         placeholder="Catégorie Age",
                         className="input-box",
                     ),
                     dcc.Dropdown(
-                        options=[x for x in sorted(nom_saison)],
+                        options=[x for x in [2022, 2023, 2024, 2025]],
                         multi=False,
                         id='quizz_input_sa',
                         placeholder="Saison",
                         className="input-box",
                     ),
-                    dbc.Col([
-                        dbc.Button("▶️ Lancer", id="lancer_quizz", color="secondary", outline=True, className="me-1", size="sm"),
-                        html.Div([
-                            dbc.Button("🏳️ Abandonner", id="stop_quizz", color="secondary", outline=True, className="me-1", size="sm"),
-                        ], id="button_stop", style={'display': 'none'}),
-                    ], xs=12, sm=12, md=10, lg=8, xl=6),
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Button("▶️ Lancer", id="lancer_quizz", color="secondary", outline=True, className="me-1", size="sm"),
+                            html.Div([
+                                dbc.Button("🏳️ Abandonner", id="stop_quizz", color="secondary", outline=True, className="me-1", size="sm"),
+                            ], id="button_stop", style={'display': 'none'}),
+                        ], xs=12, sm=12, md=10, lg=8, xl=6),
+                    ]),
+
+                html.P(""),
                 html.P("", id="txt_q_titre"),
                 html.Div([
                     dcc.Dropdown(
@@ -260,7 +228,7 @@ layout = html.Div([
                 tooltip={"placement": "bottom", "always_visible": True},
                 id='year-slider',
                 className='slider_zone')
-        ], xs=6, sm=6, md=8, lg=8, xl=9),
+        ], xs=5, sm=5, md=6, lg=6, xl=8),
     ]),
     html.Br(),
     html.Div([
@@ -744,6 +712,7 @@ def toggle_info_modal(open_clicks_q, close_clicks_q, is_open_q):
          Output("div_q_athlete", "style"),
          Output("txt_q_titre", "children"),
          Output("df_quizz", "data"),
+         Output("lancer_quizz", "n_clicks"),
          Output("n1", "children", allow_duplicate=True),
          Output("n2", "children", allow_duplicate=True),
          Output("n3", "children", allow_duplicate=True),
@@ -771,7 +740,10 @@ def toggle_info_modal(open_clicks_q, close_clicks_q, is_open_q):
     prevent_initial_call=True
 )
 
-def quizz_lancer(q_is_open, val_sexe, val_age, val_saisonannee):
+def quizz_lancer(q_is_started, val_sexe, val_age, val_saisonannee):
+    #On ne relance pas le quizz si changement de catégori
+    if not q_is_started:
+        raise PreventUpdate
     display_opt = {'display': 'none', 'color': 'black'}
     out_init = ['']*10
     txt_out=''
@@ -787,7 +759,7 @@ def quizz_lancer(q_is_open, val_sexe, val_age, val_saisonannee):
         else:
             out_init[i]='#' + str(i+1) + ' '
 
-    if q_is_open:
+    if q_is_started:
         txt_out="C'est parti !"
         where_qry_quizz = " where ath.""Nationalite""='FR' and cat.Sexe = '" + val_sexe + "'"
         join_athl_pr=""
@@ -822,7 +794,7 @@ def quizz_lancer(q_is_open, val_sexe, val_age, val_saisonannee):
         if val_saisonannee:
             txt_q_titre = txt_q_titre + 'Saison ' + str(val_saisonannee-1) + '-' + str(val_saisonannee)
         else:
-            txt_q_titre = txt_q_titre + 'sur toutes les saisons '
+            txt_q_titre = txt_q_titre + 'sur toutes les saisons (2021+) '
 
         dirname = os.path.dirname(__file__)
         path_db = os.path.join(dirname, 'dataltero.db')
@@ -830,7 +802,7 @@ def quizz_lancer(q_is_open, val_sexe, val_age, val_saisonannee):
 
         df_q = pd.read_sql_query(qry_quizz, conn)
         print(df_q)
-    return txt_out, display_opt, display_opt,  display_opt, txt_q_titre, df_q.to_dict('records'), \
+    return txt_out, display_opt, display_opt,  display_opt, txt_q_titre, df_q.to_dict('records'), 0, \
         out_init[0], out_init[1], out_init[2], out_init[3], out_init[4], out_init[5], out_init[6], out_init[7], out_init[8], out_init[9], \
         display_opt, display_opt, display_opt, display_opt, display_opt, display_opt, display_opt, display_opt, display_opt, display_opt
 
@@ -880,7 +852,7 @@ def update_quizz(q_athlete, df_q, n_1, n_2, n_3, n_4, n_5, n_6, n_7, n_8, n_9, n
         print(i)
         print(df_q_df['Nom'].values[i])
         out[i] = str(locals()["n_" + str(i + 1)])
-        if len(out[i])>=8:
+        if q_athlete == df_q_df['Nom'].values[i] and len(out[i])>=8:
             a=a+1
             txt_out = q_athlete + " a déjà été trouvé(e)"
         elif q_athlete == df_q_df['Nom'].values[i] and len(out[i])<=8:

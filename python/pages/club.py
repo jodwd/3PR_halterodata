@@ -18,33 +18,7 @@ path_db = os.path.join(dirname, 'dataltero.db')
 conn = sql.connect(database=path_db)
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
-qry = """SELECT * FROM
-            (SELECT distinct
-                ath.Nom             as "Nom"
-            ,   clb.Club            as "Club"
-            ,   clb.Ligue           as "Ligue"
-            ,   cat."Sexe"          as "Sexe"
-            ,   cat.Arrache         as "Arr"
-            ,   cat.ArracheU13      as "ArrU13"
-            ,   cat.EpJete          as "EpJ"
-            ,   cat.EpJeteU13       as "EpJU13"
-            ,   cat.PoidsTotal      as "Tot"
-            ,   cat.PoidsDeCorps    as "PdC"
-            ,   cat.IWF_Calcul      as "IWF"   
-            ,   apr.SaisonAnnee     as "SaisonAnnee"
-            ,   apr.MaxIWFSaison    as "IWF Max"
-            ,   cat.Serie           as "Serie"
-            ,   cat.RangSerie       as "RangSerie"
-            ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee" order by cat.IWF_Calcul desc) as "RowNum"
-            ,   row_number() over(partition by ath.Nom, apr."SaisonAnnee", cat.CatePoids
-                                  order by cat.PoidsTotal desc) as "RowNumMaxCateTotal"
-          FROM ATHLETE as ath 
-          LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-          LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-          LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-          LEFT JOIN ATHLETE_PR as apr on apr.AthleteID = ath.AthleteID and apr.SaisonAnnee = cmp.SaisonAnnee)
-      """
-
+qry = """SELECT * FROM REPORT_CLUB"""
 df = pd.read_sql_query(qry, conn)
 df.head()
 

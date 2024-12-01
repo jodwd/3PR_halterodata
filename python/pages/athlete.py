@@ -20,20 +20,7 @@ conn = sql.connect(database=path_db)
 print("db conn : " + str(time.time()))
 
 # Requête principale
-#qry = """SELECT ath.Nom, ath.DateNaissance as "Né le"
-#      , substr(cmp."NomCompetitionCourt", 1, 64) as "Competition", cat."PoidsDeCorps" as "PdC", clb.Club
-#      , cmp.AnneeMois as "Mois", cmp.SaisonAnnee, cmp.MoisCompet, cmp.DateCompet as "Date", cat.Sexe
-#      , cat.Arr1, cat.Arr2, cat.Arr3, cat.Arrache as "Arr", cat.Epj1, cat.Epj2, cat.Epj3, cat.EpJete as "EpJ"
-#      , cat.Serie as "Série", cat.Categorie as "Catégorie", cat.PoidsTotal as "Total", cat.IWF_Calcul as "IWF"
-#      ,   ath."MondeSEN",    ath."MondeU20",    ath."MondeU17",    ath."MondeMasters"
-#      ,   ath."EuropeSEN",   ath."EuropeU23",   ath."EuropeU20",   ath."EuropeU17",   ath."EuropeMasters"
-#      ,   ath."FranceElite",   ath."GrandPrixFederal",   ath."TropheeNationalU13"
-#      ,   ath."NbCompet",   ath."Nb6sur6",   ath."Nb2sur6DerniereBarre",   ath."NbBulles",   ath."NbDoublesBulles"
-#      FROM ATHLETE as ath
-#      LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID
-#      LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition
-#      LEFT JOIN CLUB as clb on clb.Club = cat.CATClub"""
-qry = "select * from report_athletes"
+qry = "SELECT * FROM REPORT_ATHLETES"
 df = pd.read_sql_query(qry, conn)
 df.head()
 
@@ -49,6 +36,11 @@ qry2 = """SELECT ath.Nom, cat.Serie as "Série", cat.Categorie as "Catégorie"
 df2 = pd.read_sql_query(qry2, conn)
 df2.head()
 
+# Requête
+qry3 = """SELECT max(cmp.DateCompet) as "Date"
+      FROM COMPET as cmp """
+df3 = pd.read_sql_query(qry3, conn)
+df3.head()
 
 print("qry done : " + str(time.time()))
 
@@ -66,6 +58,10 @@ list_names = list(set(df[(df['SaisonAnnee'] >= min(selected_year)) & (df['Saison
 # body
 layout = html.Div([
     # Header & filtres
+
+        dbc.Row([
+            html.P("MàJ : " + df3.iloc[0,0] + " - Nouveau : Quizz 'Top 10' sur la page 'Listings'", id="zone_news", className="news")
+        ]),
         dbc.Row([            # Titre
             dbc.Col([
                 dbc.Button(" Dashboard Athlètes ", id="title-box", color="danger", className="titlebox", size="md"),
@@ -1026,7 +1022,8 @@ def update_table_athl1(is_open_ach1, is_open_ach2, is_open_ach3, is_open_ach4):
      Output("reset_col", "color"),
      Output("excel_export", "color"),
      Output("bool_total", "label"),
-     Output("year-slider-athl", "marks")],
+     Output("year-slider-athl", "marks"),
+     Output("zone_news", "className")],
     [Input("bool_light", "on")]
 )
 
@@ -1036,6 +1033,7 @@ def light_mode_athl(on):
         css_grid = "ag-theme-quartz"
         reset_color = "secondary"
         reset_col_xl = "secondary"
+        news_cn = "news_light"
         iwf_total_label = {"label": "IWF/Total", 'style': {"color": "rgb(40,40,45)"}}
         slider_marks = {str(year): {'label' : str(year), 'style':{'color':'rgb(40,40,45)'}} for year in df['SaisonAnnee'].unique()}
     else:
@@ -1043,11 +1041,12 @@ def light_mode_athl(on):
         css_grid = "ag-theme-quartz-dark"
         reset_color = "light"
         reset_col_xl = "light"
+        news_cn = "news"
         iwf_total_label = {"label": "IWF/Total", 'style': {"color": "white"}}
         slider_marks = {str(year): {'label' : str(year), 'style':{'color':'white'}} for year in df['SaisonAnnee'].unique()}
 
     print("d")
-    return css_body, css_grid, reset_color, reset_col_xl, iwf_total_label, slider_marks;
+    return css_body, css_grid, reset_color, reset_col_xl, iwf_total_label, slider_marks, news_cn;
 
 #Export Excel
 clientside_callback(
