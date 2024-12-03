@@ -400,9 +400,9 @@ def update_data(selected_year=None, txt_ligue=None, txt_club=None, txt_serie=Non
 
     dat = fdff.to_dict('records')
 
-    filtered_df=round(fdff.head(4),0)
+    filtered_df=round(fdff.head(5),0)
     res = filtered_df['IWF Max'].sum()
-    updated_title_f = "Top 4 Femmes : " + str(int(res)) + " IWF"
+    updated_title_f = "Top 5 Femmes : " + str(int(res)) + " IWF"
 
     return updated_title_f, dat
 
@@ -432,99 +432,19 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
     txt_qry = 'clb.club'
     mode_ligue = False
     disp_cards = False
+    qry_age = """SELECT * FROM REPORT_CLUB_LIGUE_RANG"""
     if txt_ligue and not txt_club:
         mode_ligue = True
-        txt_qry='clb.ligue'
         if len(txt_ligue) == 1:
             disp_cards = True
             print(txt_ligue)
     if txt_club:
         if len(txt_club) == 1:
             disp_cards = True
+            qry_age = """SELECT * FROM REPORT_CLUB_RANG"""
             print(txt_club)
 
     conn = sql.connect(database=path_db)
-    qry_age = """SELECT
-    cmp.SaisonAnnee             as "Saison",""" + txt_qry + """,
-    CASE
-        WHEN cat."CateAge" IN ('U10','U13') THEN 'U10/U13'
-        WHEN cat."CateAge" IN ('U15','U17') THEN 'U15/U17'
-        WHEN cat."CateAge" = 'U20' THEN 'U20'
-        ELSE 'SEN'
-    END                          as "CateAge",
-    rclb.row_num_nb_part         as "RangPartClubCateAge",
-    rclb.row_num_nb_athl         as "RangAthlClubCateAge",
-    COUNT(1)                     as "NbPart",
-    COUNT(DISTINCT ath.Nom)      as "NbAthl"
-    FROM ATHLETE as ath 
-    LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-    LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-    LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-    LEFT JOIN 
-    (SELECT
-        cmp.SaisonAnnee             as "Saison",
-        """ + txt_qry + """,
-        CASE cat."CateAge" 
-            WHEN 'U10' THEN 'U10/U13'
-            WHEN 'U13' THEN 'U10/U13'
-            WHEN 'U15' THEN 'U15/U17'
-            WHEN 'U17' THEN 'U15/U17'
-            WHEN 'U20' THEN 'U20'
-            ELSE 'SEN'
-        END                           as "CateAge",
-        COUNT(1)     as "Nb_Part",
-        COUNT(DISTINCT ath.Nom)      as "Nb_Athl",
-        ROW_NUMBER() OVER (PARTITION BY cmp.SaisonAnnee,
-            CASE cat."CateAge" 
-                WHEN 'U10' THEN 'U10/U13'
-                WHEN 'U13' THEN 'U10/U13'
-                WHEN 'U15' THEN 'U15/U17'
-                WHEN 'U17' THEN 'U15/U17'
-                WHEN 'U20' THEN 'U20'
-                ELSE 'SEN'
-            END
-            ORDER BY COUNT(1) DESC) as row_num_nb_part,
-        ROW_NUMBER() OVER (PARTITION BY cmp.SaisonAnnee,
-            CASE cat."CateAge" 
-                WHEN 'U10' THEN 'U10/U13'
-                WHEN 'U13' THEN 'U10/U13'
-                WHEN 'U15' THEN 'U15/U17'
-                WHEN 'U17' THEN 'U15/U17'
-                WHEN 'U20' THEN 'U20'
-                ELSE 'SEN'
-            END
-            ORDER BY COUNT(DISTINCT ath.Nom) DESC) as row_num_nb_athl
-        FROM ATHLETE as ath 
-        LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-        LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-        LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-        GROUP BY cmp.SaisonAnnee, """ + txt_qry + """, 
-            CASE cat."CateAge" 
-                WHEN 'U10' THEN 'U10/U13'
-                WHEN 'U13' THEN 'U10/U13'
-                WHEN 'U15' THEN 'U15/U17'
-                WHEN 'U17' THEN 'U15/U17'
-                WHEN 'U20' THEN 'U20'
-                ELSE 'SEN'
-            END) as rclb
-    ON rclb.Saison = cmp.SaisonAnnee
-    AND rclb.CateAge = CASE cat."CateAge" 
-        WHEN 'U10' THEN 'U10/U13'
-        WHEN 'U13' THEN 'U10/U13'
-        WHEN 'U15' THEN 'U15/U17'
-        WHEN 'U17' THEN 'U15/U17'
-        WHEN 'U20' THEN 'U20'
-        ELSE 'SEN'
-    END
-    AND r""" + txt_qry + """ = """ + txt_qry + """
-    GROUP BY cmp.SaisonAnnee, """ + txt_qry + """, 
-        CASE
-            WHEN cat."CateAge" IN ('U10','U13') THEN 'U10/U13'
-            WHEN cat."CateAge" IN ('U15','U17') THEN 'U15/U17'
-            WHEN cat."CateAge" = 'U20' THEN 'U20'
-            ELSE 'SEN'
-        END
-          """
     df_ac = pd.read_sql_query(qry_age, conn)
     df_ac.head()
     print(txt_club)
