@@ -1,14 +1,16 @@
 
 .body {
-  background-color: rgb(40,40,45);
-  margin: 0;
-  padding: 0;
+    background-color: rgb(40,40,45);
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
 }
 
 .body_light {
     background-color: rgb(248, 249, 250);
     margin-left: 0px;
     margin-right: 0px;
+    font-size: 12px;
 }
 
 .title-box {
@@ -55,12 +57,21 @@
     text-align: center;
 }
 
- .slider_zone {
+.slider_zone {
   font-family: 'Helvetica Neue', sans-serif;
   font-size: 12px;
   color: white;
 }
 
+.date-pick{
+  font-family: 'Helvetica Neue', sans-serif;
+  width=100%;
+  font-size: inherit;
+}
+
+.DateInput_input {
+  font-size: inherit;  /*or whatever size you would like to have*/
+}
 /* Sidebar */
 .sidebar {
   position: fixed;

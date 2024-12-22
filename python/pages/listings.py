@@ -2,6 +2,7 @@ import dash
 import plotly.express as px
 from dash import dash_table, dcc, html, callback, State, clientside_callback
 from dash.exceptions import PreventUpdate
+from datetime import date, datetime
 import pandas as pd
 import sqlite3 as sql
 import dash_ag_grid as dag
@@ -45,7 +46,13 @@ nom_serie = df['Serie'].unique().tolist()
 nom_saison = df['SaisonAnnee'].unique().tolist()
 list_names = df['Nom'].unique().tolist()
 nom_competition = ['Critérium National', 'Chpt Province', 'Chpt Ligue', 'Challenge Avenir', 'Chpt Départemental',  'Cpe de France', 'France Elite', 'Fédéral', 'TOP 9', 'NAT 1', 'NAT 2', 'REG 1',
-                   'Monde', 'Trophée Nat']
+                   'Monde', 'Tournoi International', 'Trophée Nat']
+
+init_curr_year = datetime.now().year
+curr_year = init_curr_year
+curr_month = datetime.now().month
+if curr_month>8:
+    curr_year=curr_year+1
 
 # body
 layout = html.Div([
@@ -127,7 +134,24 @@ layout = html.Div([
                 placeholder="Compétition",
                 className="input-box"
             )
-        ], xs=12, sm=12, md=6, lg=3, xl=3),
+        ], xs=6, sm=6, md=3, lg=3, xl=3),
+        dbc.Col([
+            html.Div([
+                dcc.DatePickerRange(
+                    id='filtre_dates',
+                    min_date_allowed=date(curr_year-1, 9, 1),
+                    max_date_allowed=date(curr_year, 8, 31),
+                    initial_visible_month=date(init_curr_year, curr_month, 1),
+                    start_date=date(curr_year-1, 9, 1),
+                    end_date=date(curr_year, 8, 31),
+                    display_format="DD/MM/YYYY",
+                    start_date_placeholder_text="Date Début",
+                    end_date_placeholder_text="Date Fin"
+                )
+            ], id="date_pick", className="date-pick"
+        ),
+        ], xs=6, sm=6, md=3, lg=3, xl=3),
+
     ]),
 
     html.Br(),
