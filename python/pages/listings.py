@@ -1,6 +1,6 @@
 import dash
 import plotly.express as px
-from dash import dash_table, dcc, html, callback, State, clientside_callback
+from dash import dash_table, dcc, html, callback, State, clientside_callback, ctx
 from dash.exceptions import PreventUpdate
 from datetime import date, datetime
 import pandas as pd
@@ -74,7 +74,8 @@ layout = html.Div([
                 multi=False,
                 id='my_txt_input1',
                 placeholder="Sexe",
-                className="input-box"
+                className="input-box",
+                value=None
             )
         ], xs=3, sm=3, md=1, lg=1, xl=1),
         dbc.Col([
@@ -84,6 +85,7 @@ layout = html.Div([
                 id='my_txt_input5',
                 placeholder="Nationalité",
                 className="input-box",
+                value=None
                 )
         ], xs=3, sm=3, md=2, lg=2, xl=2),
         dbc.Col([
@@ -92,7 +94,8 @@ layout = html.Div([
                 multi=True,
                 id='my_txt_input2',
                 placeholder="Catégorie Poids",
-                className="input-box"
+                className="input-box",
+                value=None
             )
         ], xs=6, sm=6, md=3, lg=3, xl=3),
         dbc.Col([
@@ -102,6 +105,7 @@ layout = html.Div([
                 id='my_txt_input3',
                 placeholder="Catégorie Age",
                 className="input-box",
+                value=None
                 ),
         ], xs=6, sm=6, md=3, lg=3, xl=3),
         dbc.Col([
@@ -114,7 +118,8 @@ layout = html.Div([
                 multi=True,
                 id='my_txt_input4',
                 placeholder="Ligue",
-                className="input-box"
+                className="input-box",
+                value=None
             )
         ], xs=6, sm=6, md=3, lg=3, xl=3),
         dbc.Col([
@@ -123,7 +128,8 @@ layout = html.Div([
                 multi=True,
                 id='my_txt_input6',
                 placeholder="Série",
-                className="input-box"
+                className="input-box",
+                value=None
             )
         ], xs=6, sm=6, md=3, lg=3, xl=3),
         dbc.Col([
@@ -132,7 +138,8 @@ layout = html.Div([
                 multi=True,
                 id='my_txt_input7',
                 placeholder="Compétition",
-                className="input-box"
+                className="input-box",
+                value=None
             )
         ], xs=6, sm=6, md=3, lg=3, xl=3),
         dbc.Col([
@@ -164,13 +171,13 @@ layout = html.Div([
                                   color="#FFC107"),
                 html.P("Masters"),
                 ], id="div_masters", className="bool_switch"),
-        ], xs=3, sm=3, md=2, lg=2, xl=1),
+            ], xs=2, sm=2, md=2, lg=2, xl=1),
 
         dbc.Col([
             dbc.Button("↪️", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
             dbc.Button("💾", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
-            dbc.Button("🎯 Quizz", id="quizz", color="light", outline=True, className="me-1", size="sm"),
-        ], xs=3, sm=3, md=2, lg=2, xl=2),
+            dbc.Button("🎯", id="quizz", color="light", outline=True, className="me-1", size="sm"),
+        ], xs=4, sm=4, md=4, lg=2, xl=2),
 
         dbc.Col([
             dbc.Modal([
@@ -252,7 +259,7 @@ layout = html.Div([
                 tooltip={"placement": "bottom", "always_visible": True},
                 id='year-slider',
                 className='slider_zone')
-        ], xs=5, sm=5, md=6, lg=6, xl=8),
+        ], xs=5, sm=5, md=5, lg=6, xl=8),
     ]),
     html.Br(),
     html.Div([
@@ -294,7 +301,8 @@ layout = html.Div([
      Input('my_txt_input3', 'value'),
      Input('my_txt_input4', 'value'),
      Input('my_txt_input5', 'value'),
-     Input('my_txt_input6', 'value')]
+     Input('my_txt_input6', 'value')],
+    prevent_initial_call=True
 )
 def update_datalist(selected_year, on, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
     if selected_year == '':
@@ -326,7 +334,8 @@ def update_datalist(selected_year, on, txt_inserted2, txt_inserted3, txt_inserte
      Input('my_txt_input3', 'value'),
      Input('my_txt_input4', 'value'),
      Input('my_txt_input5', 'value'),
-     Input('my_txt_input6', 'value')]
+     Input('my_txt_input6', 'value')],
+    prevent_initial_call=True
 )
 
 def update_datalist(selected_year, on, txt_inserted1, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6):
@@ -359,7 +368,8 @@ def update_datalist(selected_year, on, txt_inserted1, txt_inserted3, txt_inserte
      Input('my_txt_input2', 'value'),
      Input('my_txt_input4', 'value'),
      Input('my_txt_input5', 'value'),
-     Input('my_txt_input6', 'value')]
+     Input('my_txt_input6', 'value')],
+    prevent_initial_call=True
 )
 def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted4, txt_inserted5, txt_inserted6):
     if selected_year == '':
@@ -424,7 +434,8 @@ def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserte
      Input('my_txt_input2', 'value'),
      Input('my_txt_input3', 'value'),
      Input('my_txt_input4', 'value'),
-     Input('my_txt_input6', 'value')]
+     Input('my_txt_input6', 'value')],
+    prevent_initial_call=True
 )
 def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted6):
     if selected_year == '':
@@ -455,7 +466,8 @@ def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserte
      Input('my_txt_input2', 'value'),
      Input('my_txt_input3', 'value'),
      Input('my_txt_input4', 'value'),
-     Input('my_txt_input5', 'value')]
+     Input('my_txt_input5', 'value')],
+    prevent_initial_call=True
 )
 def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5):
     if selected_year == '':
@@ -483,20 +495,25 @@ def update_datalist(selected_year, on, txt_inserted1, txt_inserted2, txt_inserte
 @callback(
     [Output('ag-datatable-l', "rowData"),
      Output('ag-datatable-l', "columnDefs"),
-     Output('ag-datatable-l', "defaultColDef")],
+     Output('ag-datatable-l', "defaultColDef"),
+     Output('filtre_dates', 'start_date'),
+     Output('filtre_dates', 'end_date'),
+     ],
     [Input('year-slider', 'value'),
      Input('bool_masters', 'on'),
-     Input(component_id='my_txt_input1', component_property='value'),  # sexe
-     Input(component_id='my_txt_input2', component_property='value'),  # poids
-     Input(component_id='my_txt_input3', component_property='value'),  # age
-     Input(component_id='my_txt_input4', component_property='value'),  # ligue
-     Input(component_id='my_txt_input5', component_property='value'),  # nationalité
-     Input(component_id='my_txt_input6', component_property='value'),  # série
-     Input(component_id='my_txt_input7', component_property='value'),  # compétition
+     Input('my_txt_input1', 'value'),  # sexe
+     Input('my_txt_input2', 'value'),  # poids
+     Input('my_txt_input3', 'value'),  # age
+     Input('my_txt_input4', 'value'),  # ligue
+     Input('my_txt_input5', 'value'),  # nationalité
+     Input('my_txt_input6', 'value'),  # série
+     Input('my_txt_input7', 'value'),  # compétition
+     Input('filtre_dates', 'start_date'),
+     Input('filtre_dates', 'end_date'),
      Input("display", "children") #taille écran
      ])
 
-def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7, breakpoint_str):
+def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, txt_inserted4, txt_inserted5, txt_inserted6, txt_inserted7, start_date, end_date, breakpoint_str):
     #on bloque le déplacement de colonne si l'écran est trop petit
     if breakpoint_str == "sm" or breakpoint_str == "xs":
         col_move = True
@@ -504,20 +521,30 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
         col_move = False
     defaultColDef={"resizable": True, "sortable": True, "filter": True, "suppressMovable": col_move}
 
+    print(ctx.triggered_id)
 
+    #si on change d'année de listing on recalcule start_date et end_date du date picker
+    if datetime.strptime(start_date, '%Y-%m-%d').date()>date(selected_year, 8, 31) or datetime.strptime(end_date, '%Y-%m-%d').date()<date(curr_year-1, 9, 1):
+        start_date=str(date(selected_year-1, 9, 1))
+        end_date=str(date(selected_year, 8, 31))
+
+    filtered_df = df[(df['Date'] >= start_date)]
+    filtered_df = filtered_df[(filtered_df['Date'] <= end_date)]
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
-    filtered_df = df[(df['SaisonAnnee'] == selected_year)]
+    filtered_df = filtered_df[(filtered_df['SaisonAnnee'] == selected_year)]
     if txt_inserted1:
         filtered_df = filtered_df[(filtered_df['Sexe'] == txt_inserted1)]
         print(txt_inserted1)
     if not (txt_inserted2 or txt_inserted6 or txt_inserted7):
-        filtered_df = filtered_df[(filtered_df['RowNumMaxSaison'] == 1)]
+        filtered_df = filtered_df.sort_values(by=['IWF'], ascending=[False])
+        filtered_df = filtered_df.groupby('Nom', as_index=False).first()
     if txt_inserted2 and not(txt_inserted7):
         filtered_df = filtered_df[(filtered_df['RowNumMaxCateTotal'] == 1)]
     if txt_inserted2:
-        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
         filtered_df = filtered_df.sort_values(by=['Total', 'IWF'], ascending=[False, False])
+        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(txt_inserted2))]
+        filtered_df = filtered_df.groupby('Nom', as_index=False).first()
         print(txt_inserted2)
     # Gestion spécifique masters
     if on == True:
@@ -553,7 +580,6 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
             "children": [
                 {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
                 {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
-
             ],
         },
         {
@@ -603,7 +629,6 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                     "children": [
                         {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
                         {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
-
                     ],
                 },
                 {
@@ -635,10 +660,9 @@ def update_data(selected_year, on, txt_inserted1, txt_inserted2, txt_inserted3, 
                 },
             ]
 
-
     dat = filtered_df.to_dict('records')
 
-    return dat, columns, defaultColDef
+    return dat, columns, defaultColDef, start_date, end_date
 
 @callback(
     Output("ag-datatable-l", "columnDefs", allow_duplicate=True),
@@ -725,7 +749,6 @@ def light_mode_list(on):
 def toggle_info_modal(open_clicks_q, close_clicks_q, is_open_q):
     if open_clicks_q or close_clicks_q:
         return not is_open_q
-    print(str(is_open_q))
     return is_open_q
 
 #Lancer Quizz
@@ -882,7 +905,6 @@ def update_quizz(q_athlete, df_q, n_1, n_2, n_3, n_4, n_5, n_6, n_7, n_8, n_9, n
         elif q_athlete == df_q_df['Nom'].values[i] and len(out[i])<=8:
             txt_out = "Bien joué, " + df_q_df['Nom'].values[i] + " est #" + str(i+1)
             out[i] = str(locals()["n_" + str(i+1)]) + df_q_df['Nom'].values[i]
-            print(str(locals()["n_" + str(i+1)]) + df_q_df['Nom'].values[i])
             a=a+1
 
     if a == 10:
@@ -930,7 +952,6 @@ def update_quizz(q_athlete, df_q, n_1, n_2, n_3, n_4, n_5, n_6, n_7, n_8, n_9, n
 
 def end_quizz(stop_q, df_q, n_1, n_2, n_3, n_4, n_5, n_6, n_7, n_8, n_9, n_10):
     if stop_q is None or stop_q==0:
-        print("sttop")
         raise PreventUpdate
     if stop_q:
         df_q_df = pd.DataFrame(df_q)

@@ -16,6 +16,7 @@
 .title-box {
   float: left;
   color: rgb(40,40,45);
+  Height: 35px;
 }
 
 .bool_switch {
@@ -71,6 +72,7 @@
 
 .DateInput_input {
   font-size: inherit;  /*or whatever size you would like to have*/
+   Height: 20px;
 }
 /* Sidebar */
 .sidebar {
