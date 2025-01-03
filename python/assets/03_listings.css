@@ -16,7 +16,11 @@
 .title-box {
   float: left;
   color: rgb(40,40,45);
-  Height: 35px;
+  font-family: 'Helvetica Neue', sans-serif;
+  width: 90%;
+  margin-top: 2%;
+  margin-left: 2%;
+  text-align: center;
 }
 
 .bool_switch {
@@ -55,7 +59,8 @@
 }
 
 .boutons {
-    text-align: center;
+  text-align: center;
+  font-size: 12px;
 }
 
 .slider_zone {
@@ -66,14 +71,20 @@
 
 .date-pick{
   font-family: 'Helvetica Neue', sans-serif;
-  width=100%;
+  width: 100%;
   font-size: inherit;
+  text-align: center;
+  align-self: center;
+  height: 18px;
+  margin-top: 1%;
 }
 
 .DateInput_input {
   font-size: inherit;  /*or whatever size you would like to have*/
    Height: 20px;
 }
+
+
 /* Sidebar */
 .sidebar {
   position: fixed;
