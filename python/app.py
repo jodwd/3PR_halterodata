@@ -53,8 +53,9 @@ nav_button = \
                     html.P("🐓 Basé sur les données FFHM Scoresheet"),
                     html.P("🔄 Mise à Jour tous les week-ends"),
                     html.P("🏋️ Données à jour au " + df.iloc[0,0]),
-                    html.P("👨‍💻 https://github.com/jodwd/3PR_halterodata"),
-                    html.P("📧 Contact : trois3pr@gmail.com"),
+                    html.P("👨‍💻 Repo : https://github.com/jodwd/3PR_halterodata"),
+                    html.P("📷 Insta : @3pr.fr"),
+                    html.P("📧 Mail : trois3pr@gmail.com"),
                     html.Div([], id="help-txt"),
                 ]),
                 dbc.ModalFooter(
