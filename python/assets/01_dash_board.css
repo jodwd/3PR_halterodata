@@ -21,11 +21,31 @@
     font-family: 'Helvetica Neue', sans-serif;
 }
 
+.news{
+    font-size: 11px;
+    font-family: 'Helvetica Neue', sans-serif;
+    background-color: rgb(40,40,45);
+    color: white;
+    margin-left: 2%;
+}
+
+.news_light{
+    font-size: 11px;
+    font-family: 'Helvetica Neue', sans-serif;
+    background-color: rgb(248, 249, 250);
+    color: black;
+    margin-left: 2%;
+}
+
 .titlebox {
     font-family: 'Helvetica Neue', sans-serif;
     width: 90%;
     margin-top: 2%;
     margin-left: 2%;
+    text-align: center;
+}
+
+.boutons {
     text-align: center;
 }
 
@@ -47,6 +67,11 @@
     font-size: 14px;
     line-height: 16px;
     text-align: justify;
+}
+
+.ath_info_header{
+    font-size: 20px;
+    line-height: 20px;
 }
 
 .ag-theme-quartz-dark {

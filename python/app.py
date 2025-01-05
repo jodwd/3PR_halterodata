@@ -8,8 +8,10 @@ import os
 import dash_daq as daq
 from datetime import datetime, timedelta
 import dash_breakpoints
+import time
 from dash_bootstrap_components._components.Container import Container
 
+print("0 start : " + str(time.time()))
 app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'}],
@@ -49,9 +51,11 @@ nav_button = \
                 dbc.ModalHeader("Informations & Aide"),
                 dbc.ModalBody([
                     html.P("🐓 Basé sur les données FFHM Scoresheet"),
+                    html.P("🔄 Mise à Jour tous les week-ends"),
                     html.P("🏋️ Données à jour au " + df.iloc[0,0]),
-                    html.P("👨‍💻 https://github.com/jodwd/3PR_halterodata"),
-                    html.P("📧 trois3pr@gmail.com"),
+                    html.P("👨‍💻 Repo : https://github.com/jodwd/3PR_halterodata"),
+                    html.P("📷 Insta : @3pr.fr"),
+                    html.P("📧 Mail : trois3pr@gmail.com"),
                     html.Div([], id="help-txt"),
                 ]),
                 dbc.ModalFooter(
@@ -101,6 +105,9 @@ navbar = dbc.Navbar(
                 href="/",
                 style={"textDecoration": "none"},
             ),
+           # dbc.Col([
+           #     html.P("Nouveau : Testez vos connaissances avec la fonctionnalité 'Quizz' sur la page Listing !", style = {"color": "white", 'font-size': "12px"})
+           # ], xs=8, sm=6, md=3, lg=2, xl=2, align="center"),
             dbc.Col([
                 daq.BooleanSwitch(
                     id='bool_light',
@@ -108,6 +115,8 @@ navbar = dbc.Navbar(
                     labelPosition="bottom",
                     on=False),
             ], width="auto"),
+
+
             dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
             dbc.Collapse(
                 nav_button,
@@ -142,6 +151,7 @@ html.Div(children=[
     id="page-content"
 )
 
+
 # On change le titre en fonction de la taille de l'écran
 clientside_callback(
     """(wBreakpoint, w) => {
@@ -154,7 +164,8 @@ clientside_callback(
 )
 @app.callback(
     Output("nav_brand", "children"),
-    Input("display", "children")
+    Input("display", "children"),
+    prevent_initial_call=True
 )
 
 def change_title_screensize(breakpoint_str):
@@ -177,6 +188,7 @@ def change_title_screensize(breakpoint_str):
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],
     [State("navbar-collapse", "is_open")],
+    prevent_initial_call=True
 )
 def toggle_navbar_collapse(n, is_open):
     if n:
@@ -189,6 +201,7 @@ def toggle_navbar_collapse(n, is_open):
     [Input("open", "n_clicks"),
     Input("close-button", "n_clicks")],
     State("info-modal", "is_open"),
+    prevent_initial_call=True
 )
 
 def toggle_info_modal(open_clicks, close_clicks, is_open):
@@ -212,7 +225,7 @@ def page_info(path_name, is_open):
         print(path_name)
         help_div = []
         if str(path_name) == '/' or str(path_name) == '' or str(path_name) == '/athletes':
-            help_div = [html.H3("Dashboard Athlètes"),
+            help_div = [html.H3("Perfs Athlètes"),
                         html.P("On peut suivre les performances détaillées d'un athlète et les comparer à d'autres athlètes"),
                         html.P("Quand on choisit un athlète une carte apparait en haut qui donne des informations clés sur l'athlète.",
                               "On peut également cliquer sur +Info pour afficher ses performances depuis le début de Scoresheet."),
@@ -249,6 +262,7 @@ def page_info(path_name, is_open):
     [Input("anniv", "n_clicks"),
     Input("close-button-anniv", "n_clicks")],
     State("anniv-modal", "is_open"),
+    prevent_initial_call=True
 )
 
 def toggle_anniv_modal(open_clicks, close_clicks, is_open):
@@ -300,4 +314,4 @@ def anniv(is_open):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8057)
