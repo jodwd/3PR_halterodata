@@ -8,6 +8,8 @@ import sqlite3 as sql
 import dash_ag_grid as dag
 import numpy as np
 import os
+import dash_extensions as de  # For injecting JavaScript
+import dash.dependencies
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_daq as daq
@@ -33,6 +35,17 @@ updated_title = 'Listings'
 # app = dash.Dash(__name__)
 dash.register_page(__name__, name='3PR - Listings', title='3PR - Listings', image='/assets/3PR.png', description='Listings et classements des haltérophiles français')
 # server = server
+
+js_script = """
+window.rotateScreen = function() {
+    if (screen.orientation) {
+        screen.orientation.lock(screen.orientation.type.includes("portrait") ? "landscape" : "portrait")
+        .catch(err => console.error("Orientation lock failed:", err));
+    } else {
+        console.error("Screen orientation API not supported.");
+    }
+};
+"""
 
 
 # df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
@@ -155,6 +168,17 @@ layout = html.Div([
                 value=None
             )
         ], xs=6, sm=6, md=3, lg=3, xl=3),
+        dbc.Button("↪R️", id="rotate-btn", n_clicks=0),
+        html.Script("""
+            function rotateScreen() {
+                if (screen.orientation) {
+                    let newOrientation = screen.orientation.type.includes("portrait") ? "landscape" : "portrait";
+                    screen.orientation.lock(newOrientation).catch(err => console.error("Orientation lock failed:", err));
+                } else {
+                    console.error("Screen Orientation API not supported.");
+                }
+            }
+        """)
     ]),
 
     html.Br(),
@@ -633,15 +657,6 @@ def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_ser
     if not (l_poids or l_serie or l_comp):
         filtered_df = filtered_df.sort_values(by=['IWF'], ascending=[False])
         filtered_df = filtered_df.groupby('Nom', as_index=False).first()
-    # Gestion spécifique masters
-    if on == True:
-        filtered_df = filtered_df[(filtered_df['CateMaster'].str.len()>0)]
-    if l_age:
-        if on == False:
-            filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
-        else:
-            filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
-        print(l_age)
     if l_ligue:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(l_ligue))]
         print(l_ligue)
@@ -660,25 +675,47 @@ def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_ser
     if l_club:
         filtered_df = filtered_df[(filtered_df['Club'].isin(l_club))]
         print(l_club)
-
+    if l_poids:
+        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(l_poids))]
+    # Gestion spécifique caté age + masters
+    filtered_df_no_age = filtered_df
+    hide_rangall = True
+    if on == True:
+        hide_rangall = False
+        filtered_df = filtered_df[(filtered_df['CateMaster'].str.len() > 0)]
+    if l_age:
+        hide_rangall = False
+        if on == False:
+            filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
+        else:
+            filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
+        print(l_age)
     #if l_poids and not(l_comp):
     #    filtered_df = filtered_df[(filtered_df['RowNumMaxCateTotal'] == 1)]
     if l_poids:
         filtered_df = filtered_df.sort_values(by=['Total', 'IWF'], ascending=[False, False])
-        filtered_df = filtered_df[(filtered_df['CatePoids'].isin(l_poids))]
         filtered_df = filtered_df.groupby('Nom', as_index=False).first()
         filtered_df = filtered_df.sort_values(by=['Total', 'IWF'], ascending=[False, False])
+        filtered_df_no_age = filtered_df_no_age.sort_values(by=['Total', 'IWF'], ascending=[False, False])
+        filtered_df_no_age = filtered_df_no_age.groupby('Nom', as_index=False).first()
+        filtered_df_no_age = filtered_df_no_age.sort_values(by=['Total', 'IWF'], ascending=[False, False])
         print(l_poids)
     if not (l_poids or l_serie):
         filtered_df = filtered_df.sort_values(by=['IWF', 'Total'], ascending=[False, False])
+        filtered_df_no_age = filtered_df_no_age.sort_values(by=['IWF', 'Total'], ascending=[False, False])
     filtered_df['Rang'] = filtered_df.groupby(['SaisonAnnee']).cumcount()+1
+    #if l_age or on == True:
+    filtered_df_no_age['Tous'] = filtered_df_no_age.groupby(['SaisonAnnee']).cumcount()+1
+    filtered_df_no_age = filtered_df_no_age[['Nom', 'Compet', 'Tous']]
+    filtered_df = pd.merge(filtered_df, filtered_df_no_age, how='left', on=['Nom', 'Compet'])
 
     columns = [
         {
-            "headerName": "Athlete",
+            "headerName": "Athlete & Classement",
             "children": [
-                {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
-                {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
+                {"field": "Rang", "width": 50, "pinned": "left", "hide": False},
+                {"field": "Tous", "width": 50, "pinned": "left", "hide": hide_rangall},
+                {"field": "Nom", "width": 150, "pinned": "left", "hide": False},
             ],
         },
         {
@@ -1122,7 +1159,15 @@ clientside_callback(
     Output("excel_export_list", "n_clicks"),
     Input("excel_export_list", "n_clicks"),
     prevent_initial_call=True
+),
+
+@callback(
+    dash.dependencies.Output("rotate-btn", "n_clicks"),
+    dash.dependencies.Input("rotate-btn", "n_clicks"),
+    prevent_initial_call=True
 )
+def trigger_rotation(n):
+    return dash.no_update  # This prevents Dash from modifying anything
 
 if __name__ == '__main__':
     run_server(debug=True)
