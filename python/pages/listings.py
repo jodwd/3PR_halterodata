@@ -8,8 +8,6 @@ import sqlite3 as sql
 import dash_ag_grid as dag
 import numpy as np
 import os
-import dash_extensions as de  # For injecting JavaScript
-import dash.dependencies
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_daq as daq
@@ -34,19 +32,6 @@ updated_title = 'Listings'
 
 # app = dash.Dash(__name__)
 dash.register_page(__name__, name='3PR - Listings', title='3PR - Listings', image='/assets/3PR.png', description='Listings et classements des haltérophiles français')
-# server = server
-
-js_script = """
-window.rotateScreen = function() {
-    if (screen.orientation) {
-        screen.orientation.lock(screen.orientation.type.includes("portrait") ? "landscape" : "portrait")
-        .catch(err => console.error("Orientation lock failed:", err));
-    } else {
-        console.error("Screen orientation API not supported.");
-    }
-};
-"""
-
 
 # df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
 nom_ligue = list(set(df['Ligue'].tolist()))
@@ -168,17 +153,6 @@ layout = html.Div([
                 value=None
             )
         ], xs=6, sm=6, md=3, lg=3, xl=3),
-        dbc.Button("↪R️", id="rotate-btn", n_clicks=0),
-        html.Script("""
-            function rotateScreen() {
-                if (screen.orientation) {
-                    let newOrientation = screen.orientation.type.includes("portrait") ? "landscape" : "portrait";
-                    screen.orientation.lock(newOrientation).catch(err => console.error("Orientation lock failed:", err));
-                } else {
-                    console.error("Screen Orientation API not supported.");
-                }
-            }
-        """)
     ]),
 
     html.Br(),
@@ -1159,15 +1133,7 @@ clientside_callback(
     Output("excel_export_list", "n_clicks"),
     Input("excel_export_list", "n_clicks"),
     prevent_initial_call=True
-),
-
-@callback(
-    dash.dependencies.Output("rotate-btn", "n_clicks"),
-    dash.dependencies.Input("rotate-btn", "n_clicks"),
-    prevent_initial_call=True
 )
-def trigger_rotation(n):
-    return dash.no_update  # This prevents Dash from modifying anything
 
 if __name__ == '__main__':
     run_server(debug=True)
