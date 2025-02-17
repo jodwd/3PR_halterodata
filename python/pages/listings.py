@@ -1,17 +1,14 @@
 import dash
-import plotly.express as px
-from dash import dash_table, dcc, html, callback, State, clientside_callback, ctx
+from dash import dcc, html, callback, State, clientside_callback, ctx
 from dash.exceptions import PreventUpdate
 from datetime import date, datetime
 import pandas as pd
 import sqlite3 as sql
 import dash_ag_grid as dag
-import numpy as np
 import os
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-from flask import Flask, render_template
 
 # Connection à la base SQLite
 dirname = os.path.dirname(__file__)
@@ -284,9 +281,10 @@ layout = html.Div([
     html.Div([
         dag.AgGrid(
             id="ag-datatable-l",
-            rowData=df.to_dict("records"),  # **need it
+            rowData=df.to_dict("records"),
             columnDefs=[],
             defaultColDef={"resizable": True, "sortable": True, "filter": False},
+            columnSize="responsiveSizeToFit",
             suppressDragLeaveHidesColumns=True,
             style={"height": 540},
             dashGridOptions={"pagination": False},
@@ -654,11 +652,13 @@ def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_ser
     # Gestion spécifique caté age + masters
     filtered_df_no_age = filtered_df
     hide_rangall = True
-    if on == True:
+    first_header = "Classement"
+    if on == True or l_age:
+        first_header = "Classement (Caté Age | Tout Âge)"
         hide_rangall = False
+    if on == True:
         filtered_df = filtered_df[(filtered_df['CateMaster'].str.len() > 0)]
     if l_age:
-        hide_rangall = False
         if on == False:
             filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
         else:
@@ -685,38 +685,38 @@ def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_ser
 
     columns = [
         {
-            "headerName": "Athlete & Classement",
+            "headerName": first_header,
             "children": [
-                {"field": "Rang", "width": 50, "pinned": "left", "hide": False},
-                {"field": "Tous", "width": 50, "pinned": "left", "hide": hide_rangall},
-                {"field": "Nom", "width": 150, "pinned": "left", "hide": False},
+                {"field": "Rang", "width": 60, "maxWidth": 70, "pinned": "left", "hide": False, 'type': 'numericColumn'},
+                {"field": "Tous", "width": 60, "maxWidth": 70, "pinned": "left", "hide": hide_rangall, 'type': 'numericColumn'},
+                {"field": "Nom", "width": 200, "minWidth": 100, "maxWidth": 300, "pinned": "left", "hide": False},
             ],
         },
         {
             "headerName": "Performance",
             "children": [
-                {"field": "Arr", "width": 60},
-                {"field": "EpJ", "width": 60},
-                {"field": "Total", "width": 60, "hide": False},
-                {"field": "Tot U13", "width": 80, "hide": True},
-                {"field": "IWF", "width": 80, "hide": False},
-                {"field": "IWF U13", "width": 80, "hide": True},
-                {"field": "PdC", "width": 80},
-                {"field": "Serie", "width": 80},
+                {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                {"field": "Total", "minWidth": 60, "maxWidth": 80, "hide": False, 'type': 'numericColumn'},
+                {"field": "Tot U13", "minWidth": 60, "maxWidth": 80, "hide": True, 'type': 'numericColumn'},
+                {"field": "IWF", "minWidth": 70, "maxWidth": 100, "hide": False, 'type': 'numericColumn'},
+                {"field": "IWF U13", "minWidth": 70, "maxWidth": 100, "hide": True, 'type': 'numericColumn'},
+                {"field": "PdC", "minWidth": 80, "maxWidth": 100, 'type': 'numericColumn'},
+                {"field": "Serie", "minWidth": 80, "maxWidth": 120},
             ],
         },
         {
             "headerName": "Compétition",
             "children": [
-                {"field": "Date", "width": 100, "hide": False},
-                {"field": "Compet", "width": 250, "hide": False},
+                {"field": "Date", "minWidth": 100, "maxWidth": 100, "hide": False},
+                {"field": "Compet", "minWidth": 100, "maxWidth": 250, "hide": False},
             ],
         }, {
             "headerName": "Infos",
             "children": [
-                {"field": "Né en", "width": 70, "hide": False},
-                {"field": "Pays", "width": 60, "hide": False},
-                {"field": "Club", "width": 200, "hide": False},
+                {"field": "Né en", "minWidth": 70, "maxWidth": 100, "hide": False},
+                {"field": "Pays", "minWidth": 60, "maxWidth": 80, "hide": False},
+                {"field": "Club", "minWidth": 150, "maxWidth": 250, "hide": False},
             ],
         },
     ]
@@ -737,20 +737,21 @@ def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_ser
                 {
                     "headerName": "Athlete",
                     "children": [
-                        {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
+                        {"field": "Rang", "width": 55, "pinned": "left", "hide": False, 'type': 'numericColumn'},
+                        {"field": "Tous", "width": 55, "pinned": "left", "hide": hide_rangall},
                         {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
                     ],
                 },
                 {
                     "headerName": "Performance",
                     "children": [
-                        {"field": "Arr", "width": 60, "hide": False},
-                        {"field": "EpJ", "width": 60, "hide": False},
-                        {"field": "Total ", "width": 60, "hide": True},
-                        {"field": "Tot U13", "width": 80, "hide": False},
-                        {"field": "IWF", "width": 80, "hide": True},
-                        {"field": "IWF U13", "width": 80, "hide": False},
-                        {"field": "PdC", "width": 80, "hide": False},
+                        {"field": "Arr", "width": 60, "hide": False, 'type': 'numericColumn'},
+                        {"field": "EpJ", "width": 60, "hide": False, 'type': 'numericColumn'},
+                        {"field": "Total ", "width": 60, "hide": True, 'type': 'numericColumn'},
+                        {"field": "Tot U13", "width": 80, "hide": False, 'type': 'numericColumn'},
+                        {"field": "IWF", "width": 80, "hide": True, 'type': 'numericColumn'},
+                        {"field": "IWF U13", "width": 80, "hide": False, 'type': 'numericColumn'},
+                        {"field": "PdC", "width": 80, "hide": False, 'type': 'numericColumn'},
                         {"field": "Serie", "width": 80, "hide": False},
                     ],
                 },
@@ -788,7 +789,8 @@ def toggle_modal_athl(reset_l_clicks):
                 {
                 "headerName": "Athlete",
                 "children": [
-                    {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
+                    {"field": "Rang", "width": 55, "pinned": "left", "hide": False},
+                    {"field": "Tous", "width": 55, "pinned": "left"},
                     {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
 
                 ],
@@ -822,7 +824,7 @@ def toggle_modal_athl(reset_l_clicks):
             },
         ]
 
-    return cols
+        return cols
 
 @callback(
     [Output("app_code_l", "className"),
