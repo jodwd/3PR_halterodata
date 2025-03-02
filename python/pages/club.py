@@ -248,12 +248,12 @@ layout = html.Div([
                     rowData=dfh.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 170, "pinned": "left"},
+                        {"field": "Nom", "width": 120, "pinned": "left"},
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
-                        {"field": "IWF Max", "width": 80},
-                        {"field": "PdC", "width": 80},
+                        {"field": "IWF Max", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
+                        {"field": "PdC", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=True,
@@ -277,12 +277,12 @@ layout = html.Div([
                     rowData=dff.to_dict("records"),  # **need it
                     columnDefs=[
                         {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 170, "pinned": "left"},
+                        {"field": "Nom", "width": 120, "pinned": "left"},
                         {"field": "Arr", "width": 60},
                         {"field": "EpJ", "width": 60},
                         {"field": "Tot", "width": 60},
-                        {"field": "IWF Max", "width": 80},
-                        {"field": "PdC", "width": 80},
+                        {"field": "IWF Max", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
+                        {"field": "PdC", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=False,
@@ -744,12 +744,12 @@ def toggle_modal_athl(reset_club_clicks, breakpoint_str):
     if reset_club_clicks:
         cols = [
                     {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
-                    {"field": "Nom", "width": 170, "pinned": "left", "hide": False},
+                    {"field": "Nom", "width": 120, "pinned": "left", "hide": False},
                     {"field": "Arr", "width": 60, "hide": False},
                     {"field": "EpJ", "width": 60, "hide": False},
                     {"field": "Tot", "width": 60, "hide": False},
-                    {"field": "IWF Max", "width": 80, "hide": False},
-                    {"field": "PdC", "width": 80, "hide": False},
+                    {"field": "IWF Max", "width": 80, "hide": False, "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
+                    {"field": "PdC", "width": 80, "hide": False, "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
                 ]
     return cols, cols, defaultColDef, defaultColDef
 
