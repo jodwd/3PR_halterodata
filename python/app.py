@@ -49,7 +49,7 @@ nav_button = \
             dbc.Modal([
                 dbc.ModalHeader("Informations & Aide"),
                 dbc.ModalBody([
-                    html.P("🐓 Basé sur les données FFHM Scoresheet"),
+                    html.P("🐓 Basé sur les données de toutes les compétitions closes de Scoresheet FFHM"),
                     html.P("🔄 Mise à Jour tous les week-ends"),
                     html.P("🏋️ Données à jour au " + df.iloc[0,0]),
                     html.P("👨‍💻 Repo : https://github.com/jodwd/3PR_halterodata"),

@@ -60,7 +60,7 @@ layout = html.Div([
     # Header & filtres
 
         dbc.Row([
-            html.P("MàJ : " + df3.iloc[0,0] + " - Avec le tournoi féminin 🏆", id="zone_news", className="news")
+            html.P("MàJ : " + df3.iloc[0,0] + " - Avec le championnat des provinces 🥖", id="zone_news", className="news")
         ]),
         dbc.Row([            # Titre
             dbc.Col([
