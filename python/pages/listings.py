@@ -735,38 +735,38 @@ def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_ser
             filtered_df['Rang'] = filtered_df.groupby(['SaisonAnnee']).cumcount() + 1
             columns = [
                 {
-                    "headerName": "Athlete",
+                    "headerName": first_header,
                     "children": [
-                        {"field": "Rang", "width": 55, "pinned": "left", "hide": False, 'type': 'numericColumn'},
-                        {"field": "Tous", "width": 55, "pinned": "left", "hide": hide_rangall},
-                        {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
+                        {"field": "Rang", "width": 60, "maxWidth": 70, "pinned": "left", "hide": False, 'type': 'numericColumn'},
+                        {"field": "Tous", "width": 60, "maxWidth": 70, "pinned": "left", "hide": hide_rangall, 'type': 'numericColumn'},
+                        {"field": "Nom", "width": 200, "minWidth": 100, "maxWidth": 300, "pinned": "left", "hide": False},
                     ],
                 },
                 {
                     "headerName": "Performance",
                     "children": [
-                        {"field": "Arr", "width": 60, "hide": False, 'type': 'numericColumn'},
-                        {"field": "EpJ", "width": 60, "hide": False, 'type': 'numericColumn'},
-                        {"field": "Total ", "width": 60, "hide": True, 'type': 'numericColumn'},
-                        {"field": "Tot U13", "width": 80, "hide": False, 'type': 'numericColumn'},
-                        {"field": "IWF", "width": 80, "hide": True, 'type': 'numericColumn'},
-                        {"field": "IWF U13", "width": 80, "hide": False, 'type': 'numericColumn'},
-                        {"field": "PdC", "width": 80, "hide": False, 'type': 'numericColumn'},
-                        {"field": "Serie", "width": 80, "hide": False},
+                        {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "Total", "minWidth": 60, "maxWidth": 80, "hide": False, 'type': 'numericColumn'},
+                        {"field": "Tot U13", "minWidth": 60, "maxWidth": 80, "hide": True, 'type': 'numericColumn'},
+                        {"field": "IWF", "minWidth": 70, "maxWidth": 100, "hide": False, 'type': 'numericColumn'},
+                        {"field": "IWF U13", "minWidth": 70, "maxWidth": 100, "hide": True, 'type': 'numericColumn'},
+                        {"field": "PdC", "minWidth": 80, "maxWidth": 100, 'type': 'numericColumn'},
+                        {"field": "Serie", "minWidth": 80, "maxWidth": 120},
                     ],
                 },
                 {
                     "headerName": "Compétition",
                     "children": [
-                        {"field": "Date", "width": 100, "hide": False},
-                        {"field": "Compet", "width": 250, "hide": False},
+                        {"field": "Date", "minWidth": 100, "maxWidth": 100, "hide": False},
+                        {"field": "Compet", "minWidth": 100, "maxWidth": 250, "hide": False},
                     ],
                 }, {
                     "headerName": "Infos",
                     "children": [
-                        {"field": "Né en", "width": 70, "hide": False},
-                        {"field": "Pays", "width": 60, "hide": False},
-                        {"field": "Club", "width": 200, "hide": False},
+                        {"field": "Né en", "minWidth": 70, "maxWidth": 100, "hide": False},
+                        {"field": "Pays", "minWidth": 60, "maxWidth": 80, "hide": False},
+                        {"field": "Club", "minWidth": 150, "maxWidth": 250, "hide": False},
                     ],
                 },
             ]
@@ -779,47 +779,55 @@ def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_ser
 
 @callback(
     Output("ag-datatable-l", "columnDefs", allow_duplicate=True),
-    [Input("reset_col_list", "n_clicks")],
+    [Input("reset_col_list", "n_clicks"),
+     Input('bool_masters', 'on'),
+     Input('in_age', 'value')],
     prevent_initial_call=True
 )
 
-def toggle_modal_athl(reset_l_clicks):
+def toggle_modal_athl(reset_l_clicks, on, l_age):
+    hide_rangall = True
+    first_header = "Classement"
+    if on == True or l_age:
+        first_header = "Classement (Caté Age | Tout Âge)"
+        hide_rangall = False
+
     if reset_l_clicks:
         cols = [
                 {
-                "headerName": "Athlete",
+                "headerName": first_header,
                 "children": [
-                    {"field": "Rang", "width": 55, "pinned": "left", "hide": False},
-                    {"field": "Tous", "width": 55, "pinned": "left"},
-                    {"field": "Nom", "width": 160, "pinned": "left", "hide": False},
+                    {"field": "Rang", "width": 60, "maxWidth": 70, "pinned": "left", "hide": False, 'type': 'numericColumn'},
+                    {"field": "Tous", "width": 60, "maxWidth": 70, "pinned": "left", "hide": hide_rangall, 'type': 'numericColumn'},
+                    {"field": "Nom", "width": 200, "minWidth": 100, "maxWidth": 300, "pinned": "left", "hide": False},
 
                 ],
             },
             {
                 "headerName": "Performance",
                 "children": [
-                    {"field": "Arr", "width": 60, "hide": False},
-                    {"field": "EpJ", "width": 60, "hide": False},
-                    {"field": "Total", "width": 60},
-                    {"field": "Tot U13", "width": 80},
-                    {"field": "IWF", "width": 80},
-                    {"field": "IWF U13", "width": 80},
-                    {"field": "PdC", "width": 80, "hide": False},
-                    {"field": "Serie", "width": 80, "hide": False},
+                    {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                    {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                    {"field": "Total", "minWidth": 60, "maxWidth": 80, "hide": False, 'type': 'numericColumn'},
+                    {"field": "Tot U13", "minWidth": 60, "maxWidth": 80, "hide": True, 'type': 'numericColumn'},
+                    {"field": "IWF", "minWidth": 70, "maxWidth": 100, "hide": False, 'type': 'numericColumn'},
+                    {"field": "IWF U13", "minWidth": 70, "maxWidth": 100, "hide": True, 'type': 'numericColumn'},
+                    {"field": "PdC", "minWidth": 80, "maxWidth": 100, 'type': 'numericColumn'},
+                    {"field": "Serie", "minWidth": 80, "maxWidth": 120},
                 ],
             },
             {
                 "headerName": "Compétition",
                 "children": [
-                    {"field": "Date", "width": 100, "hide": False},
-                    {"field": "Compet", "width": 250, "hide": False},
+                    {"field": "Date", "minWidth": 100, "maxWidth": 100, "hide": False},
+                    {"field": "Compet", "minWidth": 100, "maxWidth": 250, "hide": False},
                 ],
             },            {
                 "headerName": "Infos",
                 "children": [
-                    {"field": "Né en", "width": 70, "hide": False},
-                    {"field": "Pays", "width": 60, "hide": False},
-                    {"field": "Club", "width": 200, "hide": False},
+                    {"field": "Né en", "minWidth": 70, "maxWidth": 100, "hide": False},
+                    {"field": "Pays", "minWidth": 60, "maxWidth": 80, "hide": False},
+                    {"field": "Club", "minWidth": 150, "maxWidth": 250, "hide": False},
                 ],
             },
         ]
