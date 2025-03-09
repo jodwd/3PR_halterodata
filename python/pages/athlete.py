@@ -757,9 +757,150 @@ def update_table_athl4(txt_inserted, is_open_athl1, is_open_athl2, is_open_athl3
                  where ath.Nom='""" + athl + """'
                  group by cmp.SaisonAnnee, clb.club
                  order by cmp.SaisonAnnee asc"""
+
+    qry_hf = """SELECT
+                        rng.*
+                    ,   ROW_NUMBER() OVER (PARTITION BY rng.AtlNom ORDER BY rng.FinalScore DESC) as row_num		
+                 
+                     FROM (
+                        SELECT
+                            ath.nom
+                        ,	cast(substr(ath."DateNaissanceFormat",1,4) as Integer)  as "AnNaissance"
+                        ,	mxa.MaxIWF		        as "MaxIWF"
+                        ,	mxa.MaxTotal		    as "MaxTotal"
+                        ,	cla.Latitude
+                        ,   cla.Longitude
+                        ,	atl.NOM			        as "AtlNom"
+                        ,	atl.AnNaissance			as "AtlAnNaissance"
+                        ,	atl.MaxIWF				as "AtlMaxIWF"
+                        ,	atl.MaxTotal			as "AtlMaxTotal"
+                        ,    cast(1 - NULLIF(
+                                ACOS(
+                                    SIN(RADIANS(atl.latitude)) * SIN(RADIANS(cla.latitude)) +
+                                    COS(RADIANS(atl.latitude)) * COS(RADIANS(cla.latitude)) * COS(RADIANS(atl.longitude - cla.longitude))
+                                ) * 6371, 
+                                0 
+                            ) / 1000 as float)
+                            * cast(case when atl.MaxIWF < mxa.MaxIWF
+                            then
+                                atl.MaxIWF / mxa.MaxIWF
+                            else
+                                mxa.MaxIWF / atl.MaxIWF
+                            end as float)
+                            * cast(case when atl.MaxTotal < mxa.MaxTotal
+                            then
+                                cast(atl.MaxTotal as float) / cast(mxa.MaxTotal as float)
+                            else
+                                cast(mxa.MaxTotal as float) / cast(atl.MaxTotal as float)
+                            end as float)
+                            * POWER(1 - (ABS(cast(substr(ath."DateNaissanceFormat",1,4) as Float) - cast(atl.AnNaissance as Float)) / 80), 4) 
+                                as "FinalScore"
+                                                    
+                        FROM ATHLETE as ath 
+                        LEFT JOIN 
+                            (select
+                                cat.AthleteID
+                             ,  cat.Sexe
+                             ,	max(cat.IWF_Calcul)		as "MaxIWF"
+                             ,	max(cat.PoidsTotal)		as "MaxTotal"
+                             from COMPET_ATHLETE as cat
+                             LEFT JOIN COMPET as cmp
+                                on cmp.NomCompetition = cat.CATNomCompetition
+                             LEFT JOIN 
+                                (	SELECT DISTINCT
+                                        cmp.SaisonAnnee
+                                    FROM COMPET cmp
+                                    WHERE cmp.SaisonAnnee = 2024
+                                    OR	  cmp.SaisonAnnee = 2025
+                                ) as cms
+                                    on cms.SaisonAnnee = cmp.SaisonAnnee
+                             where cms.SaisonAnnee is not null
+                             group by cat.AthleteID
+                            ) as mxa
+                            on mxa.AthleteID = ath.AthleteID
+                        LEFT JOIN 
+                            (	SELECT
+                                    ath.AthleteID
+                                ,	clb.Latitude   
+                                ,   clb.Longitude      
+                                ,   ROW_NUMBER() OVER (PARTITION BY ath.AthleteID ORDER BY cmp.DateCompet DESC) as row_num		
+                                FROM ATHLETE as ath 
+                                LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID = ath.AthleteID 
+                                LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+                                LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
+                                where cmp.SaisonAnnee in (2024, 2025)
+                            ) as cla
+                            on cla.AthleteID = ath.AthleteID
+        
+                        LEFT JOIN
+                            (SELECT DISTINCT
+                                ath.Nom
+                            ,   cla.Sexe
+                            ,   ath.AthleteID
+                            ,	cast(substr(ath."DateNaissanceFormat",1,4) as Integer)	as "AnNaissance"
+                            ,	mxa.MaxIWF
+                            ,	mxa.MaxTotal
+                            ,	cla.latitude
+                            ,   cla.longitude
+                            FROM ATHLETE as ath 
+                            LEFT JOIN 
+                                (	SELECT
+                                        ath.AthleteID
+                                    ,   cat.Sexe
+                                    ,	clb.Latitude   
+                                    ,   clb.Longitude        
+                                    ,   ROW_NUMBER() OVER (PARTITION BY ath.AthleteID ORDER BY cmp.DateCompet DESC) as row_num
+                                    FROM ATHLETE as ath 
+                                    LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
+                                    LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
+                                    LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
+                                    where ath.AthleteID = 'Emeline LAURENT08/01/2007'
+                                    
+                                ) as cla
+                                on cla.AthleteID = ath.AthleteID
+                            
+                            LEFT JOIN 
+                                (select
+                                    cat.AthleteID
+                                ,	max(cat.IWF_Calcul)		as "MaxIWF"
+                                ,	max(cat.PoidsTotal)		as "MaxTotal"
+                                FROM COMPET_ATHLETE as cat
+                                LEFT JOIN COMPET as cmp
+                                    on cmp.NomCompetition = cat.CATNomCompetition
+                                LEFT JOIN 
+                                    (	SELECT DISTINCT
+                                            cmp.SaisonAnnee
+                                        FROM COMPET cmp
+                                        where cmp.SaisonAnnee = 2024
+                                        OR	  cmp.SaisonAnnee = 2025
+                                    ) as cms
+                                    on cms.SaisonAnnee = cmp.SaisonAnnee
+                                 where cms.SaisonAnnee is not null
+                                 group by cat.AthleteID
+                                ) as mxa
+                                on mxa.AthleteID = ath.AthleteID
+                                    
+                            where ath.AthleteId = 'Emeline LAURENT08/01/2007'
+                            and cla.row_num = 1
+                            )
+                            as atl
+                                on 1=1
+                        where cla.row_num = 1
+                        and mxa.Sexe = atl.Sexe
+                        and ath.nom <> atl.Nom
+                        ) as rng
+                
+						"""
+
+    print("qry hf : " + str(time.time()))
+    df_hf = pd.read_sql_query(qry_hf, conn)
+    df_hf.head()
+
+    print("qry hf done : " + str(time.time()))
     df_athl = pd.read_sql_query(qry, conn)
     df_athl.head()
 
+    print("qry r done : " + str(time.time()))
     df2_athl = df2[(df2['Nom'] == athl)]
     df2_athl['Série'] = pd.Categorical(df2_athl['Série'], ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
                                         ordered=True)
