@@ -552,7 +552,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l
      Input('in_serie', 'value'),
      Input('in_comp', 'value')]
 )
-def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_serie, l_club):
+def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_serie, l_comp):
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -571,8 +571,8 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l
         filtered_df = filtered_df[(filtered_df['Pays'].isin(l_nat))]
     if l_serie:
         filtered_df = filtered_df[(filtered_df['Serie'].isin(l_serie))]
-    if l_club:
-        filtered_df = filtered_df[(filtered_df['Club'].isin(l_club))]
+    if l_comp:
+        filtered_df = filtered_df[(filtered_df['Compet'].str.contains('|'.join(l_comp)))]
 
     nom_club = list(set(filtered_df['Club'].tolist()))
     opt = [x for x in sorted(nom_club)]

@@ -654,11 +654,16 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
 
     output_df = []
     hf_display = {'display': 'None'}
-    if is_open_athl_sim:
+    if 1==1: #is_open_athl_sim:
         hf_display = {'display': 'block'}
-        qry_hf = """SELECT
-                            rng.*
-                        ,   ROW_NUMBER() OVER (PARTITION BY rng.AtlNom ORDER BY rng.FinalScore DESC) as row_num		
+        qry_hf = """SELECT * FROM (
+                        SELECT
+                            ROW_NUMBER() OVER (PARTITION BY rng.AtlNom ORDER BY rng.FinalScore DESC) as "Rang"		
+                        ,   rng.Nom
+                        ,   rng.Club
+                        ,   rng.AnNaissance as "Naissance"
+                        ,   round(rng.MaxIWF, 1) as "Max IWF"
+                        ,   rng.MaxTotal as "Total"
                      
                          FROM (
                             SELECT
@@ -666,9 +671,11 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                             ,	cast(substr(ath."DateNaissanceFormat",1,4) as Integer)  as "AnNaissance"
                             ,	mxa.MaxIWF		        as "MaxIWF"
                             ,	mxa.MaxTotal		    as "MaxTotal"
+                            ,   cla.Club
                             ,	cla.Latitude
                             ,   cla.Longitude
                             ,	atl.NOM			        as "AtlNom"
+                            ,   atl.Club                as "AtlClub"
                             ,	atl.AnNaissance			as "AtlAnNaissance"
                             ,	atl.MaxIWF				as "AtlMaxIWF"
                             ,	atl.MaxTotal			as "AtlMaxTotal"
@@ -719,6 +726,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                             LEFT JOIN 
                                 (	SELECT
                                         ath.AthleteID
+                                    ,   clb.Club
                                     ,	clb.Latitude   
                                     ,   clb.Longitude      
                                     ,   ROW_NUMBER() OVER (PARTITION BY ath.AthleteID ORDER BY cmp.DateCompet DESC) as row_num		
@@ -735,6 +743,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                                     ath.Nom
                                 ,   cla.Sexe
                                 ,   ath.AthleteID
+                                ,   cla.Club
                                 ,	cast(substr(ath."DateNaissanceFormat",1,4) as Integer)	as "AnNaissance"
                                 ,	mxa.MaxIWF
                                 ,	mxa.MaxTotal
@@ -745,6 +754,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                                     (	SELECT
                                             ath.AthleteID
                                         ,   cat.Sexe
+                                        ,   clb.Club
                                         ,	clb.Latitude   
                                         ,   clb.Longitude        
                                         ,   ROW_NUMBER() OVER (PARTITION BY ath.AthleteID ORDER BY cmp.DateCompet DESC) as row_num
@@ -778,7 +788,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                                     ) as mxa
                                     on mxa.AthleteID = ath.AthleteID
                                         
-                                where ath.AthleteId = '""" + athl + """'
+                                where ath.Nom = '""" + athl + """'
                                 and cla.row_num = 1
                                 )
                                 as atl
@@ -787,12 +797,13 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                             and mxa.Sexe = atl.Sexe
                             and ath.nom <> atl.Nom
                             ) as rng
-                    
-                            """
+                        )
+                    where rang<=10
+                    """
 
         print("qry hf : " + str(time.time()))
         df_hf = pd.read_sql_query(qry_hf, conn)
-        df_hf.head()
+        print(df_hf)
         output_df= [dbc.Table.from_dataframe(df_hf, responsive=True, striped=True, bordered=True, hover=True)]
 
         print("qry hf done : " + str(time.time()))
