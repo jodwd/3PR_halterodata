@@ -7,6 +7,7 @@ import sqlite3 as sql
 import dash_ag_grid as dag
 import numpy as np
 import os
+import plotly.graph_objects as go
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_daq as daq
