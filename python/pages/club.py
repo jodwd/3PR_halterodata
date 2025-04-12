@@ -40,6 +40,7 @@ dash.register_page(__name__, name='3PR - Clubs', title='3PR - Dashboard Clubs', 
 #df_unique_names = df['Nom'].unique  # Fetch or generate data from Python
 df = df.sort_values(by=['RangSerie'])
 nom_ligue = list(set(df['Ligue'].tolist()))
+print(nom_ligue)
 nom_club = list(set(df['Club'].tolist()))
 nom_serie = df['Serie'].unique().tolist()
 
