@@ -176,9 +176,9 @@ layout = html.Div([
                                                 ]),
                                             ], align="right"),
                                         ], id='ach_aide-div_athl', style= {'display': 'none'})
-                                    ]),
+                                    ], close_button=False),
                                     dbc.ModalBody([
-                                        dbc.Button("Athlètes Similaires", id="athl_sim", color="secondary", className="mt-auto", size="sm"),
+                                        dbc.Button("Voir les Athlètes Similaires", id="athl_sim", color="primary", className="mt-auto", size="sm"),
                                         html.Div(id="athl_sim-table", className="athl_data_tab", style = {'display': 'none'}),
                                         dcc.Graph(id='athl-graph', style = {'display': 'none'}),
                                         html.Div(id="athl-table", className="athl_data_tab"),
@@ -186,7 +186,7 @@ layout = html.Div([
                                     dbc.ModalFooter(
                                         dbc.Button("Fermer", id="close-athl", color="secondary", className="ml-auto")
                                     ),
-                                ], id="athl-modal", size="lg", centered=True, is_open=False),
+                                ], id="athl-modal", size="lg", centered=True, is_open=False, scrollable=True),
                             ]
                         ),
                     )
@@ -528,7 +528,7 @@ def up_athletes(selected_year, txt_inserted, breakpoint_str):
     prevent_initial_call=True
 )
 
-# +Info Carte 4
+
 def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4,  close_clicks, is_open_athl):
     if is_open_athl:
         is_open_athl = False
@@ -556,10 +556,7 @@ def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4,  c
      Output("athl_sim-table", "style"),
      Output("athlete_nom_info", "children"),
      Output('ach_aide-div_athl', 'style'),
-     Output("open_athl1", "n_clicks"),
-     Output("open_athl2", "n_clicks"),
-     Output("open_athl3", "n_clicks"),
-     Output("open_athl4", "n_clicks")],
+     Output("athl_sim", "n_clicks")],
     [Input('my_txt_input', 'value'),
      Input("athl-modal", "is_open"),
      Input("athl_sim", "n_clicks"),
@@ -654,7 +651,8 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
 
     output_df = []
     hf_display = {'display': 'None'}
-    if 1==1: #is_open_athl_sim:
+    if is_open_athl_sim:
+        is_open_athl_sim = 0
         hf_display = {'display': 'block'}
         qry_hf = """SELECT * FROM (
                         SELECT
@@ -807,11 +805,11 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
         output_df= [dbc.Table.from_dataframe(df_hf, responsive=True, striped=True, bordered=True, hover=True)]
 
         print("qry hf done : " + str(time.time()))
-    else:
-        open_clicks1 = None
-        open_clicks2 = None
-        open_clicks3 = None
-        open_clicks4 = None
+    #else:
+    #    open_clicks1 = None
+    #    open_clicks2 = None
+    #    open_clicks3 = None
+    #    open_clicks4 = None
         
     df_athl = pd.read_sql_query(qry, conn)
     df_athl.head()
@@ -839,7 +837,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
     display_graph_athl = {'display': 'block'}
 
     return fig_athl, display_graph_athl, [dbc.Table.from_dataframe(df_athl, responsive=True, striped=True, bordered=True, hover=True)], \
-       output_df, hf_display, athl_info_title, up_show_ach_aide, open_clicks1, open_clicks2, open_clicks3, open_clicks4
+       output_df, hf_display, athl_info_title, up_show_ach_aide, is_open_athl_sim
 
 @callback(
     [Output("ag_datatable_athl", "columnDefs"),
