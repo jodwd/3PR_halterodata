@@ -248,14 +248,15 @@ layout = html.Div([
                     enableEnterpriseModules=True,
                     rowData=dfh.to_dict("records"),  # **need it
                     columnDefs=[
-                        {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 120, "pinned": "left"},
-                        {"field": "Arr", "width": 60},
-                        {"field": "EpJ", "width": 60},
-                        {"field": "Tot", "width": 60},
-                        {"field": "IWF Max", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
-                        {"field": "PdC", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
+                        {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
+                        {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},
+                        {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "Tot", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "IWF Max", "minWidth": 70, "maxWidth": 100, 'type': 'numericColumn',  "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
+                        {"field": "PdC", "minWidth": 70, "maxWidth": 90, 'type': 'numericColumn', "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
                     ],
+                    columnSize="responsiveSizeToFit",
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=True,
                     style={"height": 540},
@@ -275,15 +276,16 @@ layout = html.Div([
                 dag.AgGrid(
                     id="ag-datatable-f",
                     enableEnterpriseModules=True,
+                    columnSize="responsiveSizeToFit",
                     rowData=dff.to_dict("records"),  # **need it
                     columnDefs=[
-                        {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 120, "pinned": "left"},
-                        {"field": "Arr", "width": 60},
-                        {"field": "EpJ", "width": 60},
-                        {"field": "Tot", "width": 60},
-                        {"field": "IWF Max", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
-                        {"field": "PdC", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
+                        {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
+                        {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},
+                        {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "Tot", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "IWF Max", "minWidth": 70, "maxWidth": 100, 'type': 'numericColumn', "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
+                        {"field": "PdC", "minWidth": 70, "maxWidth": 90, 'type': 'numericColumn', "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=False,
@@ -744,14 +746,14 @@ def toggle_modal_athl(reset_club_clicks, breakpoint_str):
     defaultColDef={"resizable": True, "sortable": True, "filter": True, "suppressMovable": col_move}
     if reset_club_clicks:
         cols = [
-                    {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
-                    {"field": "Nom", "width": 120, "pinned": "left", "hide": False},
-                    {"field": "Arr", "width": 60, "hide": False},
-                    {"field": "EpJ", "width": 60, "hide": False},
-                    {"field": "Tot", "width": 60, "hide": False},
-                    {"field": "IWF Max", "width": 80, "hide": False, "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
-                    {"field": "PdC", "width": 80, "hide": False, "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
-                ]
+            {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
+            {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},
+            {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+            {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+            {"field": "Tot", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+            {"field": "IWF Max", "minWidth": 70, "maxWidth": 100, 'type': 'numericColumn',"valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
+            {"field": "PdC", "minWidth": 70, "maxWidth": 90, 'type': 'numericColumn', "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
+        ]
     return cols, cols, defaultColDef, defaultColDef
 
 @callback(
