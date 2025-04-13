@@ -7,7 +7,9 @@ import sqlite3 as sql
 import dash_ag_grid as dag
 import numpy as np
 import os
-import plotly.graph_objects as go
+import dash_leaflet as dl
+import dash_leaflet.express as dlx
+from dash_extensions.enrich import DashProxy
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_daq as daq
@@ -30,6 +32,11 @@ dfh = df
 dff = df
 dfh['Rang'] = df[(df['Sexe'] == 'M') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
 dff['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
+
+clubs_pos = df[df['lat'] > 40.0][['Club', 'lat', 'lon']].drop_duplicates()
+clubs_pos = clubs_pos.to_dict(orient='records')
+
+geojson = dlx.dicts_to_geojson([{**c, **dict(tooltip=c["Club"])} for c in clubs_pos])
 
 updated_title='Dashboard Club'
 
@@ -272,7 +279,11 @@ layout = html.Div([
             dbc.Button(
                 title="  Top 5 Femmes  ", id="top_5_f", outline=False, color="primary", className="top_5", href="/club"),
             html.Br(),
-
+            dl.Map(
+                    children=[dl.TileLayer(), dl.GeoJSON(data=geojson)],
+                    center=[46.232193, 2.209667],
+                    zoom=5,
+                    style={"height": "50vh"}),
             html.Div([
                 dag.AgGrid(
                     id="ag-datatable-f",
