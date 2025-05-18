@@ -56,119 +56,134 @@ if curr_month>8:
 layout = html.Div([
     # Header & filtres
     dcc.Store(id='df_quizz', data={}, storage_type='memory'),
-    dbc.Row([
-        dbc.Col([
-            html.Div(
-                children=[
-                    dbc.Button(
-                        "  Listings  ", outline=False, color="warning", className="title-box",  href="/listings", size="lg"),
-                ],
-                id='filter_info',
-            )], xs=6, sm=6, md=3, lg=2, xl=2),
-        # Zone filtres Sexe / Catégorie de Poids / Catégorie d'Age / Ligue
-        dbc.Col([
-            dcc.Dropdown(
-                options=[x for x in sorted(nom_sexe)],
-                multi=False,
-                id='in_sexe',
-                placeholder="Sexe",
-                className="input-box",
-                value=None
-            )
-        ], xs=3, sm=3, md=1, lg=1, xl=1),
-        dbc.Col([
-            dcc.Dropdown(
-                options=[x for x in sorted(nom_nat)],
-                multi=True,
-                id='in_nat',
-                placeholder="Nationalité",
-                className="input-box",
-                value=None
+
+    html.Div([
+        dbc.Row([
+            dbc.Col([
+                html.Div([
+                    dbc.Button("  Listings  ", outline=False, color="warning", className="title-box",  href="/listings", size="lg"),
+                ], id='edf_filter_info')
+            ], xs=6, sm=6, md=3, lg=2, xl=2),
+            dbc.Col([], xs=6, sm=6, md=0, lg=0, xl=0),
+        ]),
+    ], id='zone_filtre_edf', style= {'display': 'none'}),
+
+    html.Div([
+        dbc.Row([
+            dbc.Col([
+                html.Div(
+                    children=[
+                        dbc.Button(
+                            "  Listings  ", outline=False, color="warning", className="title-box",  href="/listings", size="lg"),
+                    ],
+                    id='filter_info',
+                )], xs=6, sm=6, md=3, lg=2, xl=2),
+            # Zone filtres Sexe / Catégorie de Poids / Catégorie d'Age / Ligue
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in sorted(nom_sexe)],
+                    multi=False,
+                    id='in_sexe',
+                    placeholder="Sexe",
+                    className="input-box",
+                    value=None
                 )
-        ], xs=3, sm=3, md=2, lg=2, xl=2),
-        dbc.Col([
-            dcc.Dropdown(
-                options=[x for x in sorted(nom_poids)],
-                multi=True,
-                id='in_poids',
-                placeholder="Catégorie Poids",
-                className="input-box",
-                value=None
-            )
-        ], xs=6, sm=6, md=3, lg=3, xl=3),
-        dbc.Col([
-            dcc.Dropdown(
-                options=[x for x in sorted(nom_age)],
-                multi=True,
-                id='in_age',
-                placeholder="Catégorie Age",
-                className="input-box",
-                value=None
-                ),
-        ], xs=6, sm=6, md=3, lg=3, xl=3),
-        dbc.Col([
-        ], xs=0, sm=0, md=0, lg=2, xl=2),
-        #]),
-        #dbc.Row([
-        dbc.Col([
-            dcc.Dropdown(
-                options=[x for x in sorted(nom_ligue)],
-                multi=True,
-                id='in_ligue',
-                placeholder="Ligue",
-                className="input-box",
-                value=None
-            )
-        ], xs=6, sm=6, md=3, lg=1, xl=1),
-        dbc.Col([
-            dcc.Dropdown(
-                options=[x for x in nom_serie],
-                multi=True,
-                id='in_serie',
-                placeholder="Série",
-                className="input-box",
-                value=None
-            )
-        ], xs=6, sm=6, md=3, lg=2, xl=2),
-        dbc.Col([
-            dcc.Dropdown(
-                options=[x for x in nom_competition],
-                multi=True,
-                id='in_comp',
-                placeholder="Compétition",
-                className="input-box",
-                value=None
-            )
-        ], xs=6, sm=6, md=3, lg=3, xl=3),
-        dbc.Col([
-            dcc.Dropdown(
-                options=[x for x in nom_club],
-                multi=True,
-                id='in_club',
-                placeholder="Club",
-                className="input-box",
-                value=None
-            )
-        ], xs=6, sm=6, md=3, lg=3, xl=3),
-    ]),
+            ], xs=3, sm=3, md=1, lg=1, xl=1),
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in sorted(nom_nat)],
+                    multi=True,
+                    id='in_nat',
+                    placeholder="Nationalité",
+                    className="input-box",
+                    value=None
+                    )
+            ], xs=3, sm=3, md=2, lg=2, xl=2),
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in sorted(nom_poids)],
+                    multi=True,
+                    id='in_poids',
+                    placeholder="Catégorie Poids",
+                    className="input-box",
+                    value=None
+                )
+            ], xs=6, sm=6, md=3, lg=3, xl=3),
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in sorted(nom_age)],
+                    multi=True,
+                    id='in_age',
+                    placeholder="Catégorie Age",
+                    className="input-box",
+                    value=None
+                    ),
+            ], xs=6, sm=6, md=3, lg=3, xl=3),
+            dbc.Col([], xs=0, sm=0, md=0, lg=2, xl=2),
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in sorted(nom_ligue)],
+                    multi=True,
+                    id='in_ligue',
+                    placeholder="Ligue",
+                    className="input-box",
+                    value=None
+                )
+            ], xs=6, sm=6, md=3, lg=1, xl=1),
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in nom_serie],
+                    multi=True,
+                    id='in_serie',
+                    placeholder="Série",
+                    className="input-box",
+                    value=None
+                )
+            ], xs=6, sm=6, md=3, lg=2, xl=2),
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in nom_competition],
+                    multi=True,
+                    id='in_comp',
+                    placeholder="Compétition",
+                    className="input-box",
+                    value=None
+                )
+            ], xs=6, sm=6, md=3, lg=3, xl=3),
+            dbc.Col([
+                dcc.Dropdown(
+                    options=[x for x in nom_club],
+                    multi=True,
+                    id='in_club',
+                    placeholder="Club",
+                    className="input-box",
+                    value=None
+                )
+            ], xs=6, sm=6, md=3, lg=3, xl=3),
+        ]),
+    ], id='zone_filtre', style={'display': 'Block'}),
 
     html.Br(),
-    #master Switch
+    #type de listing
     dbc.Row([
         dbc.Col([
             html.Div([
-                daq.BooleanSwitch(id='bool_masters',
-                                  on=False,
-                                  color="#FFC107"),
-                html.P("Masters"),
-                ], id="div_masters", className="bool_switch"),
-            ], xs=2, sm=2, md=2, lg=2, xl=1),
+                html.P("Options", className="class_options_div"),
+                dcc.RadioItems(
+                    options=[
+                       {'label': ' Listings ', 'value': 'LIS'},
+                       {'label': ' Masters ', 'value': 'MAS'},
+                       {'label': ' 🇫🇷 EdF ', 'value': 'EDF'},
+                    ],
+                    value='LIS', inline=True, id='list_option', labelClassName="class_options"),
+                ], id="div_options"),
+            ], xs=4, sm=3, md=3, lg=3, xl=3),
 
         dbc.Col([
             dbc.Button("↪️", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
             dbc.Button("💾", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
             dbc.Button("🎯", id="quizz", color="light", outline=True, className="mt-auto", size="sm"),
-        ], xs=4, sm=4, md=3, lg=2, xl=2),
+        ], xs=2, sm=3, md=3, lg=2, xl=2),
 
 
             dbc.Col([
@@ -207,7 +222,7 @@ layout = html.Div([
                     tooltip={"placement": "bottom", "always_visible": True},
                     id='year-slider',
                     className='slider_zone'),
-            ], xs=4, sm=4, md=4, lg=5, xl=6),
+            ], xs=4, sm=4, md=4, lg=4, xl=5),
         ]),
 
     dbc.Modal([
@@ -286,10 +301,39 @@ layout = html.Div([
             defaultColDef={"resizable": True, "sortable": True, "filter": False},
             columnSize="responsiveSizeToFit",
             suppressDragLeaveHidesColumns=True,
-            style={"height": 540},
+            style={"Display": 'Block', "height": 540},
             dashGridOptions={"pagination": False},
             className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
         )
+    ], id='listing_zone', style={'display': 'Block'}),
+    html.Div([
+        html.Div([
+            html.Br(),
+            dbc.Col([
+                html.Div([
+                    dcc.RadioItems(
+                        options=[
+                           {'label': ' Seniors ', 'value': 'SEN'},
+                           {'label': ' U20/U23 ', 'value': 'JNR'},
+                           {'label': ' U15/U17 ', 'value': 'YTH'},
+                        ],
+                        value='SEN', inline=True,
+                        id='int_option',
+                        labelClassName="class_options"),
+                ], id="div_edf"),
+            ], xs=8, sm=6, md=6, lg=4, xl=4),
+            dag.AgGrid(
+                id="ag-datatable-int_edf",
+                rowData=df.to_dict("records"),
+                columnDefs=[],
+                defaultColDef={"resizable": True, "sortable": True, "filter": False},
+                columnSize="responsiveSizeToFit",
+                suppressDragLeaveHidesColumns=True,
+                style={"height": 540},
+                dashGridOptions={"pagination": False},
+                className="ag-theme-quartz-dark",
+            )
+        ], id='edf_zone', style={'display': 'None'})
     ]),
     html.Div(id='datatable-container'),
     html.Link(
@@ -307,7 +351,7 @@ layout = html.Div([
 @callback(
     Output('in_sexe', 'options'),
     [Input('year-slider', 'value'),
-     Input('bool_masters', 'on'),
+     Input('list_option', 'value'),
      Input('in_poids', 'value'),
      Input('in_age', 'value'),
      Input('in_ligue', 'value'),
@@ -317,14 +361,19 @@ layout = html.Div([
      Input('in_club', 'value')],
     prevent_initial_call=True
 )
-def update_datalist(selected_year, on, l_poids, l_age, l_ligue, l_nat, l_serie, l_comp, l_club):
+def update_datalist(selected_year, list_opt, l_poids, l_age, l_ligue, l_nat, l_serie, l_comp, l_club):
+    master = False
+    if list_opt == 'EDF':
+        raise PreventUpdate
+    elif list_opt == 'MAS':
+        master = True
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
     if l_poids:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(l_poids))]
     if l_age:
-        if on == False:
+        if master == False:
             filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
         else:
             filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
@@ -346,7 +395,7 @@ def update_datalist(selected_year, on, l_poids, l_age, l_ligue, l_nat, l_serie, 
 @callback(
     Output('in_poids', 'options'),
     [Input('year-slider', 'value'),
-     Input('bool_masters', 'on'),
+     Input('list_option', 'value'),
      Input('in_sexe', 'value'),
      Input('in_age', 'value'),
      Input('in_ligue', 'value'),
@@ -357,14 +406,19 @@ def update_datalist(selected_year, on, l_poids, l_age, l_ligue, l_nat, l_serie, 
     prevent_initial_call=True
 )
 
-def update_datalist(selected_year, on, l_sexe, l_age, l_ligue, l_nat, l_serie, l_comp, l_club):
+def update_datalist(selected_year, list_opt, l_sexe, l_age, l_ligue, l_nat, l_serie, l_comp, l_club):
+    master = False
+    if list_opt == 'EDF':
+        raise PreventUpdate
+    elif list_opt == 'MAS':
+        master = True
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
     if l_sexe:
         filtered_df = filtered_df[(filtered_df['Sexe'] == l_sexe)]
     if l_age:
-        if on == False:
+        if master == False:
             filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
         else:
             filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
@@ -386,7 +440,7 @@ def update_datalist(selected_year, on, l_sexe, l_age, l_ligue, l_nat, l_serie, l
 @callback(
     Output('in_age', 'options'),
     [Input('year-slider', 'value'),
-     Input('bool_masters', 'on'),
+     Input('list_option', 'value'),
      Input('in_sexe', 'value'),
      Input('in_poids', 'value'),
      Input('in_ligue', 'value'),
@@ -396,7 +450,12 @@ def update_datalist(selected_year, on, l_sexe, l_age, l_ligue, l_nat, l_serie, l
      Input('in_club', 'value')],
     prevent_initial_call=True
 )
-def update_datalist(selected_year, on, l_sexe, l_poids, l_ligue, l_nat, l_serie, l_comp, l_club):
+def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_ligue, l_nat, l_serie, l_comp, l_club):
+    master = False
+    if list_opt == 'EDF':
+        raise PreventUpdate
+    elif list_opt == 'MAS':
+        master = True
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -415,7 +474,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_ligue, l_nat, l_serie,
     if l_club:
         filtered_df = filtered_df[(filtered_df['Club'].isin(l_club))]
 
-    if on == False:
+    if master == False:
         nom_age = list(set(filtered_df['CateAge'].tolist()))
     else:
         nom_age = list(set(filtered_df['CateMaster'].tolist()))
@@ -425,7 +484,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_ligue, l_nat, l_serie,
 @callback(
     Output('in_ligue', 'options'),
     [Input('year-slider', 'value'),
-     Input('bool_masters', 'on'),
+     Input('list_option', 'value'),
      Input('in_sexe', 'value'),
      Input('in_poids', 'value'),
      Input('in_age', 'value'),
@@ -435,7 +494,12 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_ligue, l_nat, l_serie,
      Input('in_club', 'value')],
     prevent_initial_call=True
 )
-def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_nat, l_serie, l_comp, l_club):
+def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_nat, l_serie, l_comp, l_club):
+    master = False
+    if list_opt == 'EDF':
+        raise PreventUpdate
+    elif list_opt == 'MAS':
+        master = True
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -444,7 +508,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_nat, l_serie, l
     if l_poids:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(l_poids))]
     if l_age:
-        if on == False:
+        if master == False:
             filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
         else:
             filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
@@ -464,7 +528,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_nat, l_serie, l
 @callback(
     Output('in_nat', 'options'),
     [Input('year-slider', 'value'),
-     Input('bool_masters', 'on'),
+     Input('list_option', 'value'),
      Input('in_sexe', 'value'),
      Input('in_poids', 'value'),
      Input('in_age', 'value'),
@@ -502,7 +566,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_serie,
 @callback(
     Output('in_serie', 'options'),
     [Input('year-slider', 'value'),
-     Input('bool_masters', 'on'),
+     Input('list_option', 'value'),
      Input('in_sexe', 'value'),
      Input('in_poids', 'value'),
      Input('in_age', 'value'),
@@ -512,7 +576,12 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_serie,
      Input('in_club', 'value')],
     prevent_initial_call=True
 )
-def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_comp, l_club):
+def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_nat, l_comp, l_club):
+    master = False
+    if list_opt == 'EDF':
+        raise PreventUpdate
+    elif list_opt == 'MAS':
+        master = True
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -521,7 +590,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l
     if l_poids:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(l_poids))]
     if l_age:
-        if on == False:
+        if master == False:
             filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
         else:
             filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
@@ -543,7 +612,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l
 @callback(
     Output('in_club', 'options'),
     [Input('year-slider', 'value'),
-     Input('bool_masters', 'on'),
+     Input('list_option', 'value'),
      Input('in_sexe', 'value'),
      Input('in_poids', 'value'),
      Input('in_age', 'value'),
@@ -552,7 +621,12 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l
      Input('in_serie', 'value'),
      Input('in_comp', 'value')]
 )
-def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_serie, l_comp):
+def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_nat, l_serie, l_comp):
+    master = False
+    if list_opt == 'EDF':
+        raise PreventUpdate
+    elif list_opt == 'MAS':
+        master = True
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -561,7 +635,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l
     if l_poids:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(l_poids))]
     if l_age:
-        if on == False:
+        if master == False:
             filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
         else:
             filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
@@ -582,12 +656,16 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l
     [Output('ag-datatable-l', "rowData"),
      Output('ag-datatable-l', "columnDefs"),
      Output('ag-datatable-l', "defaultColDef"),
+     Output('listing_zone', "style"),
+     Output('edf_zone', "style"),
      Output('filtre_dates', 'start_date'),
      Output('filtre_dates', 'end_date'),
-     Output('cal', 'children')
+     Output('cal', 'children'),
+     Output('zone_filtre', 'style'),
+     Output('zone_filtre_edf', 'style'),
      ],
     [Input('year-slider', 'value'),
-     Input('bool_masters', 'on'),
+     Input('list_option', 'value'),
      Input('in_sexe', 'value'),  # sexe
      Input('in_poids', 'value'),  # poids
      Input('in_age', 'value'),  # age
@@ -601,7 +679,13 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l
      Input("display", "children") #taille écran
      ])
 
-def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_serie, l_comp, l_club, start_date, end_date, breakpoint_str):
+def update_data(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_nat, l_serie, l_comp, l_club, start_date, end_date, breakpoint_str):
+    master = False
+    if list_opt == 'EDF':
+        raise PreventUpdate
+    elif list_opt == 'MAS':
+        master = True
+
     #on bloque le déplacement de colonne si l'écran est trop petit
     if breakpoint_str == "sm" or breakpoint_str == "xs":
         col_move = True
@@ -653,13 +737,13 @@ def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_ser
     filtered_df_no_age = filtered_df
     hide_rangall = True
     first_header = "Classement"
-    if on == True or l_age:
+    if master == True or l_age:
         first_header = "Classement (Caté Age | Tout Âge)"
         hide_rangall = False
-    if on == True:
+    if master == True:
         filtered_df = filtered_df[(filtered_df['CateMaster'].str.len() > 0)]
     if l_age:
-        if on == False:
+        if master == False:
             filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
         else:
             filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
@@ -772,23 +856,31 @@ def update_data(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_nat, l_ser
             ]
 
     dat = filtered_df.to_dict('records')
+    style_l = {'display': 'block'}
+    style_edf = {'display': 'None'}
+
     ys, ms, ds = start_date.split('-')
     ye, me, de = end_date.split('-')
     output_cal = '📅 ' + ds + '/' + ms + ' ' + de + '/' + me
-    return dat, columns, defaultColDef, start_date, end_date, output_cal
+    return dat, columns, defaultColDef, style_l, style_edf, start_date, end_date, output_cal, style_l, style_edf,
 
 @callback(
     Output("ag-datatable-l", "columnDefs", allow_duplicate=True),
     [Input("reset_col_list", "n_clicks"),
-     Input('bool_masters', 'on'),
+     Input('list_option', 'value'),
      Input('in_age', 'value')],
     prevent_initial_call=True
 )
 
-def toggle_modal_athl(reset_l_clicks, on, l_age):
+def toggle_modal_athl(reset_l_clicks, list_opt, l_age):
+    master = False
+    if list_opt == 'EDF':
+        raise PreventUpdate
+    elif list_opt == 'MAS':
+        master = True
     hide_rangall = True
     first_header = "Classement"
-    if on == True or l_age:
+    if master == True or l_age:
         first_header = "Classement (Caté Age | Tout Âge)"
         hide_rangall = False
 
@@ -841,25 +933,26 @@ def toggle_modal_athl(reset_l_clicks, on, l_age):
      Output("excel_export_list", "color"),
      Output("quizz", "color"),
      Output("cal", "color"),
-     Output("div_masters", "className")],
+     Output("div_options", "className"),
+     Output("div_edf", "className")],
     [Input("bool_light", "on")]
 )
 
 def light_mode_list(on):
-
-    #masters_label_pos = "bottom"
     if on == True:
         css_body = "body_light"
         css_grid = "ag-theme-quartz"
         reset_color = "secondary"
-        masters_label_classname = "bool_switch_light"
+        options_label_classname = "class_options_light"
+        edf_label_classname = "class_options_light"
     else:
         css_body = "body"
         css_grid = "ag-theme-quartz-dark"
         reset_color = "light"
-        masters_label_classname = "bool_switch"
+        options_label_classname = "class_options"
+        edf_label_classname = "class_options"
 
-    return css_body, css_grid, reset_color, reset_color, reset_color, reset_color, masters_label_classname
+    return css_body, css_grid, reset_color, reset_color, reset_color, reset_color, options_label_classname, edf_label_classname
 
 #Bouton Calendrier
 @callback(
@@ -1121,6 +1214,107 @@ def end_quizz(stop_q, df_q, n_1, n_2, n_3, n_4, n_5, n_6, n_7, n_8, n_9, n_10):
 
         return [dict_out[cnt_ok]], 0, {'display':'none'}, {'display':'none'}, out[0], out[1], out[2], out[3], out[4], out[5], out[6], out[7], out[8], out[9],   \
         style_end[0], style_end[1], style_end[2], style_end[3], style_end[4], style_end[5], style_end[6], style_end[7], style_end[8], style_end[9]
+
+
+#Vue Minima Int
+@callback(
+    [Output('ag-datatable-int_edf', 'rowData'),
+     Output('ag-datatable-int_edf', 'columnDefs'),
+     Output('edf_zone', 'style', allow_duplicate=True),
+     Output('listing_zone', 'style', allow_duplicate=True),
+     Output('filtre_dates', 'start_date', allow_duplicate=True),
+     Output('filtre_dates', 'end_date', allow_duplicate=True),
+     Output('cal', 'children', allow_duplicate=True),
+     Output('zone_filtre_edf', 'style', allow_duplicate=True),
+     Output('zone_filtre', 'style', allow_duplicate=True)
+     ],
+    [Input('year-slider', 'value'),
+     Input('list_option', 'value'),
+     Input('int_option', 'value'),
+     Input('filtre_dates', 'start_date'),
+     Input('filtre_dates', 'end_date'),
+     Input("display", "children")], #taille écran
+     prevent_initial_call=True)
+
+def update_data(selected_year, list_opt, int_option, start_date, end_date, breakpoint_str):
+    print(list_opt)
+    if list_opt not in ('EDF'):
+        raise PreventUpdate
+
+    dirname = os.path.dirname(__file__)
+    path_db = os.path.join(dirname, 'dataltero.db')
+    conn = sql.connect(database=path_db)
+
+    qry_edf = """SELECT * FROM REPORT_EDF"""
+    df_edf = pd.read_sql_query(qry_edf, conn)
+
+    filtered_df = df_edf[(df_edf['Date'] >= start_date)]
+    filtered_df = filtered_df[(filtered_df['Date'] <= end_date)]
+    filtered_df = filtered_df[(filtered_df['Saison Int'] == selected_year)]
+    filtered_df = filtered_df[(filtered_df['Cate'] != None)]
+    print(int_option)
+    list_age = ['SEN']
+    if int_option == 'JNR':
+        list_age = ['U20 1', 'U20 2&3', 'U23']
+    elif int_option == 'YTH':
+        list_age = ['U15', 'U17']
+
+    filtered_df = filtered_df[(filtered_df['Classe'].isin(list_age))]
+    print(filtered_df)
+    filtered_df = filtered_df.sort_values(by=['Sexe', 'Minima', 'Total'], ascending=[True, True, False])
+    filtered_df = filtered_df.drop_duplicates(subset=['Nom', 'Classe', 'Cate'], keep='first')
+
+
+    print(filtered_df)
+    dat = filtered_df.to_dict('records')
+
+    cols = [
+        {
+            "headerName": "Athlete",
+            "children": [
+                {"field": "Classe", "minWidth": 80, "maxWidth": 80, 'type': 'numericColumn', "pinned": "left", "hide": False},
+                {"field": "Cate", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn', "pinned": "left", "hide": False},
+                {"field": "Nom", "width": 200, "minWidth": 120, "maxWidth": 250, "pinned": "left", "hide": False},
+            ],
+        },
+        {
+            "headerName": "Performance",
+            "children": [
+                {"field": "Perf", "minWidth": 90, "maxWidth": 110, 'type': 'numericColumn',
+                                 'cellStyle': {
+                                     "function": "params.value.includes('+') ? {'color': 'rgb(20, 164, 77)'} : {'color': 'rgb(220, 76, 100)'}",
+                                 },
+                             },
+                {"field": "Total", "minWidth": 70, "maxWidth": 100, 'type': 'numericColumn'},
+                {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                {"field": "PdC", "minWidth": 80, "maxWidth": 100, 'type': 'numericColumn',
+                 "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
+            ],
+        },
+        {
+            "headerName": "Compétition",
+            "children": [
+                {"field": "Date", "minWidth": 100, "maxWidth": 100, "hide": False},
+                {"field": "Compet", "minWidth": 100, "maxWidth": 250, "hide": False},
+            ],
+        }, {
+            "headerName": "Infos",
+            "children": [
+                {"field": "Né en", "minWidth": 70, "maxWidth": 100, "hide": False},
+                {"field": "Club", "minWidth": 150, "maxWidth": 250, "hide": False},
+            ],
+        },
+    ]
+
+    style_edf = {'display': 'block'}
+    style_l = {'display': 'None'}
+    ys, ms, ds = start_date.split('-')
+    ye, me, de = end_date.split('-')
+    output_cal = '📅 ' + ds + '/' + ms + ' ' + de + '/' + me
+
+    return dat, cols, style_edf, style_l, start_date, end_date, output_cal, style_edf, style_l
+
 
 #Export Excel
 clientside_callback(
