@@ -677,7 +677,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                             ,	atl.AnNaissance			as "AtlAnNaissance"
                             ,	atl.MaxIWF				as "AtlMaxIWF"
                             ,	atl.MaxTotal			as "AtlMaxTotal"
-                            ,    cast(1 - NULLIF(
+                            ,    cast(1.5 - NULLIF(
                                     ACOS(
                                         SIN(RADIANS(atl.latitude)) * SIN(RADIANS(cla.latitude)) +
                                         COS(RADIANS(atl.latitude)) * COS(RADIANS(cla.latitude)) * COS(RADIANS(atl.longitude - cla.longitude))
@@ -696,7 +696,10 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                                 else
                                     cast(mxa.MaxTotal as float) / cast(atl.MaxTotal as float)
                                 end as float)
-                                * POWER(1 - (ABS(cast(substr(ath."DateNaissanceFormat",1,4) as Float) - cast(atl.AnNaissance as Float)) / 80), 4) 
+                                * (0.7+POWER(1 - (ABS(cast(substr(ath."DateNaissanceFormat",1,4) as Float) - cast(atl.AnNaissance as Float)) / 80), 
+                                    CASE WHEN cast(atl.AnNaissance as Float)>2011 THEN 6
+                                         WHEN cast(atl.AnNaissance as Float)>2004 THEN 4
+                                         WHEN cast(atl.AnNaissance as Float)>1990 THEN 2 ELSE 1 END)/(1/0.7))
                                     as "FinalScore"
                                                         
                             FROM ATHLETE as ath 
