@@ -168,21 +168,22 @@ layout = html.Div([
     dbc.Row([
         dbc.Col([
             html.Div([
+                html.P("Options", className="class_options_div"),
                 dcc.RadioItems(
                     options=[
                        {'label': ' Listings ', 'value': 'LIS'},
                        {'label': ' Masters ', 'value': 'MAS'},
                        {'label': ' 🇫🇷 EdF ', 'value': 'EDF'},
                     ],
-                    value='LIS', inline=True, id='list_option'),
-                ], id="div_options", className="class_options"),
-            ], xs=3, sm=3, md=3, lg=2, xl=2),
+                    value='LIS', inline=True, id='list_option', labelClassName="class_options"),
+                ], id="div_options"),
+            ], xs=4, sm=3, md=3, lg=3, xl=3),
 
         dbc.Col([
             dbc.Button("↪️", id="reset_col_list", color="light", outline=True, className="mt-auto", size="sm"),
             dbc.Button("💾", id="excel_export_list", color="light", outline=True, className="mt-auto", size="sm"),
             dbc.Button("🎯", id="quizz", color="light", outline=True, className="mt-auto", size="sm"),
-        ], xs=3, sm=3, md=3, lg=2, xl=2),
+        ], xs=2, sm=3, md=3, lg=2, xl=2),
 
 
             dbc.Col([
@@ -221,7 +222,7 @@ layout = html.Div([
                     tooltip={"placement": "bottom", "always_visible": True},
                     id='year-slider',
                     className='slider_zone'),
-            ], xs=4, sm=4, md=4, lg=5, xl=6),
+            ], xs=4, sm=4, md=4, lg=4, xl=5),
         ]),
 
     dbc.Modal([
@@ -316,9 +317,11 @@ layout = html.Div([
                            {'label': ' U20/U23 ', 'value': 'JNR'},
                            {'label': ' U15/U17 ', 'value': 'YTH'},
                         ],
-                        value='SEN', inline=True, id='int_option'),
-                ], id="div_edf", className="class_options"),
-            ], xs=6, sm=6, md=3, lg=2, xl=2),
+                        value='SEN', inline=True,
+                        id='int_option',
+                        labelClassName="class_options"),
+                ], id="div_edf"),
+            ], xs=8, sm=6, md=6, lg=4, xl=4),
             dag.AgGrid(
                 id="ag-datatable-int_edf",
                 rowData=df.to_dict("records"),
