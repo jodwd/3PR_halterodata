@@ -15,6 +15,25 @@ import dash_bootstrap_components as dbc
 import dash_daq as daq
 from flask import Flask, render_template
 
+
+def create_marker(loc):
+    if loc['Adresse1'] is None:
+        adr1 = ''
+    else:
+        adr1 = loc['Adresse1'] + '- '
+        print(adr1)
+    if loc['Salle'] is None:
+        salle = ''
+    else:
+        salle = loc['Salle']
+    return dl.Marker(
+        position=(loc["lat"], loc["lon"]),
+        children=[
+
+            dl.Tooltip(content="<b>" + loc['Club'] + "</b><br>" + adr1 + salle + "<br>" + loc['CodePostal'] + " " + loc['Ville'], permanent=False, direction="top")
+        ]
+    )
+
 # Connection à la base SQLite
 dirname = os.path.dirname(__file__)
 path_db = os.path.join(dirname, 'dataltero.db')
@@ -33,10 +52,10 @@ dff = df
 dfh['Rang'] = df[(df['Sexe'] == 'M') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
 dff['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
 
-clubs_pos = df[df['lat'] > 40.0][['Club', 'lat', 'lon']].drop_duplicates()
+clubs_pos = df[df['lat'] > 40.0][['Club', 'lat', 'lon', 'CodePostal', 'Ville', 'Salle', 'Adresse1', 'Adresse2']].drop_duplicates()
 clubs_pos = clubs_pos.to_dict(orient='records')
 
-geojson = dlx.dicts_to_geojson([{**c, **dict(tooltip=c["Club"])} for c in clubs_pos])
+geojson = dlx.dicts_to_geojson([{**c, **dict(tooltip=(c["Club"] + '\n' + str(c["CodePostal"]) + ' ' + c['Ville']))} for c in clubs_pos])
 
 updated_title='Dashboard Club'
 
@@ -235,11 +254,12 @@ layout = html.Div([
             dbc.ModalHeader("Carte des Clubs", id="map_info"),
             dbc.ModalBody([
                 dl.Map(
-                    children=[dl.TileLayer(), dl.GeoJSON(data=geojson)],
+                    children=[dl.TileLayer(), dl.LayerGroup(id="layer")],
                     center=[46.232193, 2.209667],
                     zoom=5,
                     style={"height": "50vh"}),
                 ]),
+            dcc.Interval(id="interval", interval=300000, n_intervals=0),
             dbc.ModalFooter(
                 dbc.Button("Fermer", id="close-map", color="secondary", className="ml-auto")
             ),
@@ -813,6 +833,21 @@ def light_mode_club(on):
 
     return css_body, css_grid, css_grid, reset_color, reset_color;
 
+
+
+@callback(
+    Output("layer", "children"),
+    Input("interval", "n_intervals")
+)
+
+def update_tooltips(n):
+    # Example dynamic change: rotate tooltip text
+    updated_markers = []
+    backslash_char = "\n"
+    for i, loc in enumerate(clubs_pos):
+        clubs_pos_c = loc.copy()
+        updated_markers.append(create_marker(clubs_pos_c))
+    return updated_markers
 
 #Export Excel
 clientside_callback(

@@ -58,6 +58,7 @@ nav_button = \
                     html.Div([], id="help-txt"),
                 ]),
                 dbc.ModalFooter(
+                    
                     dbc.Button("Fermer", id="close-button", color="secondary", className="ml-auto", size="sm")
                 ),
                 ], id="info-modal", size="lg", centered=True, is_open=False),
