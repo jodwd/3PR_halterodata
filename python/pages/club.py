@@ -7,10 +7,32 @@ import sqlite3 as sql
 import dash_ag_grid as dag
 import numpy as np
 import os
+import dash_leaflet as dl
+import dash_leaflet.express as dlx
+from dash_extensions.enrich import DashProxy
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 from flask import Flask, render_template
+
+
+def create_marker(loc):
+    if loc['Adresse1'] is None:
+        adr1 = ''
+    else:
+        adr1 = loc['Adresse1'] + '- '
+        print(adr1)
+    if loc['Salle'] is None:
+        salle = ''
+    else:
+        salle = loc['Salle']
+    return dl.Marker(
+        position=(loc["lat"], loc["lon"]),
+        children=[
+
+            dl.Tooltip(content="<b>" + loc['Club'] + "</b><br>" + adr1 + salle + "<br>" + loc['CodePostal'] + " " + loc['Ville'], permanent=False, direction="top")
+        ]
+    )
 
 # Connection à la base SQLite
 dirname = os.path.dirname(__file__)
@@ -29,6 +51,11 @@ dfh = df
 dff = df
 dfh['Rang'] = df[(df['Sexe'] == 'M') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
 dff['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
+
+clubs_pos = df[df['lat'] > 40.0][['Club', 'lat', 'lon', 'CodePostal', 'Ville', 'Salle', 'Adresse1', 'Adresse2']].drop_duplicates()
+clubs_pos = clubs_pos.to_dict(orient='records')
+
+geojson = dlx.dicts_to_geojson([{**c, **dict(tooltip=(c["Club"] + '\n' + str(c["CodePostal"]) + ' ' + c['Ville']))} for c in clubs_pos])
 
 updated_title='Dashboard Club'
 
@@ -220,7 +247,24 @@ layout = html.Div([
         dbc.Col([
             dbc.Button("↪️", id="reset_col_club", color="light", outline=True, className="mt-auto", size="sm"),
             dbc.Button("💾", id="excel_export_club", color="light", outline=True, className="mt-auto", size="sm"),
-        ], xs=3, sm=3, md=2, lg=2, xl=1),
+            dbc.Button("🌍", id="club_map", color="light", outline=True, className="mt-auto", size="sm"),
+        ], xs=4, sm=4, md=3, lg=3, xl=2),
+
+        dbc.Modal([
+            dbc.ModalHeader("Carte des Clubs", id="map_info"),
+            dbc.ModalBody([
+                dl.Map(
+                    children=[dl.TileLayer(), dl.LayerGroup(id="layer")],
+                    center=[46.232193, 2.209667],
+                    zoom=5,
+                    style={"height": "50vh"}),
+                ]),
+            dcc.Interval(id="interval", interval=300000, n_intervals=0),
+            dbc.ModalFooter(
+                dbc.Button("Fermer", id="close-map", color="secondary", className="ml-auto")
+            ),
+        ], id="map-modal", size="lg", centered=True, is_open=False),
+
         dbc.Col([
             dcc.Slider(
                 min=df['SaisonAnnee'].min(),
@@ -232,7 +276,7 @@ layout = html.Div([
                 tooltip={"placement": "bottom", "always_visible": True},
                 id='year-slider-club',
                 className='slider_zone')
-        ], xs=9, sm=9, md=10, lg=10, xl=11),
+        ], xs=8, sm=8, md=9, lg=9, xl=10),
     ]),
 
     #top 5 H & F
@@ -248,14 +292,15 @@ layout = html.Div([
                     enableEnterpriseModules=True,
                     rowData=dfh.to_dict("records"),  # **need it
                     columnDefs=[
-                        {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 120, "pinned": "left"},
-                        {"field": "Arr", "width": 60},
-                        {"field": "EpJ", "width": 60},
-                        {"field": "Tot", "width": 60},
-                        {"field": "IWF Max", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
-                        {"field": "PdC", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
+                        {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
+                        {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},
+                        {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "Tot", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "IWF Max", "minWidth": 70, "maxWidth": 100, 'type': 'numericColumn',  "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
+                        {"field": "PdC", "minWidth": 70, "maxWidth": 90, 'type': 'numericColumn', "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
                     ],
+                    columnSize="responsiveSizeToFit",
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=True,
                     style={"height": 540},
@@ -270,20 +315,20 @@ layout = html.Div([
             dbc.Button(
                 title="  Top 5 Femmes  ", id="top_5_f", outline=False, color="primary", className="top_5", href="/club"),
             html.Br(),
-
             html.Div([
                 dag.AgGrid(
                     id="ag-datatable-f",
                     enableEnterpriseModules=True,
+                    columnSize="responsiveSizeToFit",
                     rowData=dff.to_dict("records"),  # **need it
                     columnDefs=[
-                        {"field": "Rang", "width": 30, "pinned": "left"},
-                        {"field": "Nom", "width": 120, "pinned": "left"},
-                        {"field": "Arr", "width": 60},
-                        {"field": "EpJ", "width": 60},
-                        {"field": "Tot", "width": 60},
-                        {"field": "IWF Max", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
-                        {"field": "PdC", "width": 80, "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
+                        {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
+                        {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},
+                        {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "Tot", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+                        {"field": "IWF Max", "minWidth": 70, "maxWidth": 100, 'type': 'numericColumn', "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
+                        {"field": "PdC", "minWidth": 70, "maxWidth": 90, 'type': 'numericColumn', "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
                     ],
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=False,
@@ -726,6 +771,19 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
         return [dbc.Table.from_dataframe(df_sen, responsive=True, striped=True, bordered=True, hover=True)]
         #fig_athl1, display_graph_athl1,
 
+
+@callback(
+    Output("map-modal", "is_open"),
+    [Input("club_map", "n_clicks"),
+     Input("close-map", "n_clicks")],
+    State("map-modal", "is_open"),
+    prevent_initial_call=True
+)
+def toggle_modal_athl(open_clicks, close_clicks, is_open_map):
+    if open_clicks or close_clicks:
+        return not is_open_map
+    return is_open_map
+
 @callback(
      [Output("ag-datatable-f", "columnDefs"),
      Output("ag-datatable-h", "columnDefs"),
@@ -744,14 +802,14 @@ def toggle_modal_athl(reset_club_clicks, breakpoint_str):
     defaultColDef={"resizable": True, "sortable": True, "filter": True, "suppressMovable": col_move}
     if reset_club_clicks:
         cols = [
-                    {"field": "Rang", "width": 30, "pinned": "left", "hide": False},
-                    {"field": "Nom", "width": 120, "pinned": "left", "hide": False},
-                    {"field": "Arr", "width": 60, "hide": False},
-                    {"field": "EpJ", "width": 60, "hide": False},
-                    {"field": "Tot", "width": 60, "hide": False},
-                    {"field": "IWF Max", "width": 80, "hide": False, "valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
-                    {"field": "PdC", "width": 80, "hide": False, "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
-                ]
+            {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
+            {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},
+            {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+            {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+            {"field": "Tot", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
+            {"field": "IWF Max", "minWidth": 70, "maxWidth": 100, 'type': 'numericColumn',"valueFormatter": {"function": "params.value ? params.value.toFixed(3) : ''"}},
+            {"field": "PdC", "minWidth": 70, "maxWidth": 90, 'type': 'numericColumn', "valueFormatter": {"function": "params.value ? params.value.toFixed(2) : ''"}},
+        ]
     return cols, cols, defaultColDef, defaultColDef
 
 @callback(
@@ -775,6 +833,21 @@ def light_mode_club(on):
 
     return css_body, css_grid, css_grid, reset_color, reset_color;
 
+
+
+@callback(
+    Output("layer", "children"),
+    Input("interval", "n_intervals")
+)
+
+def update_tooltips(n):
+    # Example dynamic change: rotate tooltip text
+    updated_markers = []
+    backslash_char = "\n"
+    for i, loc in enumerate(clubs_pos):
+        clubs_pos_c = loc.copy()
+        updated_markers.append(create_marker(clubs_pos_c))
+    return updated_markers
 
 #Export Excel
 clientside_callback(
