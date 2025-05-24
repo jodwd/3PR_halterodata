@@ -23,15 +23,46 @@
   text-align: center;
 }
 
-.bool_switch {
+.class_options {
+    display: inline-block;
     color: white;
     text-align: center;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    margin: 0 12px;
 }
 
-.bool_switch_light {
+.class_options_div {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 0px;
+}
+
+.class_options_light {
+    display: inline-block;
     color: rgb(40,40,45);
     text-align: center;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    margin: 0 12px;
 }
+
+
+.athl_data_tab {
+    font-size: 12px;
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+.date-group-labels.date-group-labels-checked {
+    color:#484856;
+    border-bottom-color: #3B99FC;
+}
+
+
 
 #year-slider .rc-slider-track {
   background-color: rgb(240, 173, 78);
