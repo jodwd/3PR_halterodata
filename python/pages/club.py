@@ -20,8 +20,7 @@ def create_marker(loc):
     if loc['Adresse1'] is None:
         adr1 = ''
     else:
-        adr1 = loc['Adresse1'] + '- '
-        print(adr1)
+        adr1 = loc['Adresse1'] + ' - '
     if loc['Salle'] is None:
         salle = ''
     else:
@@ -29,7 +28,6 @@ def create_marker(loc):
     return dl.Marker(
         position=(loc["lat"], loc["lon"]),
         children=[
-
             dl.Tooltip(content="<b>" + loc['Club'] + "</b><br>" + adr1 + salle + "<br>" + loc['CodePostal'] + " " + loc['Ville'], permanent=False, direction="top")
         ]
     )
@@ -52,10 +50,8 @@ dff = df
 dfh['Rang'] = df[(df['Sexe'] == 'M') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
 dff['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
 
-clubs_pos = df[df['lat'] > 40.0][['Club', 'lat', 'lon', 'CodePostal', 'Ville', 'Salle', 'Adresse1', 'Adresse2']].drop_duplicates()
+clubs_pos = df[abs(df['lat']) > 1.0][['Club', 'lat', 'lon', 'CodePostal', 'Ville', 'Salle', 'Adresse1', 'Adresse2']].drop_duplicates()
 clubs_pos = clubs_pos.to_dict(orient='records')
-
-geojson = dlx.dicts_to_geojson([{**c, **dict(tooltip=(c["Club"] + '\n' + str(c["CodePostal"]) + ' ' + c['Ville']))} for c in clubs_pos])
 
 updated_title='Dashboard Club'
 
@@ -256,7 +252,7 @@ layout = html.Div([
                 dl.Map(
                     children=[dl.TileLayer(), dl.LayerGroup(id="layer")],
                     center=[46.232193, 2.209667],
-                    zoom=5,
+                    zoom=1.5,
                     style={"height": "50vh"}),
                 ]),
             dcc.Interval(id="interval", interval=300000, n_intervals=0),
