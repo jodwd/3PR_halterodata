@@ -52,7 +52,10 @@
 }
 
 
-
+.athl_data_tab {
+    font-size: 12px;
+    font-family: 'Helvetica Neue', sans-serif;
+}
 
 .date-group-labels.date-group-labels-checked {
     color:#484856;
