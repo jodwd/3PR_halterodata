@@ -12,3 +12,4 @@ dash_daq==0.5.0
 dash_ag_grid==31.0
 dash_breakpoints==0.1.0
 dash_leaflet==1.0.15
+dash_extensions==1.0.20
