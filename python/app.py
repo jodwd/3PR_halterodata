@@ -18,9 +18,6 @@ app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
 app.title = "3PR - Tableau de Bord de l'Haltérophilie en France"
 server = app.server
 
-#port
-port = int(os.environ.get('PORT', 3500))
-
 # Connection à la base SQLite
 dirname = os.path.dirname(os.path.abspath(__file__))
 path_db = os.path.join(dirname, 'pages/dataltero.db')
@@ -317,5 +314,6 @@ def anniv(is_open):
         return [txt_anniv]
 
 
-if __name__ == "__main__":
-    app.run(debug=True, port=3500)
+if __name__ == "__main__":#port
+    port = int(os.environ.get('PORT', 3500))
+    app.run(host="0.0.0.0", port=port, debug=False)
