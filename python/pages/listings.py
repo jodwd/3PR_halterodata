@@ -36,7 +36,7 @@ nom_age = list(set(df['CateAge'].tolist()))
 nom_age_masters = list(set(df['CateMaster'].tolist()))
 nom_poids = list(set(df['CatePoids'].tolist()))
 nom_sexe = list(set(df['Sexe'].tolist()))
-nom_nat = list(set(df['Pays'].tolist()))
+nom_nat = list(set(df['Nationalite'].tolist()))
 nom_serie = df['Serie'].unique().tolist()
 nom_saison = df['SaisonAnnee'].unique().tolist()
 nom_club = df['Club'].unique().tolist()
@@ -380,7 +380,7 @@ def update_datalist(selected_year, list_opt, l_poids, l_age, l_ligue, l_nat, l_s
     if l_ligue:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(l_ligue))]
     if l_nat:
-        filtered_df = filtered_df[(filtered_df['Pays'].isin(l_nat))]
+        filtered_df = filtered_df[(filtered_df['Nationalite'].isin(l_nat))]
     if l_serie:
         filtered_df = filtered_df[(filtered_df['Serie'].isin(l_serie))]
     if l_comp:
@@ -425,7 +425,7 @@ def update_datalist(selected_year, list_opt, l_sexe, l_age, l_ligue, l_nat, l_se
     if l_ligue:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(l_ligue))]
     if l_nat:
-        filtered_df = filtered_df[(filtered_df['Pays'].isin(l_nat))]
+        filtered_df = filtered_df[(filtered_df['Nationalite'].isin(l_nat))]
     if l_serie:
         filtered_df = filtered_df[(filtered_df['Serie'].isin(l_serie))]
     if l_comp:
@@ -466,7 +466,7 @@ def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_ligue, l_nat, l_
     if l_ligue:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(l_ligue))]
     if l_nat:
-        filtered_df = filtered_df[(filtered_df['Pays'].isin(l_nat))]
+        filtered_df = filtered_df[(filtered_df['Nationalite'].isin(l_nat))]
     if l_serie:
         filtered_df = filtered_df[(filtered_df['Serie'].isin(l_serie))]
     if l_comp:
@@ -513,7 +513,7 @@ def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_nat, l_se
         else:
             filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
     if l_nat:
-        filtered_df = filtered_df[(filtered_df['Pays'].isin(l_nat))]
+        filtered_df = filtered_df[(filtered_df['Nationalite'].isin(l_nat))]
     if l_serie:
         filtered_df = filtered_df[(filtered_df['Serie'].isin(l_serie))]
     if l_comp:
@@ -560,7 +560,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_serie,
     if l_club:
         filtered_df = filtered_df[(filtered_df['Club'].isin(l_club))]
 
-    nom_nat = list(set(filtered_df['Pays'].tolist()))
+    nom_nat = list(set(filtered_df['Nationalite'].tolist()))
     opt = [x for x in sorted(nom_nat)]
     return opt
 @callback(
@@ -597,7 +597,7 @@ def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_
     if l_ligue:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(l_ligue))]
     if l_nat:
-        filtered_df = filtered_df[(filtered_df['Pays'].isin(l_nat))]
+        filtered_df = filtered_df[(filtered_df['Nationalite'].isin(l_nat))]
     if l_comp:
         filtered_df = filtered_df[(filtered_df['Compet'].str.contains('|'.join(l_comp)))]
     if l_club:
@@ -642,7 +642,7 @@ def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_
     if l_ligue:
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(l_ligue))]
     if l_nat:
-        filtered_df = filtered_df[(filtered_df['Pays'].isin(l_nat))]
+        filtered_df = filtered_df[(filtered_df['Nationalite'].isin(l_nat))]
     if l_serie:
         filtered_df = filtered_df[(filtered_df['Serie'].isin(l_serie))]
     if l_comp:
@@ -717,7 +717,7 @@ def update_data(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_nat,
         filtered_df = filtered_df[(filtered_df['Ligue'].isin(l_ligue))]
         print(l_ligue)
     if l_nat:
-        filtered_df = filtered_df[(filtered_df['Pays'].isin(l_nat))]
+        filtered_df = filtered_df[(filtered_df['Nationalite'].isin(l_nat))]
         print(l_nat)
     if l_serie and not(l_comp):
         filtered_df = filtered_df[(filtered_df['RowNumMaxCateTotal'] == 1)]
@@ -799,7 +799,7 @@ def update_data(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_nat,
             "headerName": "Infos",
             "children": [
                 {"field": "Né en", "minWidth": 70, "maxWidth": 100, "hide": False},
-                {"field": "Pays", "minWidth": 60, "maxWidth": 80, "hide": False},
+                {"field": "Nat", "minWidth": 60, "maxWidth": 80, "hide": False},
                 {"field": "Club", "minWidth": 150, "maxWidth": 250, "hide": False},
             ],
         },
@@ -849,7 +849,7 @@ def update_data(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_nat,
                     "headerName": "Infos",
                     "children": [
                         {"field": "Né en", "minWidth": 70, "maxWidth": 100, "hide": False},
-                        {"field": "Pays", "minWidth": 60, "maxWidth": 80, "hide": False},
+                        {"field": "Nat", "minWidth": 60, "maxWidth": 80, "hide": False},
                         {"field": "Club", "minWidth": 150, "maxWidth": 250, "hide": False},
                     ],
                 },
@@ -918,7 +918,7 @@ def toggle_modal_athl(reset_l_clicks, list_opt, l_age):
                 "headerName": "Infos",
                 "children": [
                     {"field": "Né en", "minWidth": 70, "maxWidth": 100, "hide": False},
-                    {"field": "Pays", "minWidth": 60, "maxWidth": 80, "hide": False},
+                    {"field": "Nat", "minWidth": 60, "maxWidth": 80, "hide": False},
                     {"field": "Club", "minWidth": 150, "maxWidth": 250, "hide": False},
                 ],
             },
