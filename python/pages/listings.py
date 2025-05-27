@@ -538,7 +538,13 @@ def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_nat, l_se
      Input('in_club', 'value')],
     prevent_initial_call=True
 )
-def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_serie, l_comp, l_club):
+
+def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_serie, l_comp, l_club):
+    master = False
+    if list_opt == 'EDF':
+        raise PreventUpdate
+    elif list_opt == 'MAS':
+        master = True
     if selected_year == '':
         selected_year = df['SaisonAnnee'].max()
     filtered_df = df[(df['SaisonAnnee'] == selected_year)]
@@ -547,7 +553,7 @@ def update_datalist(selected_year, on, l_sexe, l_poids, l_age, l_ligue, l_serie,
     if l_poids:
         filtered_df = filtered_df[(filtered_df['CatePoids'].isin(l_poids))]
     if l_age:
-        if on == False:
+        if master == False:
             filtered_df = filtered_df[(filtered_df['CateAge'].isin(l_age))]
         else:
             filtered_df = filtered_df[(filtered_df['CateMaster'].isin(l_age))]
@@ -621,6 +627,7 @@ def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_
      Input('in_serie', 'value'),
      Input('in_comp', 'value')]
 )
+
 def update_datalist(selected_year, list_opt, l_sexe, l_poids, l_age, l_ligue, l_nat, l_serie, l_comp):
     master = False
     if list_opt == 'EDF':
