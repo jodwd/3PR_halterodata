@@ -1268,7 +1268,7 @@ def update_data(selected_year, list_opt, int_option, start_date, end_date, break
 
     filtered_df = filtered_df[(filtered_df['Classe'].isin(list_age))]
     print(filtered_df)
-    filtered_df = filtered_df.sort_values(by=['Sexe', 'Minima', 'Total'], ascending=[True, True, False])
+    filtered_df = filtered_df.sort_values(by=['Sexe', 'Classe', 'Minima', 'Total'], ascending=[True, True, True, False])
     filtered_df = filtered_df.drop_duplicates(subset=['Nom', 'Classe', 'Cate'], keep='first')
 
 
@@ -1293,6 +1293,7 @@ def update_data(selected_year, list_opt, int_option, start_date, end_date, break
                                  },
                              },
                 {"field": "Total", "minWidth": 70, "maxWidth": 100, 'type': 'numericColumn'},
+                {"field": "Minima", "minWidth": 70, "maxWidth": 100, 'type': 'numericColumn'},
                 {"field": "Arr", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
                 {"field": "EpJ", "minWidth": 60, "maxWidth": 80, 'type': 'numericColumn'},
                 {"field": "PdC", "minWidth": 80, "maxWidth": 100, 'type': 'numericColumn',
