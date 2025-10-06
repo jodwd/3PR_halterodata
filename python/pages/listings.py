@@ -1244,7 +1244,7 @@ def end_quizz(stop_q, df_q, n_1, n_2, n_3, n_4, n_5, n_6, n_7, n_8, n_9, n_10):
      prevent_initial_call=True)
 
 def update_data(selected_year, list_opt, int_option, start_date, end_date, breakpoint_str):
-    print(list_opt)
+    print(selected_year)
     if list_opt not in ('EDF'):
         raise PreventUpdate
 
@@ -1254,6 +1254,10 @@ def update_data(selected_year, list_opt, int_option, start_date, end_date, break
 
     qry_edf = """SELECT * FROM REPORT_EDF"""
     df_edf = pd.read_sql_query(qry_edf, conn)
+
+    #si on change d'année de listing on recalcule start_date et end_date du date picker
+    start_date=str(date(selected_year, 1, 1))
+    end_date=str(date(selected_year, 12, 31))
 
     filtered_df = df_edf[(df_edf['Date'] >= start_date)]
     filtered_df = filtered_df[(filtered_df['Date'] <= end_date)]
