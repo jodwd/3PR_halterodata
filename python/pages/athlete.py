@@ -47,7 +47,7 @@ print("qry done : " + str(time.time()))
 # Reformatage des donnée de la requête
 df['IWF'] = round(df['IWF'], 3)
 df['MoisCompet'] = pd.Categorical(df['MoisCompet'], ["08", "09", "10", "11", "12", "01", "02", "03", "04", "05", "06", "07"])
-df2['Série'] = pd.Categorical(df2['Série'], ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"], ordered=True)
+df2['Série'] = pd.Categorical(df2['Série'], ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "HON", "NAT", "INT B", "EUR", "INT A", "MON", "OLY"], ordered=True)
 df_temp = df[df['Nom']=='ZZZZZ']
 dash.register_page(__name__, path='/', name='3PR - Athletes', title='3PR - Perfs Athlètes', image='/assets/3PR.png', description='Tableau de bord des performances des haltérophiles français')
 
@@ -645,7 +645,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                  LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
                  LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
 
-                 where ath.Nom='""" + athl + """'
+                 where ath.Nom= :athlete
                  group by cmp.SaisonAnnee, clb.club
                  order by cmp.SaisonAnnee asc"""
 
@@ -763,7 +763,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                                         LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
                                         LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
                                         LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-                                        where ath.Nom = '""" + athl + """'
+                                        where ath.Nom = :athlete
                                         
                                     ) as cla
                                     on cla.AthleteID = ath.AthleteID
@@ -789,7 +789,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                                     ) as mxa
                                     on mxa.AthleteID = ath.AthleteID
                                         
-                                where ath.Nom = '""" + athl + """'
+                                where ath.Nom = :athlete
                                 and cla.row_num = 1
                                 )
                                 as atl
@@ -803,7 +803,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                     """
 
         print("qry hf : " + str(time.time()))
-        df_hf = pd.read_sql_query(qry_hf, conn)
+        df_hf = pd.read_sql_query(qry_hf, conn, params=(athl, ))
         print(df_hf)
         output_df= [dbc.Table.from_dataframe(df_hf, responsive=True, striped=True, bordered=True, hover=True)]
 
@@ -814,12 +814,12 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
     #    open_clicks3 = None
     #    open_clicks4 = None
         
-    df_athl = pd.read_sql_query(qry, conn)
+    df_athl = pd.read_sql_query(qry, conn, params=(athl,))
     df_athl.head()
 
     print("qry r done : " + str(time.time()))
     df2_athl = df2[(df2['Nom'] == athl)]
-    df2_athl['Série'] = pd.Categorical(df2_athl['Série'], ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"],
+    df2_athl['Série'] = pd.Categorical(df2_athl['Série'], ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "HON", "NAT", "INT B", "EUR", "INT A", "MON", "OLY"],
                                         ordered=True)
     df2_athl = df2_athl.sort_values(by=['Série'])
     print(df2_athl)
@@ -827,7 +827,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
                              color_discrete_sequence=["#DC4C64", "#3B71CA", "#E4A11B", "#14A44D", "#FBFBFB", "purple",
                                                       "#54B4D3", "#9FA6B2"],
                              category_orders={
-                                 "Série": ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "NAT", "INT B", "INT A", "OLY"]})
+                                 "Série": ["N.C.", "DEB", "DPT", "REG", "IRG", "FED", "HON", "NAT", "INT B", "EUR", "INT A", "MON", "OLY"]})
 
     fig_athl.update_layout(font_size=12,
                             legend=dict(
