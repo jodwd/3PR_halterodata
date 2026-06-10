@@ -12,13 +12,9 @@ import dash_daq as daq
 
 # Connection à la base SQLite
 dirname = os.path.dirname(__file__)
-path_db = os.path.join(dirname, 'dataltero.db')
-conn = sql.connect(database=path_db)
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
-qry = """SELECT * FROM REPORT_LISTINGS"""
-
-df = pd.read_sql_query(qry, conn)
+df = pd.read_parquet(dirname + '\parquet_tables\REPORT_LISTINGS.parquet', engine='fastparquet')
 
 df = df.sort_values(by=['RangSerie'])
 df['IWF Max Saison'] = round(df['IWF Max Saison'], 3) # Arrondi à 3 virgule pour l'IWF pour le display
@@ -1248,12 +1244,11 @@ def update_data(selected_year, list_opt, int_option, start_date, end_date, break
     if list_opt not in ('EDF'):
         raise PreventUpdate
 
-    dirname = os.path.dirname(__file__)
-    path_db = os.path.join(dirname, 'dataltero.db')
-    conn = sql.connect(database=path_db)
+    #dirname = os.path.dirname(__file__)
+    #path_db = os.path.join(dirname, 'dataltero.db')
+    #conn = sql.connect(database=path_db)
 
-    qry_edf = """SELECT * FROM REPORT_EDF"""
-    df_edf = pd.read_sql_query(qry_edf, conn)
+    df_edf = pd.read_parquet(dirname + '\parquet_tables\REPORT_EDF.parquet', engine='fastparquet')
 
     #si on change d'année de listing on recalcule start_date et end_date du date picker
     start_date=str(date(selected_year, 1, 1))

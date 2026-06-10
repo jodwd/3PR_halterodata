@@ -282,27 +282,7 @@ def anniv(is_open):
         raise PreventUpdate
     if is_open:
         dirname = os.path.dirname(os.path.abspath(__file__))
-        path_db = os.path.join(dirname, 'pages/dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        qry_anniv = """SELECT DISTINCT
-                        ath.Nom || ' (' || Cast((JulianDay(DATETIME('now')) - JulianDay(DATETIME(substr(ath."DateNaissance",7,4)
-                        || '-' || substr(ath."DateNaissance",4,2) || '-' || substr(ath."DateNaissance",1,2)))) / 365 AS Integer) || ' ans)' AS "AthlAnniv"
-                    FROM
-                        ATHLETE as ath
-                        LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID = ath.AthleteID
-                        LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition
-                        LEFT JOIN ATHLETE_PR apr on apr."AthleteID" = (ath.Nom || ath."DateNaissance")
-                                                  and apr.SaisonAnnee = cmp.SaisonAnnee
-                    WHERE substr(DateNaissance, 1, 5) = substr(DATETIME('now'), 9,2) || '/' || substr(DATETIME('now'), 6 ,2)
-                        AND (cmp.SaisonAnnee = cast(substr(DATE('now', '-8 months'),1,4) as Integer)
-                        OR  cmp.SaisonAnnee = cast(substr(DATE('now', '+4 months'),1,4) as Integer))
-
-                    ORDER BY
-                        (case when cat.Sexe='F' then 1.5 else 1 end)* apr."MaxIWFSaison" DESC"""
-
-        df_anniv = pd.read_sql_query(qry_anniv, conn)
-        df_anniv.head()
+        df_anniv = pd.read_parquet(dirname + '\pages\parquet_tables\REPORT_ANNIV.parquet', engine='fastparquet')
         print(df_anniv)
 
         today = datetime.now()
