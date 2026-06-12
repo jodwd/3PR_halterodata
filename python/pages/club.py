@@ -525,14 +525,15 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
 
 # Partie + Info
 def qry_box(txt_club, txt_ligue, selected_year):
-    if txt_ligue:
-        df_ca = pd.read_parquet(dirname + '\parquet_tables\REPORT_CLUB_AGE_LIGUE.parquet', engine='fastparquet')
-        df_ca = df_ca[df_ca['Saison'] == selected_year]
-        df_ca = df_ca[df_ca['Ligue'] == txt_ligue[0]]
-    else:
+
+    if txt_club:
         df_ca = pd.read_parquet(dirname + '\parquet_tables\REPORT_CLUB_AGE.parquet', engine='fastparquet')
         df_ca = df_ca[df_ca['Saison'] == selected_year]
         df_ca = df_ca[df_ca['Club'] == txt_club[0]]
+    elif txt_ligue:
+        df_ca = pd.read_parquet(dirname + '\parquet_tables\REPORT_CLUB_AGE_LIGUE.parquet', engine='fastparquet')
+        df_ca = df_ca[df_ca['Saison'] == selected_year]
+        df_ca = df_ca[df_ca['Ligue'] == txt_ligue[0]]
     df_ca = df_ca.sort_values(by=["Classement Fr"])
     return df_ca
 
@@ -669,7 +670,7 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
         raise PreventUpdate
     if is_open_sen:
         df_sen = qry_box(txt_club, txt_ligue, selected_year)
-        df_sen = df_sen[df_u20['CateAge'].isin(['SEN'])]
+        df_sen = df_sen[df_sen['CateAge'].isin(['SEN'])]
 
         return [dbc.Table.from_dataframe(df_sen, responsive=True, striped=True, bordered=True, hover=True)]
         #fig_athl1, display_graph_athl1,

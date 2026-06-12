@@ -596,8 +596,7 @@ def toggle_modal_athl(open_clicks1, open_clicks2, open_clicks3, open_clicks4, cl
      Input("open_athl4", "n_clicks")],
     prevent_initial_call=True
 )
-def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks1, open_clicks2, open_clicks3,
-                       open_clicks4):
+def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks1, open_clicks2, open_clicks3, open_clicks4):
     if (not is_open_athl) or not txt_inserted:
         raise PreventUpdate
     athl = txt_inserted[0]
@@ -663,21 +662,15 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
     athl_info_title = athl + ' ' + date_naiss + ' - '.join(up_achievements)
 
     dirname = os.path.dirname(__file__)
-    path_db = os.path.join(dirname, 'dataltero.db')
-    df_athl = df.groupby(by=["SaisonAnnee", "Club"])[["Arr", "EpJ", "Total", "IWF"]].max
-    df_athl.sort_values(by=["SaisonAnnee"])
-    print(df_athl)
-    qry = """SELECT cmp.SaisonAnnee as "Saison", clb.club, count(clb.club) as "Nb Compet",
-                    max(cat.Arrache) as "Arr", max(cat.EpJete) as "EpJ", max(cat.PoidsTotal) as "Total"
-                   , max(round(cat.IWF_Calcul,3)) as "IWF" 
-                 FROM ATHLETE as ath 
-                 LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-                 LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-                 LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
 
-                 where ath.Nom= :athlete
-                 group by cmp.SaisonAnnee, clb.club
-                 order by cmp.SaisonAnnee asc"""
+    df_athl = (
+        df[df["Nom"] == athl]
+        .groupby(["SaisonAnnee", "Club"])[["Arr", "EpJ", "Total", "IWF"]]
+        .max()
+        .reset_index()
+        .sort_values(["SaisonAnnee", "Club"])
+    )
+    print(df_athl)
 
     output_df = []
     hf_display = {'display': 'None'}
@@ -696,10 +689,9 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
         #             where AthlNom = :athl
         #            """
 
-        print("qry hf : " + str(time.time()))
 
         dl_hf = pd.read_parquet(dirname + '\parquet_tables\ATHLETES_SIMILAIRES.parquet')
-        dl_hf = dl_hf.filter(AthlNom=athl)
+        dl_hf = dl_hf[dl_hf["AthlNom"] == athl]
         df_hf = dl_hf[["Rang", "AthlSim", "Club", "Naissance", "Max IWF", "Naissance", "Total"]]
 
         output_df = [dbc.Table.from_dataframe(df_hf, responsive=True, striped=True, bordered=True, hover=True)]
