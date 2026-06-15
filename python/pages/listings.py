@@ -12,9 +12,14 @@ import dash_daq as daq
 
 # Connection à la base SQLite
 dirname = os.path.dirname(__file__)
+file_path = os.path.join(
+    dirname,
+    "parquet_tables",
+    "REPORT_LISTINGS.parquet"
+)
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
-df = pd.read_parquet(dirname + '\parquet_tables\REPORT_LISTINGS.parquet', engine='fastparquet')
+df = pd.read_parquet(file_path, engine='fastparquet')
 
 df = df.sort_values(by=['RangSerie'])
 df['IWF Max Saison'] = round(df['IWF Max Saison'], 3) # Arrondi à 3 virgule pour l'IWF pour le display
