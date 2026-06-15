@@ -30,7 +30,7 @@ file_path = os.path.join(
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
 df = pd.read_parquet(file_path, engine='fastparquet')
-df = df["Date"].max()
+max_date = df["Date"].max()
 
 nav_button = \
     dbc.Row([
@@ -54,7 +54,7 @@ nav_button = \
                 dbc.ModalBody([
                     html.P("🐓 Basé sur les données de toutes les compétitions closes de Scoresheet FFHM"),
                     html.P("🔄 Mise à Jour tous les week-ends"),
-                    html.P("🏋️ Données à jour au " + df.iloc[0,0]),
+                    html.P("🏋️ Données à jour au " + max_date),
                     html.P("👨‍💻 Repo : https://github.com/jodwd/3PR_halterodata"),
                     html.P("📷 Insta : @3pr.fr"),
                     html.P("📧 Mail : trois3pr@gmail.com"),
