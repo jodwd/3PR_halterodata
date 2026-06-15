@@ -46,7 +46,7 @@ print("qry 1 done : " + str(time.time()))
 file_path = os.path.join(
     dirname,
     "parquet_tables",
-    "REPORT_ATHLETES"
+    "REPORT_ATHLETES.parquet"
 )
 df = pd.read_parquet(file_path, engine='fastparquet')
 df2 = df[["Nom", "Série", "Catégorie"]]
@@ -691,7 +691,7 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
         file_path = os.path.join(
             dirname,
             "parquet_tables",
-            "ATHLETES_SIMILAIRES"
+            "ATHLETES_SIMILAIRES.parquet"
         )
         dl_hf = pd.read_parquet(file_path, engine='fastparquet')
         dl_hf = dl_hf[dl_hf["AthlNom"] == athl]

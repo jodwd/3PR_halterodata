@@ -285,7 +285,7 @@ def anniv(is_open):
         file_path = os.path.join(
             dirname,
             "parquet_tables",
-            "REPORT_ANNIV"
+            "REPORT_ANNIV.parquet"
         )
         df_anniv = pd.read_parquet(file_path, engine='fastparquet')
         print(df_anniv)
