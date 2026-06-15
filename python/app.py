@@ -30,7 +30,7 @@ file_path = os.path.join(
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
 df = pd.read_parquet(file_path, engine='fastparquet')
-df = df["DateCompet"].max()
+df = df["Date"].max()
 
 nav_button = \
     dbc.Row([
