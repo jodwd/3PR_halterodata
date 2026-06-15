@@ -20,14 +20,16 @@ server = app.server
 
 # Connection à la base SQLite
 dirname = os.path.dirname(os.path.abspath(__file__))
-path_db = os.path.join(dirname, 'pages/dataltero.db')
-conn = sql.connect(database=path_db)
+dirname = os.path.dirname(__file__)
+file_path = os.path.join(
+    dirname,
+    "parquet_tables",
+    "REPORT_ATHLETE.parquet"
+)
 
-# Requête
-qry = """SELECT max(cmp.DateCompet) as "Date"
-      FROM COMPET as cmp """
-df = pd.read_sql_query(qry, conn)
-df.head()
+# Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
+df = pd.read_parquet(file_path, engine='fastparquet')
+df = max(df[df["DateCompet"]])
 
 nav_button = \
     dbc.Row([
