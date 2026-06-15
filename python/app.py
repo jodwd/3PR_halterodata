@@ -287,6 +287,7 @@ def anniv(is_open):
         dirname = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(
             dirname,
+            "pages",
             "parquet_tables",
             "REPORT_ANNIV.parquet"
         )
