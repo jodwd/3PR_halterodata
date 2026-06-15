@@ -25,7 +25,7 @@ file_path = os.path.join(
     dirname,
     "pages",
     "parquet_tables",
-    "REPORT_ATHLETE.parquet"
+    "REPORT_ATHLETES.parquet"
 )
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
