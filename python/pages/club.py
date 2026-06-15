@@ -34,13 +34,14 @@ def create_marker(loc):
 
 # Connection à la base SQLite
 dirname = os.path.dirname(__file__)
-#path_db = os.path.join(dirname, 'dataltero.db')
-#conn = sql.connect(database=path_db)
+file_path = os.path.join(
+    dirname,
+    "parquet_tables",
+    "REPORT_CLUB.parquet"
+)
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
-#qry = """SELECT * FROM REPORT_CLUB"""
-#df = pd.read_sql_query(qry, conn)
-df = pd.read_parquet(dirname + '\parquet_tables\REPORT_CLUB.parquet', engine='fastparquet')
+df = pd.read_parquet(file_path, engine='fastparquet')
 
 df['IWF'] = round(df['IWF'], 3)
 df['IWF Max'] = round(df['IWF Max'], 3)
@@ -478,12 +479,22 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
         mode_ligue = True
         if len(txt_ligue) == 1:
             disp_cards = True
-            df_ac = pd.read_parquet(dirname + '\parquet_tables\REPORT_CLUB_LIGUE_RANG.parquet', engine='fastparquet')
+            file_path = os.path.join(
+                dirname,
+                "parquet_tables",
+                "REPORT_CLUB_LIGUE_RANG.parquet"
+            )
+            df_ac = pd.read_parquet(file_path, engine='fastparquet')
             print(txt_ligue)
     if txt_club:
         if len(txt_club) == 1:
             disp_cards = True
-            df_ac = pd.read_parquet(dirname + '\parquet_tables\REPORT_CLUB_RANG.parquet', engine='fastparquet')
+            file_path = os.path.join(
+                dirname,
+                "parquet_tables",
+                "EPORT_CLUB_RANG.parquet"
+            )
+            df_ac = pd.read_parquet(file_path, engine='fastparquet')
             print(txt_club)
 
     #conn = sql.connect(database=path_db)
@@ -527,11 +538,21 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
 def qry_box(txt_club, txt_ligue, selected_year):
 
     if txt_club:
-        df_ca = pd.read_parquet(dirname + '\parquet_tables\REPORT_CLUB_AGE.parquet', engine='fastparquet')
+        file_path = os.path.join(
+            dirname,
+            "parquet_tables",
+            "REPORT_CLUB_AGE.parquet"
+        )
+        df_ca = pd.read_parquet(file_path, engine='fastparquet')
         df_ca = df_ca[df_ca['Saison'] == selected_year]
         df_ca = df_ca[df_ca['Club'] == txt_club[0]]
     elif txt_ligue:
-        df_ca = pd.read_parquet(dirname + '\parquet_tables\REPORT_CLUB_AGE_LIGUE.parquet', engine='fastparquet')
+        file_path = os.path.join(
+            dirname,
+            "parquet_tables",
+            "REPORT_CLUB_AGE_LIGUE.parquet"
+        )
+        df_ca = pd.read_parquet(file_path, engine='fastparquet')
         df_ca = df_ca[df_ca['Saison'] == selected_year]
         df_ca = df_ca[df_ca['Ligue'] == txt_ligue[0]]
     df_ca = df_ca.sort_values(by=["Classement Fr"])

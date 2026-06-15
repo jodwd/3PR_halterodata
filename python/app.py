@@ -282,7 +282,12 @@ def anniv(is_open):
         raise PreventUpdate
     if is_open:
         dirname = os.path.dirname(os.path.abspath(__file__))
-        df_anniv = pd.read_parquet(dirname + '\pages\parquet_tables\REPORT_ANNIV.parquet', engine='fastparquet')
+        file_path = os.path.join(
+            dirname,
+            "parquet_tables",
+            "REPORT_ANNIV"
+        )
+        df_anniv = pd.read_parquet(file_path, engine='fastparquet')
         print(df_anniv)
 
         today = datetime.now()

@@ -1252,8 +1252,13 @@ def update_data(selected_year, list_opt, int_option, start_date, end_date, break
     #dirname = os.path.dirname(__file__)
     #path_db = os.path.join(dirname, 'dataltero.db')
     #conn = sql.connect(database=path_db)
+    file_path = os.path.join(
+        dirname,
+        "parquet_tables",
+        "REPORT_EDF.parquet"
+    )
 
-    df_edf = pd.read_parquet(dirname + '\parquet_tables\REPORT_EDF.parquet', engine='fastparquet')
+    df_edf = pd.read_parquet(file_path, engine='fastparquet')
 
     #si on change d'année de listing on recalcule start_date et end_date du date picker
     start_date=str(date(selected_year, 1, 1))

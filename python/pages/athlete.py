@@ -43,13 +43,12 @@ selected_year = [min_year, max_year]
 
 print("qry 1 done : " + str(time.time()))
 
-# Requête secondaire pour le détail athlète
-# qry2 = """SELECT ath.Nom, cat.Serie as "Série", cat.Categorie as "Catégorie"
-#      FROM ATHLETE as ath
-#      LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID
-#      LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition
-#      LEFT JOIN CLUB as clb on clb.Club = cat.CATClub"""
-df = pd.read_parquet(dirname + '\parquet_tables\REPORT_ATHLETES.parquet', engine='fastparquet')
+file_path = os.path.join(
+    dirname,
+    "parquet_tables",
+    "REPORT_ATHLETES"
+)
+df = pd.read_parquet(file_path, engine='fastparquet')
 df2 = df[["Nom", "Série", "Catégorie"]]
 
 # Requête
@@ -689,8 +688,12 @@ def update_table_athl4(txt_inserted, is_open_athl, is_open_athl_sim, open_clicks
         #             where AthlNom = :athl
         #            """
 
-
-        dl_hf = pd.read_parquet(dirname + '\parquet_tables\ATHLETES_SIMILAIRES.parquet')
+        file_path = os.path.join(
+            dirname,
+            "parquet_tables",
+            "ATHLETES_SIMILAIRES"
+        )
+        dl_hf = pd.read_parquet(file_path, engine='fastparquet')
         dl_hf = dl_hf[dl_hf["AthlNom"] == athl]
         df_hf = dl_hf[["Rang", "AthlSim", "Club", "Naissance", "Max IWF", "Naissance", "Total"]]
 
