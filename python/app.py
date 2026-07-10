@@ -1,15 +1,14 @@
 import dash
-from dash import html, dcc, Input, Output, State, html, clientside_callback
+from dash import  dcc, Input, Output, State, html, clientside_callback
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 import sqlite3 as sql
 import pandas as pd
 import os
 import dash_daq as daq
-from datetime import datetime, timedelta
+from datetime import datetime
 import dash_breakpoints
 import time
-from dash_bootstrap_components._components.Container import Container
 
 print("0 start : " + str(time.time()))
 app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
@@ -50,7 +49,7 @@ nav_button = \
             dbc.Modal([
                 dbc.ModalHeader("Informations & Aide"),
                 dbc.ModalBody([
-                    html.P("🐓 Basé sur les données FFHM Scoresheet"),
+                    html.P("🐓 Basé sur les données de toutes les compétitions closes de Scoresheet FFHM"),
                     html.P("🔄 Mise à Jour tous les week-ends"),
                     html.P("🏋️ Données à jour au " + df.iloc[0,0]),
                     html.P("👨‍💻 Repo : https://github.com/jodwd/3PR_halterodata"),
@@ -59,6 +58,7 @@ nav_button = \
                     html.Div([], id="help-txt"),
                 ]),
                 dbc.ModalFooter(
+                    
                     dbc.Button("Fermer", id="close-button", color="secondary", className="ml-auto", size="sm")
                 ),
                 ], id="info-modal", size="lg", centered=True, is_open=False),
@@ -252,6 +252,7 @@ def page_info(path_name, is_open):
                         html.P("Le classement se fait sur la meilleure performance au coefficient IWF/Sinclair sur l'année de chaque athlètes"
                                "sauf si on filtre par catégorie de poids et/ou série et dans ce cas on affichera le meilleur total de chaque athlète par catégorie"),
                         html.P("On peut sélectionner plusieurs critères pour chaque filtre."),
+                        html.P("Si on filtre par catagorie d'âge, le classement par âge et au pour tous les âges s'affichera dans cet ordre à gauche du nom de l'athlète."),
                         html.P("Si on filtre sur les catégories U10 ou U13 cela affiche le total et le coefficient IWF sur 2 essais réussis.")
                         ]
 
@@ -314,4 +315,5 @@ def anniv(is_open):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8057)
+    port = int(os.environ.get('PORT', 3500))
+    app.run(host="0.0.0.0", port=port, debug=False)
