@@ -64,20 +64,13 @@
 
 
 
-#year-slider .rc-slider-track {
-  background-color: rgb(240, 173, 78);
+/* Dash 4 slider (Radix based, replaces rc-slider) */
+#year-slider {
+  --Dash-Fill-Interactive-Strong: rgb(240, 173, 78);
+  --Dash-Fill-Primary-Active: rgb(240, 173, 78);
 }
 
-#year-slider .rc-slider-handle {
-  background-color: rgb(240, 173, 78);
-  border-color: rgb(240, 173, 78);
-}
-
-#year-slider  .rc-slider-dot-active {
-  border-color: rgb(240, 173, 78);
-}
-
-#year-slider .rc-slider-handle-dragging {
+#year-slider .dash-slider-thumb:focus {
   box-shadow: 0px 0px 0px 2px rgb(240, 173, 78);
 }
 

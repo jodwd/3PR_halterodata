@@ -34,20 +34,13 @@
   margin-left: 2%;
 }
 
-#year-slider-club .rc-slider-track {
-  background-color: rgb(11, 95, 215);
+/* Dash 4 slider (Radix based, replaces rc-slider) */
+#year-slider-club {
+  --Dash-Fill-Interactive-Strong: rgb(11, 95, 215);
+  --Dash-Fill-Primary-Active: rgb(11, 95, 215);
 }
 
-#year-slider-club .rc-slider-handle {
-  background-color: rgb(11, 95, 215);
-  border-color: rgb(11, 95, 215);
-}
-
-#year-slider-club  .rc-slider-dot-active {
-  border-color: rgb(11, 95, 215);
-}
-
-#year-slider-club .rc-slider-handle-dragging {
+#year-slider-club .dash-slider-thumb:focus {
   box-shadow: 0px 0px 0px 2px rgb(0, 45, 165);
 }
 

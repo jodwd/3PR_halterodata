@@ -2,23 +2,24 @@ import dash
 from dash import dcc, html, callback, State, clientside_callback, ctx
 from dash.exceptions import PreventUpdate
 from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 import pandas as pd
-import sqlite3 as sql
 import dash_ag_grid as dag
 import os
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 
-# Connection à la base SQLite
+# Chargement des données (parquet)
 dirname = os.path.dirname(__file__)
-path_db = os.path.join(dirname, 'dataltero.db')
-conn = sql.connect(database=path_db)
+file_path = os.path.join(
+    dirname,
+    "parquet_tables",
+    "REPORT_LISTINGS.parquet"
+)
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
-qry = """SELECT * FROM REPORT_LISTINGS"""
-
-df = pd.read_sql_query(qry, conn)
+df = pd.read_parquet(file_path, engine='fastparquet')
 
 df = df.sort_values(by=['RangSerie'])
 df['IWF Max Saison'] = round(df['IWF Max Saison'], 3) # Arrondi à 3 virgule pour l'IWF pour le display
@@ -51,6 +52,8 @@ curr_year = init_curr_year
 curr_month = datetime.now().month
 if curr_month>8:
     curr_year=curr_year+1
+
+max_quizz_year = (datetime.today() + relativedelta(months=2)).year
 
 # body
 layout = html.Div([
@@ -244,7 +247,7 @@ layout = html.Div([
                 className="input-box",
             ),
             dcc.Dropdown(
-                options=[x for x in [2022, 2023, 2024, 2025]],
+                options=[x for x in range(2022, max_quizz_year + 1)],
                 multi=False,
                 id='quizz_input_sa',
                 placeholder="Saison",
@@ -296,13 +299,13 @@ layout = html.Div([
     html.Div([
         dag.AgGrid(
             id="ag-datatable-l",
-            rowData=df.to_dict("records"),
+            rowData=[],
             columnDefs=[],
             defaultColDef={"resizable": True, "sortable": True, "filter": False},
             columnSize="responsiveSizeToFit",
             suppressDragLeaveHidesColumns=True,
             style={"Display": 'Block', "height": 540},
-            dashGridOptions={"pagination": False},
+            dashGridOptions={"pagination": False, "theme": "legacy"},
             className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
         )
     ], id='listing_zone', style={'display': 'Block'}),
@@ -324,13 +327,13 @@ layout = html.Div([
             ], xs=8, sm=6, md=6, lg=4, xl=4),
             dag.AgGrid(
                 id="ag-datatable-int_edf",
-                rowData=df.to_dict("records"),
+                rowData=[],
                 columnDefs=[],
                 defaultColDef={"resizable": True, "sortable": True, "filter": False},
                 columnSize="responsiveSizeToFit",
                 suppressDragLeaveHidesColumns=True,
                 style={"height": 540},
-                dashGridOptions={"pagination": False},
+                dashGridOptions={"pagination": False, "theme": "legacy"},
                 className="ag-theme-quartz-dark",
             )
         ], id='edf_zone', style={'display': 'None'})
@@ -1046,29 +1049,22 @@ def quizz_lancer(q_is_started, val_sexe, val_age, val_saisonannee):
 
     if q_is_started:
         txt_out="C'est parti !"
-        where_qry_quizz = " where ath.""Nationalite""='FR' and cat.Sexe = '" + val_sexe + "'"
-        join_athl_pr=""
-        order_by = " order by apr.""MaxIWF"" desc "
-        if val_age:
-            where_qry_quizz = where_qry_quizz + " and CateAge = '" + val_age + "'"
-        if val_saisonannee:
-            where_qry_quizz = where_qry_quizz + " and cmp.SaisonAnnee = " + str(val_saisonannee) + ""
-            join_athl_pr = " and apr.SaisonAnnee = cmp.SaisonAnnee"
-            order_by = " order by apr.""MaxIWFSaison"" desc "
 
         display_opt = {'display': 'block', 'color':'black'}
-        print(where_qry_quizz)
-        qry_quizz = """SELECT * FROM
-                        (SELECT distinct
-                            ath.Nom                         as "Nom"
-                      FROM ATHLETE as ath 
-                      LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID 
-                      LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-                      LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
-                      LEFT JOIN ATHLETE_PR as apr on apr.AthleteID = ath.AthleteID"""\
-                     + join_athl_pr + where_qry_quizz + order_by + """)
-                  """
-        # Connection à la base SQLite
+        file_path = os.path.join(
+            dirname,
+            "parquet_tables",
+            "REPORT_QUIZZ.parquet"
+        )
+        df_q = pd.read_parquet(file_path, engine='fastparquet')
+
+        if val_saisonannee:
+            df_q = df_q[(df_q['SaisonAnnee'] == val_saisonannee)]
+        else:
+            df_q = df_q[(df_q['SaisonAnnee'] == 9999)]
+        df_q = df_q[(df_q['Sexe'] == val_sexe)]
+        df_q = df_q[(df_q['CateAge'] == val_age)]
+
         txt_q_titre = 'Top 10 '
         if val_sexe=='F':
             txt_q_titre = txt_q_titre + 'Femmes '
@@ -1081,11 +1077,6 @@ def quizz_lancer(q_is_started, val_sexe, val_age, val_saisonannee):
         else:
             txt_q_titre = txt_q_titre + 'sur toutes les saisons (2021+) '
 
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        df_q = pd.read_sql_query(qry_quizz, conn)
         print(df_q)
     return txt_out, display_opt, display_opt,  display_opt, txt_q_titre, df_q.to_dict('records'), 0, \
         out_init[0], out_init[1], out_init[2], out_init[3], out_init[4], out_init[5], out_init[6], out_init[7], out_init[8], out_init[9], \
@@ -1248,12 +1239,13 @@ def update_data(selected_year, list_opt, int_option, start_date, end_date, break
     if list_opt not in ('EDF'):
         raise PreventUpdate
 
-    dirname = os.path.dirname(__file__)
-    path_db = os.path.join(dirname, 'dataltero.db')
-    conn = sql.connect(database=path_db)
+    file_path = os.path.join(
+        dirname,
+        "parquet_tables",
+        "REPORT_EDF.parquet"
+    )
 
-    qry_edf = """SELECT * FROM REPORT_EDF"""
-    df_edf = pd.read_sql_query(qry_edf, conn)
+    df_edf = pd.read_parquet(file_path, engine='fastparquet')
 
     #si on change d'année de listing on recalcule start_date et end_date du date picker
     start_date=str(date(selected_year, 1, 1))

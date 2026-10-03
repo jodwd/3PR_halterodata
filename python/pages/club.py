@@ -3,7 +3,6 @@ import plotly.express as px
 from dash import dash_table, dcc, callback, State, html, clientside_callback
 from dash.exceptions import PreventUpdate
 import pandas as pd
-import sqlite3 as sql
 import dash_ag_grid as dag
 import numpy as np
 import os
@@ -32,23 +31,22 @@ def create_marker(loc):
         ]
     )
 
-# Connection à la base SQLite
+# Chargement des données (parquet)
 dirname = os.path.dirname(__file__)
-path_db = os.path.join(dirname, 'dataltero.db')
-conn = sql.connect(database=path_db)
+file_path = os.path.join(
+    dirname,
+    "parquet_tables",
+    "REPORT_CLUB.parquet"
+)
 
 # Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
-qry = """SELECT * FROM REPORT_CLUB"""
-df = pd.read_sql_query(qry, conn)
-df.head()
+df = pd.read_parquet(file_path, engine='fastparquet')
 
 df['IWF'] = round(df['IWF'], 3)
 df['IWF Max'] = round(df['IWF Max'], 3)
 
-dfh = df
-dff = df
-dfh['Rang'] = df[(df['Sexe'] == 'M') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
-dff['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
+df['Rang'] = df[(df['Sexe'] == 'M') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
+df['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
 
 clubs_pos = df[abs(df['lat']) > 1.0][['Club', 'lat', 'lon', 'CodePostal', 'Ville', 'Salle', 'Adresse1', 'Adresse2']].drop_duplicates()
 clubs_pos = clubs_pos.to_dict(orient='records')
@@ -286,7 +284,7 @@ layout = html.Div([
                 dag.AgGrid(
                     id="ag-datatable-h",
                     enableEnterpriseModules=True,
-                    rowData=dfh.to_dict("records"),  # **need it
+                    rowData=[],  # rempli par callback
                     columnDefs=[
                         {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
                         {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},
@@ -300,7 +298,7 @@ layout = html.Div([
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=True,
                     style={"height": 540},
-                    dashGridOptions={"pagination": False},
+                    dashGridOptions={"pagination": False, "theme": "legacy"},
                     className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
                 )
             ]),
@@ -316,7 +314,7 @@ layout = html.Div([
                     id="ag-datatable-f",
                     enableEnterpriseModules=True,
                     columnSize="responsiveSizeToFit",
-                    rowData=dff.to_dict("records"),  # **need it
+                    rowData=[],  # rempli par callback
                     columnDefs=[
                         {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
                         {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},
@@ -329,7 +327,7 @@ layout = html.Div([
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=False,
                     style={"height": 540},
-                    dashGridOptions={"pagination": False},
+                    dashGridOptions={"pagination": False, "theme": "legacy"},
                     className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
                 )
             ]),
@@ -474,21 +472,28 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
     txt_qry = 'clb.club'
     mode_ligue = False
     disp_cards = False
-    qry_age = """SELECT * FROM REPORT_CLUB_LIGUE_RANG"""
     if txt_ligue and not txt_club:
         mode_ligue = True
         if len(txt_ligue) == 1:
             disp_cards = True
+            file_path = os.path.join(
+                dirname,
+                "parquet_tables",
+                "REPORT_CLUB_LIGUE_RANG.parquet"
+            )
+            df_ac = pd.read_parquet(file_path, engine='fastparquet')
             print(txt_ligue)
     if txt_club:
         if len(txt_club) == 1:
             disp_cards = True
-            qry_age = """SELECT * FROM REPORT_CLUB_RANG"""
+            file_path = os.path.join(
+                dirname,
+                "parquet_tables",
+                "REPORT_CLUB_RANG.parquet"
+            )
+            df_ac = pd.read_parquet(file_path, engine='fastparquet')
             print(txt_club)
 
-    conn = sql.connect(database=path_db)
-    df_ac = pd.read_sql_query(qry_age, conn)
-    df_ac.head()
     print(txt_club)
     print(selected_year)
 
@@ -525,61 +530,28 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
 
 
 # Partie + Info
-def qry_box(txt_club_ligue, txt_ligue, selected_year):
-    if not txt_ligue:
-        txt_club = ''
-    else:
-        txt_club = 'clb.Club,'
-    qry = """SELECT cmp.SaisonAnnee as "Saison", """ + txt_club + """ ath.Nom, count(clb.club) as "Nb Compet" 
-                     , max(cat.Arrache) as "Max Arr", max(cat.EpJete) as "Max EpJ", max(cat.PoidsTotal) as "Max Tot"
-                     , max(round(cat.IWF_Calcul,3)) as "IWF Max"
-                     , CASE 
-                            WHEN cat."CateAge" = 'U10' THEN 'U10'
-                            WHEN cat."CateAge" = 'U13' THEN 'U13'
-                            WHEN cat."CateAge" = 'U15' THEN 'U15'
-                            WHEN cat."CateAge" = 'U17' THEN 'U17'
-                            WHEN cat."CateAge" = 'U20' THEN 'U20'
-                            ELSE 'SEN'
-                        END as "CateAge"
-                    , atr.AthlRang as "Classement Fr"
-                      FROM ATHLETE as ath
-                      LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID
-                      LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-                      LEFT JOIN CLUB as clb on clb.Club = cat.CATClub
+def qry_box(txt_club, txt_ligue, selected_year):
 
-                      LEFT JOIN (
-                            select
-                                cmp.SaisonAnnee
-                              , ath.Nom
-                              , cat.Sexe
-                              , CASE 
-                                    WHEN cat."CateAge" = 'U10' THEN 'U10'
-                                    WHEN cat."CateAge" = 'U13' THEN 'U13'
-                                    WHEN cat."CateAge" = 'U15' THEN 'U15'
-                                    WHEN cat."CateAge" = 'U17' THEN 'U17'
-                                    WHEN cat."CateAge" = 'U20' THEN 'U20'
-                                    ELSE 'SEN'
-                                END as "CateAge"
-                              , max(round(cat.IWF_Calcul,3)) as "IWF"
-                              , row_number() over(partition by cmp."SaisonAnnee", cat.Sexe,
-                                      CASE WHEN cat."CateAge" = 'U10' THEN 'U10' WHEN cat."CateAge" = 'U13' THEN 'U13' WHEN cat."CateAge" = 'U15' THEN 'U15' WHEN cat."CateAge" = 'U17' THEN 'U17'
-                                      WHEN cat."CateAge" = 'U20' THEN 'U20' ELSE 'SEN' END
-                              order by max(round(cat.IWF_Calcul,3)) desc) as "AthlRang"
-    
-                              FROM ATHLETE as ath
-                              LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID= ath.AthleteID
-                              LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition 
-                              group by cmp.SaisonAnnee, ath.Nom) as atr
-                                on atr.Nom = ath.Nom
-                                and atr.SaisonAnnee = cmp.SaisonAnnee
-
-                      where """ + txt_club_ligue + """
-                          and cmp.SaisonAnnee = """ + str(selected_year) + """
-                      group by cmp.SaisonAnnee, clb.club, ath.Nom, atr.AthlRang,
-                        CASE WHEN cat."CateAge" = 'U10' THEN 'U10' WHEN cat."CateAge" = 'U13' THEN 'U13' WHEN cat."CateAge" = 'U15' THEN 'U15' WHEN cat."CateAge" = 'U17' THEN 'U17'
-                            WHEN cat."CateAge" = 'U20' THEN 'U20' ELSE 'SEN' END
-                      order by atr.AthlRang"""
-    return qry
+    if txt_club:
+        file_path = os.path.join(
+            dirname,
+            "parquet_tables",
+            "REPORT_CLUB_AGE.parquet"
+        )
+        df_ca = pd.read_parquet(file_path, engine='fastparquet')
+        df_ca = df_ca[df_ca['Saison'] == selected_year]
+        df_ca = df_ca[df_ca['Club'] == txt_club[0]]
+    elif txt_ligue:
+        file_path = os.path.join(
+            dirname,
+            "parquet_tables",
+            "REPORT_CLUB_AGE_LIGUE.parquet"
+        )
+        df_ca = pd.read_parquet(file_path, engine='fastparquet')
+        df_ca = df_ca[df_ca['Saison'] == selected_year]
+        df_ca = df_ca[df_ca['Ligue'] == txt_ligue[0]]
+    df_ca = df_ca.sort_values(by=["Classement Fr"])
+    return df_ca
 
 
 @callback(
@@ -608,20 +580,8 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u10_u13):
     if not is_open_u10_u13 or (not txt_ligue and not txt_club):
         raise PreventUpdate
     if is_open_u10_u13:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        if txt_club:
-            txt_club_ligue = "clb.club in ('" + txt_club[0] + "')"
-        else:
-            txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
-
-        qry = qry_box(txt_club_ligue, txt_ligue, selected_year)
-
-        df_u10_u13 = pd.read_sql_query(qry, conn)
+        df_u10_u13 = qry_box(txt_club, txt_ligue, selected_year)
         df_u10_u13 = df_u10_u13[df_u10_u13['CateAge'].isin(['U10','U13'])]
-        df_u10_u13.head()
 
         return [dbc.Table.from_dataframe(df_u10_u13, responsive=True, striped=True, bordered=True, hover=True)]
         #fig_athl1, display_graph_athl1,
@@ -656,20 +616,8 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u15_u17):
     if not is_open_u15_u17 or (not txt_ligue and not txt_club):
         raise PreventUpdate
     if is_open_u15_u17:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        if txt_club:
-            txt_club_ligue = "clb.club in ('" + txt_club[0] + "')"
-        else:
-            txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
-
-        qry = qry_box(txt_club_ligue, txt_ligue, selected_year)
-
-        df_u15_u17 = pd.read_sql_query(qry, conn)
+        df_u15_u17 = qry_box(txt_club, txt_ligue, selected_year)
         df_u15_u17 = df_u15_u17[df_u15_u17['CateAge'].isin(['U15', 'U17'])]
-        df_u15_u17.head()
 
         return [dbc.Table.from_dataframe(df_u15_u17, responsive=True, striped=True, bordered=True, hover=True)]
         #fig_athl1, display_graph_athl1,
@@ -702,20 +650,8 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_u20):
     if not is_open_u20 or (not txt_ligue and not txt_club):
         raise PreventUpdate
     if is_open_u20:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        if txt_club:
-            txt_club_ligue = "clb.club in ('" + txt_club[0] + "')"
-        else:
-            txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
-
-        qry = qry_box(txt_club_ligue, txt_ligue, selected_year)
-
-        df_u20 = pd.read_sql_query(qry, conn)
+        df_u20 = qry_box(txt_club, txt_ligue, selected_year)
         df_u20 = df_u20[df_u20['CateAge'].isin(['U20'])]
-        df_u20.head()
 
         return [dbc.Table.from_dataframe(df_u20, responsive=True, striped=True, bordered=True, hover=True)]
         #fig_athl1, display_graph_athl1,
@@ -749,20 +685,8 @@ def update_table_athl1(selected_year, txt_ligue, txt_club, is_open_sen):
     if not is_open_sen or (not txt_ligue and not txt_club):
         raise PreventUpdate
     if is_open_sen:
-        dirname = os.path.dirname(__file__)
-        path_db = os.path.join(dirname, 'dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        if txt_club:
-            txt_club_ligue = "clb.club in ('" + txt_club[0] + "')"
-        else:
-            txt_club_ligue = "clb.ligue in ('" + txt_ligue[0] + "')"
-
-        qry = qry_box(txt_club_ligue, txt_ligue, selected_year)
-
-        df_sen = pd.read_sql_query(qry, conn)
+        df_sen = qry_box(txt_club, txt_ligue, selected_year)
         df_sen = df_sen[df_sen['CateAge'].isin(['SEN'])]
-        df_sen.head()
 
         return [dbc.Table.from_dataframe(df_sen, responsive=True, striped=True, bordered=True, hover=True)]
         #fig_athl1, display_graph_athl1,

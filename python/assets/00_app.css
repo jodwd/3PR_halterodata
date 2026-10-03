@@ -67,3 +67,25 @@
   width: 100%;
   height: 4px;
 }
+/* Dash 4 sliders: shared font and colors (old rc-slider look) */
+.slider_zone .dash-slider-track,
+.slider_zone .dash-slider-dot-outside-selection {
+  background-color: #e9e9e9;
+}
+
+.slider_zone .dash-slider-mark,
+.slider_zone .dash-slider-tooltip,
+.slider_zone .dash-range-slider-input {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+}
+
+.slider_zone .dash-slider-tooltip {
+  color: white;
+  background-color: #6c6c6c;
+  fill: #6c6c6c;
+}
+
+.slider_zone .dash-range-slider-input {
+  color: rgb(40, 40, 45);
+}

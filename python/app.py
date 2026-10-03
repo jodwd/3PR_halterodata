@@ -1,33 +1,37 @@
 import dash
 from dash import  dcc, Input, Output, State, html, clientside_callback
 import dash_bootstrap_components as dbc
+import dash_ag_grid as dag
 from dash.exceptions import PreventUpdate
-import sqlite3 as sql
 import pandas as pd
 import os
 import dash_daq as daq
 from datetime import datetime
 import dash_breakpoints
 import time
+import dash_leaflet
 
 print("0 start : " + str(time.time()))
-app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP],
+app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP, dag.themes.BASE, dag.themes.QUARTZ],
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'}],
                 use_pages=True)
 app.title = "3PR - Tableau de Bord de l'Haltérophilie en France"
 server = app.server
 
-# Connection à la base SQLite
+# Chargement des données (parquet)
 dirname = os.path.dirname(os.path.abspath(__file__))
-path_db = os.path.join(dirname, 'pages/dataltero.db')
-conn = sql.connect(database=path_db)
+dirname = os.path.dirname(__file__)
+file_path = os.path.join(
+    dirname,
+    "pages",
+    "parquet_tables",
+    "REPORT_ATHLETES.parquet"
+)
 
-# Requête
-qry = """SELECT max(cmp.DateCompet) as "Date"
-      FROM COMPET as cmp """
-df = pd.read_sql_query(qry, conn)
-df.head()
+# Requête TODO : associer les IWF Max à une compétition précise (lieu, date...) dans la BDD
+df = pd.read_parquet(file_path, engine='fastparquet', columns=['Date'])
+max_date = df["Date"].max()
 
 nav_button = \
     dbc.Row([
@@ -51,7 +55,7 @@ nav_button = \
                 dbc.ModalBody([
                     html.P("🐓 Basé sur les données de toutes les compétitions closes de Scoresheet FFHM"),
                     html.P("🔄 Mise à Jour tous les week-ends"),
-                    html.P("🏋️ Données à jour au " + df.iloc[0,0]),
+                    html.P("🏋️ Données à jour au " + max_date),
                     html.P("👨‍💻 Repo : https://github.com/jodwd/3PR_halterodata"),
                     html.P("📷 Insta : @3pr.fr"),
                     html.P("📧 Mail : trois3pr@gmail.com"),
@@ -282,27 +286,13 @@ def anniv(is_open):
         raise PreventUpdate
     if is_open:
         dirname = os.path.dirname(os.path.abspath(__file__))
-        path_db = os.path.join(dirname, 'pages/dataltero.db')
-        conn = sql.connect(database=path_db)
-
-        qry_anniv = """SELECT DISTINCT
-                        ath.Nom || ' (' || Cast((JulianDay(DATETIME('now')) - JulianDay(DATETIME(substr(ath."DateNaissance",7,4)
-                        || '-' || substr(ath."DateNaissance",4,2) || '-' || substr(ath."DateNaissance",1,2)))) / 365 AS Integer) || ' ans)' AS "AthlAnniv"
-                    FROM
-                        ATHLETE as ath
-                        LEFT JOIN COMPET_ATHLETE as cat on cat.AthleteID = ath.AthleteID
-                        LEFT JOIN COMPET as cmp on cmp.NomCompetition = cat.CATNomCompetition
-                        LEFT JOIN ATHLETE_PR apr on apr."AthleteID" = (ath.Nom || ath."DateNaissance")
-                                                  and apr.SaisonAnnee = cmp.SaisonAnnee
-                    WHERE substr(DateNaissance, 1, 5) = substr(DATETIME('now'), 9,2) || '/' || substr(DATETIME('now'), 6 ,2)
-                        AND (cmp.SaisonAnnee = cast(substr(DATE('now', '-8 months'),1,4) as Integer)
-                        OR  cmp.SaisonAnnee = cast(substr(DATE('now', '+4 months'),1,4) as Integer))
-
-                    ORDER BY
-                        (case when cat.Sexe='F' then 1.5 else 1 end)* apr."MaxIWFSaison" DESC"""
-
-        df_anniv = pd.read_sql_query(qry_anniv, conn)
-        df_anniv.head()
+        file_path = os.path.join(
+            dirname,
+            "pages",
+            "parquet_tables",
+            "REPORT_ANNIV.parquet"
+        )
+        df_anniv = pd.read_parquet(file_path, engine='fastparquet')
         print(df_anniv)
 
         today = datetime.now()
@@ -312,7 +302,6 @@ def anniv(is_open):
         txt_anniv = txt_anniv[0:-2]
 
         return [txt_anniv]
-
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 3500))

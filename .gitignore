@@ -1,0 +1,21 @@
+# Databases
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE / tooling
+.idea/
+.claude/
+
+# Local data work
+data_transform.py
+manual_data/
