@@ -97,20 +97,13 @@
 
 }
 
-#year-slider-athl .rc-slider-track {
-  background-color: rgb(220, 53, 69);
+/* Dash 4 slider (Radix based, replaces rc-slider) */
+#year-slider-athl {
+  --Dash-Fill-Interactive-Strong: rgb(220, 53, 69);
+  --Dash-Fill-Primary-Active: rgb(220, 53, 69);
 }
 
-#year-slider-athl .rc-slider-handle {
-  background-color: rgb(220, 53, 69);
-  border-color: rgb(220, 53, 69);
-}
-
-#year-slider-athl  .rc-slider-dot-active {
-  border-color: rgb(220, 53, 69);
-}
-
-#year-slider-athl .rc-slider-handle-dragging {
+#year-slider-athl .dash-slider-thumb:focus {
   box-shadow: 0px 0px 0px 2px rgb(220, 53, 69);
 }
 

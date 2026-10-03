@@ -3,7 +3,6 @@ import plotly.express as px
 from dash import dash_table, dcc, callback, State, html, clientside_callback
 from dash.exceptions import PreventUpdate
 import pandas as pd
-import sqlite3 as sql
 import dash_ag_grid as dag
 import numpy as np
 import os
@@ -32,7 +31,7 @@ def create_marker(loc):
         ]
     )
 
-# Connection à la base SQLite
+# Chargement des données (parquet)
 dirname = os.path.dirname(__file__)
 file_path = os.path.join(
     dirname,
@@ -301,7 +300,7 @@ layout = html.Div([
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=True,
                     style={"height": 540},
-                    dashGridOptions={"pagination": False},
+                    dashGridOptions={"pagination": False, "theme": "legacy"},
                     className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
                 )
             ]),
@@ -330,7 +329,7 @@ layout = html.Div([
                     defaultColDef={"resizable": True, "sortable": True, "filter": False},
                     suppressDragLeaveHidesColumns=False,
                     style={"height": 540},
-                    dashGridOptions={"pagination": False},
+                    dashGridOptions={"pagination": False, "theme": "legacy"},
                     className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
                 )
             ]),
@@ -492,13 +491,11 @@ def updated_athletes(selected_year, txt_ligue, txt_club):
             file_path = os.path.join(
                 dirname,
                 "parquet_tables",
-                "EPORT_CLUB_RANG.parquet"
+                "REPORT_CLUB_RANG.parquet"
             )
             df_ac = pd.read_parquet(file_path, engine='fastparquet')
             print(txt_club)
 
-    #conn = sql.connect(database=path_db)
-    #df_ac = pd.read_sql_query(qry_age, conn)
     print(txt_club)
     print(selected_year)
 

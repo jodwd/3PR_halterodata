@@ -3,29 +3,17 @@ import plotly.express as px
 from dash import dcc, callback, State, html, clientside_callback
 from dash.exceptions import PreventUpdate
 import pandas as pd
-import sqlite3 as sql
 import dash_ag_grid as dag
 import os
 from dash.dependencies import Input, Output
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 import time
-from functools import lru_cache
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-# @lru_cache(maxsize=1)
-# def load_main_df():
-#    with get_conn() as conn:
-#        return pd.read_sql_query(qry, conn, params={"min_year": min_year, "max_year": max_year})
-
-# def get_conn():
-#    return sql.connect(path_db, check_same_thread=False)
-
 print("full start: " + str(time.time()))
 dirname = os.path.dirname(__file__)
-path_db = os.path.join(dirname, 'dataltero.db')
-print("db conn : " + str(time.time()))
 
 # Liste d'athlètes = ceux qui ont tiré sur la plage par défaut càd l'année dernière + l'année en cours
 min_year = (datetime.today() - relativedelta(months=8)).year
@@ -336,7 +324,7 @@ layout = html.Div([
             ],
             defaultColDef={"resizable": True, "sortable": True, "filter": True},
             suppressDragLeaveHidesColumns=True,
-            dashGridOptions={"pagination": False},
+            dashGridOptions={"pagination": False, "theme": "legacy"},
             className="ag-theme-quartz-dark",  # https://dashaggrid.pythonanywhere.com/layout/themes
         )
 
@@ -392,7 +380,6 @@ def update_figure(selected_year, on, on_light, txt_inserted, n_clicks, breakpoin
     if selected_year == '':
         selected_year = [(datetime.today() - relativedelta(months=8)).year,
                          (datetime.today() + relativedelta(months=4)).year]
-    # with get_conn() as conn:
     fdf = df
     if txt_inserted:
         # On trie par nom pour aligner la saisie, les cartes et le graphique
