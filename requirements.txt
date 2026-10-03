@@ -3,7 +3,7 @@ dash_core_components
 dash_html_components
 dash_bootstrap_components
 Flask
-numpy==2.5.0
+numpy==2.4.6
 pandas==3.0.3
 plotly==6.9.0
 Werkzeug
