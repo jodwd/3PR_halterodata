@@ -45,10 +45,8 @@ df = pd.read_parquet(file_path, engine='fastparquet')
 df['IWF'] = round(df['IWF'], 3)
 df['IWF Max'] = round(df['IWF Max'], 3)
 
-dfh = df
-dff = df
-dfh['Rang'] = df[(df['Sexe'] == 'M') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
-dff['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
+df['Rang'] = df[(df['Sexe'] == 'M') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
+df['Rang'] = df[(df['Sexe'] == 'F') & df['SaisonAnnee'] == max(df['SaisonAnnee'])].groupby(['SaisonAnnee']).cumcount() + 1
 
 clubs_pos = df[abs(df['lat']) > 1.0][['Club', 'lat', 'lon', 'CodePostal', 'Ville', 'Salle', 'Adresse1', 'Adresse2']].drop_duplicates()
 clubs_pos = clubs_pos.to_dict(orient='records')
@@ -286,7 +284,7 @@ layout = html.Div([
                 dag.AgGrid(
                     id="ag-datatable-h",
                     enableEnterpriseModules=True,
-                    rowData=dfh.to_dict("records"),  # **need it
+                    rowData=[],  # rempli par callback
                     columnDefs=[
                         {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
                         {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},
@@ -316,7 +314,7 @@ layout = html.Div([
                     id="ag-datatable-f",
                     enableEnterpriseModules=True,
                     columnSize="responsiveSizeToFit",
-                    rowData=dff.to_dict("records"),  # **need it
+                    rowData=[],  # rempli par callback
                     columnDefs=[
                         {"field": "Rang", "minWidth": 30, "maxWidth": 40, "pinned": "left"},
                         {"field": "Nom", "minWidth": 120, "maxWidth": 220, "pinned": "left"},

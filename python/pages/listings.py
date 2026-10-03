@@ -299,7 +299,7 @@ layout = html.Div([
     html.Div([
         dag.AgGrid(
             id="ag-datatable-l",
-            rowData=df.to_dict("records"),
+            rowData=[],
             columnDefs=[],
             defaultColDef={"resizable": True, "sortable": True, "filter": False},
             columnSize="responsiveSizeToFit",
@@ -327,7 +327,7 @@ layout = html.Div([
             ], xs=8, sm=6, md=6, lg=4, xl=4),
             dag.AgGrid(
                 id="ag-datatable-int_edf",
-                rowData=df.to_dict("records"),
+                rowData=[],
                 columnDefs=[],
                 defaultColDef={"resizable": True, "sortable": True, "filter": False},
                 columnSize="responsiveSizeToFit",
