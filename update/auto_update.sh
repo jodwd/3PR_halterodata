@@ -2,15 +2,15 @@
 
 # Step 1: Run the Ruby script
 echo "Running Ruby script..."
-ruby C:/Users/joris/PycharmProjects/halterodata/ruby/athletes_scoresheet.rb
+ruby  C:/Users/joris/PycharmProjects/3PR_halterodata/ruby/athletes_scoresheet.rb
 
 # Step 2: Run the Python script
-cd C:/Users/joris/PycharmProjects/halterodata
+cd  C:/Users/joris/PycharmProjects/3PR_halterodata
 git checkout uat
 
 python --version
 echo "Running Python script..."
-python C:/Users/joris/PycharmProjects/halterodata/data_transform.py
+python  C:/Users/joris/PycharmProjects/3PR_halterodata/data_transform.py
 
 
 # Step 3: Add changes to Git
