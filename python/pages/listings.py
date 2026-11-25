@@ -1224,7 +1224,8 @@ def end_quizz(stop_q, df_q, n_1, n_2, n_3, n_4, n_5, n_6, n_7, n_8, n_9, n_10):
      Output('filtre_dates', 'end_date', allow_duplicate=True),
      Output('cal', 'children', allow_duplicate=True),
      Output('zone_filtre_edf', 'style', allow_duplicate=True),
-     Output('zone_filtre', 'style', allow_duplicate=True)
+     Output('zone_filtre', 'style', allow_duplicate=True),
+     Output('year-slider', 'value', allow_duplicate=True)
      ],
     [Input('year-slider', 'value'),
      Input('list_option', 'value'),
@@ -1246,6 +1247,9 @@ def update_data(selected_year, list_opt, int_option, start_date, end_date, break
     )
 
     df_edf = pd.read_parquet(file_path, engine='fastparquet')
+
+    if selected_year == df_edf['SaisonAnnee'].max() and datetime.now().month>8:
+        selected_year = selected_year -1
 
     #si on change d'année de listing on recalcule start_date et end_date du date picker
     start_date=str(date(selected_year, 1, 1))
@@ -1317,7 +1321,7 @@ def update_data(selected_year, list_opt, int_option, start_date, end_date, break
     ye, me, de = end_date.split('-')
     output_cal = '📅 ' + ds + '/' + ms + ' ' + de + '/' + me
 
-    return dat, cols, style_edf, style_l, start_date, end_date, output_cal, style_edf, style_l
+    return dat, cols, style_edf, style_l, start_date, end_date, output_cal, style_edf, style_l, selected_year
 
 
 #Export Excel
