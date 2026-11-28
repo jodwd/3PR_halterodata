@@ -41,12 +41,12 @@ def scrape(agent, s, t)
   rescue Mechanize::ResponseCodeError => e
     return nil if e.response_code == '404'          # athlete doesn't exist
     attempts += 1
-    if attempts < 4 then sleep(2 * attempts); retry end
+    if attempts < 2 then sleep(2 * attempts); retry end
     warn "athlete #{s} (t=#{t}) HTTP #{e.response_code}"
     return nil
   rescue StandardError => e                         # timeout, connection reset...
     attempts += 1
-    if attempts < 4 then sleep(2 * attempts); retry end
+    if attempts < 2 then sleep(2 * attempts); retry end
     warn "athlete #{s} (t=#{t}) #{e.class}: #{e.message}"
     return nil
   end
